@@ -235,5 +235,5 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
 datapath='/N/scratch/tqluu/merra2-nasa/full/'
 
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset,tc_name='HAIYAN', years=2013, datapath=datapath)   
+merge_data(csvdataset, datapath=datapath)   
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
