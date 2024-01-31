@@ -198,8 +198,11 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
                       "WMO_PRES", "USA_RMW"]                          #define the important columns, some for search bar, some for interest
   df=pd.read_csv(csvdataset, usecols=selected_columns) #read data using pandas read csv
   filtered_df = df[
-    (df['WMO_WIND'].apply(lambda x: str(x).isnumeric())) & (df['WMO_PRES'].apply(lambda x: str(x).isnumeric())) & (df['USA_RMW'].apply(lambda x: str(x).isnumeric()))][selected_columns] #pick only where max wind speed, min pressure, and RMW are numbers
-  filtered_df["WMO_WIND"] = filtered_df["WMO_WIND"].astype(float) #still need to convert them to number, because >>some<< entries are strings, that's why I have to use isnumeric.
+    (df['WMO_WIND'].apply(lambda x: str(x).isnumeric())) & 
+    (df['WMO_PRES'].apply(lambda x: str(x).isnumeric())) & 
+    (df['USA_RMW'].apply(lambda x: str(x).isnumeric()))][selected_columns] #pick only where max wind speed, min pressure, and RMW are numbers
+  filtered_df["WMO_WIND"] = filtered_df["WMO_WIND"].astype(float) 
+  #still need to convert them to number, because >>some<< entries are strings, that's why I have to use isnumeric.
   filtered_df["WMO_PRES"] = filtered_df["WMO_PRES"].astype(float)
   filtered_df["USA_RMW"] = filtered_df["USA_RMW"].astype(float)
   del df #liberate some data, for other users
@@ -219,11 +222,18 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
     dataname=datapath+'MERRA2_400.inst3_3d_asm_Np.'+formatted_time+'.nc4'
     dataset = xr.open_dataset(dataname)
     window=dataset.sel(time=time, lat=slice(lowerlat, upperlat), lon=slice(lowerlon,upperlon)) #cut the window
-    window=window.assign_attrs(VMAX=filtered_df[filtered_df['ISO_TIME']==time]['WMO_WIND'].values[0], PMIN=filtered_df[filtered_df['ISO_TIME']==time]['WMO_PRES'].values[0], RMW=filtered_df[filtered_df['ISO_TIME']==time]['USA_RMW'].values[0], CLAT=filtered_df[filtered_df['ISO_TIME'] == time]['LAT'].values[0], CLON=filtered_df[filtered_df['ISO_TIME'] == time]['LON'].values[0]) #assign new attributes, Max wind speed, Min pressure and radius of maximum wind
+    window=window.assign_attrs(VMAX=filtered_df[filtered_df['ISO_TIME'] == time]['WMO_WIND'].values[0], 
+                               PMIN=filtered_df[filtered_df['ISO_TIME'] == time]['WMO_PRES'].values[0], 
+    			       RMW=filtered_df[filtered_df['ISO_TIME'] == time]['USA_RMW'].values[0], 
+			       CLAT=filtered_df[filtered_df['ISO_TIME'] == time]['LAT'].values[0], 
+			       CLON=filtered_df[filtered_df['ISO_TIME'] == time]['LON'].values[0], 
+			       TCNAME=filtered_df[filtered_df['ISO_TIME'] == time]['NAME'].values[0] ) 
+			       #assign new attributes, Max wind speed, Min pressure and radius of maximum wind
     formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename
-    outname='MERRA_TC'+str(windowsize[0])+'x'+str(windowsize[1])+formatted_datetime[:-2]+formatted_datetime[-2:]+'.nc' 
+    outname='TC_domain/MERRA_TC'+str(windowsize[0])+'x'+str(windowsize[1])+formatted_datetime[:-2]+formatted_datetime[-2:]+'.nc' 
     window.to_netcdf(outname) #print out the new file, its name is MERRA_TCW1xW2YYYYMMDDHH.nc
-datapath='/N/scratch/tqluu/merra2-nasa/downloads2/'
+datapath='/N/scratch/tqluu/merra2-nasa/full/'
 
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset,tc_name='HAIYAN', years=2013, datapath=datapath)   #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
+merge_data(csvdataset,tc_name='HAIYAN', years=2013, datapath=datapath)   
+#Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
