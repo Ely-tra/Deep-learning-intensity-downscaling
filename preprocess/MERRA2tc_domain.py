@@ -1,7 +1,50 @@
+import os
 import pandas as pd
 import xarray as xr #use xarray because it is far more better than netCDF4 
 from datetime import datetime  #Use datetime to name the output files
 
+#####################################
+
+def get_runid(formatted_time):
+    """
+    Convert formatted_time to a numeric representation (assuming it's a date in YYYYMMDD format)
+    and return a runid based on predefined date ranges.
+
+    Parameters:
+    - formatted_time (str): A string representing the formatted time in YYYYMMDD format.
+
+    Returns:
+    - int or None: The runid (100, 200, 300, 400, 401) corresponding to the date range of formatted_time.
+                  Returns None if the date doesn't fall into any defined range.
+
+    Example:
+    >>> formatted_time = "19950115"
+    >>> runid = get_runid(formatted_time)
+    >>> print(runid)
+    100
+    """
+    # Convert formatted_time to a numeric representation (assuming it's a date in YYYYMMDD format)
+    numeric_time = int(formatted_time)
+
+    # Define date ranges
+    range_1 = (0, 19911231)
+    range_2 = (19920101, 20001231)
+    range_3 = (20010101, 20101231)
+    filename = f"MERRA2_401.inst3_3d_asm_Np.{formatted_time}.nc4"
+    # Check the date range and return the corresponding runid
+    if range_1[0] <= numeric_time <= range_1[1]:
+        return 100
+    elif range_2[0] <= numeric_time <= range_2[1]:
+        return 200
+    elif range_3[0] <= numeric_time <= range_3[1]:
+        return 300
+    elif os.path.isfile(filename):
+        return 401
+    else:
+        return 400  # Return None if the date doesn't fall into any defined range
+
+
+######################################
 def process_years(years,df):
   """
     Process the 'SEASON' column in the DataFrame based on the provided years.
@@ -219,7 +262,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
     lowerlon=max(-180,filtered_df[filtered_df['ISO_TIME']==time]['LON'].values[0]-windowsize[1]/2)
     upperlon=min(180, lowerlon+windowsize[1])
     formatted_time = pd.to_datetime(time).strftime('%Y%m%d') #read corresponding data file
-    dataname=datapath+'MERRA2_400.inst3_3d_asm_Np.'+formatted_time+'.nc4'
+    dataname=datapath+'MERRA2_'+str(get_runid(formatted_time))+'.inst3_3d_asm_Np.'+formatted_time+'.nc4'
     dataset = xr.open_dataset(dataname)
     window=dataset.sel(time=time, lat=slice(lowerlat, upperlat), lon=slice(lowerlon,upperlon)) #cut the window
     window=window.assign_attrs(VMAX=filtered_df[filtered_df['ISO_TIME'] == time]['WMO_WIND'].values[0], 
@@ -235,5 +278,6 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
 datapath='/N/scratch/tqluu/merra2-nasa/full/'
 
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, datapath=datapath)   
+merge_data(csvdataset, tc_name='HAIYAN',  datapath=datapath) 
+#tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple), datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
