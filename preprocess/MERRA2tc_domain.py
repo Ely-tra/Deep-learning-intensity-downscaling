@@ -256,7 +256,11 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
   filtered_df=trim_wind_range(filtered_df, maxwind=maxwind, minwind=minwind)
   filtered_df=trim_pressure_range(filtered_df, maxpres=maxpres, minpres=minpres)
   filtered_df=trim_rmw_range(filtered_df, maxrmw=maxrmw, minrmw=minrmw)
-  for time in filtered_df['ISO_TIME']: 
+  for time in filtered_df['ISO_TIME']:
+   formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename 
+   if formatted_datetime[-2:] not in ['00', '03','06', '09', '12', '15', '18', '21']:
+    pass
+   else:
     lowerlat=max(-90,filtered_df[filtered_df['ISO_TIME']==time]['LAT'].values[0]-windowsize[0]/2) #define the window
     upperlat=min(90, lowerlat+windowsize[0])
     lowerlon=max(-180,filtered_df[filtered_df['ISO_TIME']==time]['LON'].values[0]-windowsize[1]/2)
@@ -275,9 +279,9 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
     formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename
     outname='TC_domain/MERRA_TC'+str(windowsize[0])+'x'+str(windowsize[1])+formatted_datetime[:-2]+formatted_datetime[-2:]+'.nc' 
     window.to_netcdf(outname) #print out the new file, its name is MERRA_TCW1xW2YYYYMMDDHH.nc
-datapath='/N/scratch/tqluu/merra2-nasa/full/'
+datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, tc_name='HAIYAN',  datapath=datapath) 
+merge_data(csvdataset, regions=['NA','WP', 'EP'], datapath=datapath) 
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple), datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
