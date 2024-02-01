@@ -269,19 +269,28 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
     dataname=datapath+'MERRA2_'+str(get_runid(formatted_time))+'.inst3_3d_asm_Np.'+formatted_time+'.nc4'
     dataset = xr.open_dataset(dataname)
     window=dataset.sel(time=time, lat=slice(lowerlat, upperlat), lon=slice(lowerlon,upperlon)) #cut the window
-    window=window.assign_attrs(VMAX=filtered_df[filtered_df['ISO_TIME'] == time]['WMO_WIND'].values[0], 
-                               PMIN=filtered_df[filtered_df['ISO_TIME'] == time]['WMO_PRES'].values[0], 
-    			       RMW=filtered_df[filtered_df['ISO_TIME'] == time]['USA_RMW'].values[0], 
-			       CLAT=filtered_df[filtered_df['ISO_TIME'] == time]['LAT'].values[0], 
-			       CLON=filtered_df[filtered_df['ISO_TIME'] == time]['LON'].values[0], 
-			       TCNAME=filtered_df[filtered_df['ISO_TIME'] == time]['NAME'].values[0] ) 
+    window_df=filtered_df[filtered_df['ISO_TIME'] == time]
+    window=window.assign_attrs(VMAX=window_df['WMO_WIND'].values[0], 
+                               PMIN=window_df['WMO_PRES'].values[0], 
+    			       RMW=window_df['USA_RMW'].values[0], 
+			       CLAT=window_df['LAT'].values[0], 
+			       CLON=window_df['LON'].values[0], 
+			       TCNAME=window_df['NAME'].values[0] ) 
 			       #assign new attributes, Max wind speed, Min pressure and radius of maximum wind
     formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename
-    outname='TC_domain/MERRA_TC'+str(windowsize[0])+'x'+str(windowsize[1])+formatted_datetime[:-2]+formatted_datetime[-2:]+'.nc' 
+    basin=window_df['BASIN'].values[0]
+    outname='TC_domain/'+basin 
+    if not os.path.exists(outname):
+     os.makedirs(outname)
+    outname=outname + '/' + formatted_datetime[:4]
+    if not os.path.exists(outname):
+     os.makedirs(outname)
+    outname=outname + '/' + 'MERRA_TC' + str(windowsize[0])+'x'+str(windowsize[1])+formatted_datetime + '.nc'
+    outname=str(outname)
     window.to_netcdf(outname) #print out the new file, its name is MERRA_TCW1xW2YYYYMMDDHH.nc
 datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, regions=['NA','WP', 'EP'], datapath=datapath) 
+merge_data(csvdataset, tc_name='HAIYAN', years='2013' , datapath=datapath) 
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple), datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
