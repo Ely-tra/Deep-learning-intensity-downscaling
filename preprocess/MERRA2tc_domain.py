@@ -321,15 +321,15 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
     count=count+1
     if (count+faulty) % 1000 == 0:
      endtime=timer()
-     print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*1000)+ '% done.', flush=True)
+     print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
      time_used=endtime-starttime
      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
      estimate=(entries-count-faulty)/1000*time_used
      starttime=timer()
      print('Time left: ' +str(estimate))
-  print('Total: ' + str(count) + ' entries processed.', flush=True)
+  print('Total: ' + str(entries) + ' entries processed.', flush=True)
   print('With ' +str(faulty) +' faulty entries.', flush=True)
-  print('Generated ' + str(count-faulty) + ' windows.', flush=True) 
+  print('Generated ' + str(count) + ' windows.', flush=True) 
 datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 from timeit import default_timer as timer
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
