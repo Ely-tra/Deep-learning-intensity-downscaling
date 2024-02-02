@@ -243,7 +243,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   selected_columns = ["SEASON", "BASIN", "NAME", "LAT", 
                       "LON", "ISO_TIME", "WMO_WIND", 
                       "WMO_PRES", "USA_RMW"]                          #define the important columns, some for search bar, some for interest
-  df=pd.read_csv(csvdataset, usecols=selected_columns) #read data using pandas read csv
+  df=pd.read_csv(csvdataset, usecols=selected_columns); #read data using pandas read csv
   filtered_df = df[
     (df['WMO_WIND'].apply(lambda x: str(x).isnumeric())) & 
     (df['WMO_PRES'].apply(lambda x: str(x).isnumeric())) & 
@@ -260,10 +260,21 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   filtered_df=trim_wind_range(filtered_df, maxwind=maxwind, minwind=minwind)
   filtered_df=trim_pressure_range(filtered_df, maxpres=maxpres, minpres=minpres)
   filtered_df=trim_rmw_range(filtered_df, maxrmw=maxrmw, minrmw=minrmw)
+  filtered_df=filtered_df.sort_values('ISO_TIME')
   count=0
   starttime=timer()
   faulty=0
-  for time in filtered_df['ISO_TIME']:
+  suffix=0
+  previous_time=0 #There can be 2 or more TCs happen at the same time
+  entries=len(filtered_df)
+  for index, row in filtered_df.iterrows():
+   window_df=row
+   time=row['ISO_TIME']
+   if time==previous_time:
+    suffix+=1
+   elif time!= previous_time:
+    suffix=0
+   previous_time=time
    if count<completed:
     count+=1
     continue
@@ -281,48 +292,47 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
     faulty+=1
     pass
    else:
-    lowerlat=max(-90,filtered_df[filtered_df['ISO_TIME']==time]['LAT'].values[0]-windowsize[0]/2) #define the window
+    lowerlat=max(-90,window_df['LAT']-windowsize[0]/2) #define the window
     upperlat=min(90, lowerlat+windowsize[0])
-    lowerlon=max(-180,filtered_df[filtered_df['ISO_TIME']==time]['LON'].values[0]-windowsize[1]/2)
+    lowerlon=max(-180,window_df['LON']-windowsize[1]/2)
     upperlon=min(180, lowerlon+windowsize[1])
     formatted_time = pd.to_datetime(time).strftime('%Y%m%d') #read corresponding data file
     dataname=datapath+'MERRA2_'+str(get_runid(formatted_time,datapath))+'.inst3_3d_asm_Np.'+formatted_time+'.nc4'
     dataset = xr.open_dataset(dataname)
     window=dataset.sel(time=time, lat=slice(lowerlat, upperlat), lon=slice(lowerlon,upperlon)) #cut the window
-    window_df=filtered_df[filtered_df['ISO_TIME'] == time]
-    window=window.assign_attrs(VMAX=window_df['WMO_WIND'].values[0], 
-                               PMIN=window_df['WMO_PRES'].values[0], 
-    			       RMW=window_df['USA_RMW'].values[0], 
-			       CLAT=window_df['LAT'].values[0], 
-			       CLON=window_df['LON'].values[0], 
-			       TCNAME=window_df['NAME'].values[0] ) 
+    window=window.assign_attrs(VMAX=window_df['WMO_WIND'], 
+                               PMIN=window_df['WMO_PRES'], 
+    			       RMW=window_df['USA_RMW'], 
+			       CLAT=window_df['LAT'], 
+			       CLON=window_df['LON'], 
+			       TCNAME=window_df['NAME']) 
 			       #assign new attributes, Max wind speed, Min pressure and radius of maximum wind
     formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename
-    basin=window_df['BASIN'].values[0]
+    basin=window_df['BASIN']
     outname='TC_domain/'+basin 
     if not os.path.exists(outname):
      os.makedirs(outname)
     outname=outname + '/' + formatted_datetime[:4]
     if not os.path.exists(outname):
      os.makedirs(outname)
-    outname=outname + '/' + 'MERRA_TC' + str(windowsize[0])+'x'+str(windowsize[1])+formatted_datetime + '.nc'
+    outname=outname + '/' + 'MERRA_TC' + str(windowsize[0])+'x'+str(windowsize[1])+formatted_datetime + '_'+str(suffix)+ '.nc'
     outname=str(outname)
     window.to_netcdf(outname) #print out the new file, its name is MERRA_TCW1xW2YYYYMMDDHH.nc
     count=count+1
     if count % 100 == 0:
      endtime=timer()
-     print(str(count) + ' entries processed.')
+     print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.')
      time_used=endtime-starttime
      print('Time used for last 100 entries: ' +str(time_used))
-     estimate=(20200-count)/100*time_used
+     estimate=(entries-count-faulty)/100*time_used
      starttime=timer()
      print('Time left: ' +str(estimate))
   print('Total: ' + str(count) + ' entries processed.')
-  print('With ' +str(faulty) +' entries.')
+  print('With ' +str(faulty) +' faulty entries.')
   print('Generated ' + str(count-faulty) + ' windows.') 
 datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 from timeit import default_timer as timer
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, regions=['WP', 'NA', 'EP'] , datapath=datapath) 
+merge_data(csvdataset, ['WP','EP','NA'] , datapath=datapath) 
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple), datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
