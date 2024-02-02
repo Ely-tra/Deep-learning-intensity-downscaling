@@ -1,0 +1,4 @@
+  File "MERRA2tc_domain.py", line 33
+    filename = datapath+f"MERRA2_401.inst3_3d_asm_Np.{formatted_time}.nc4"
+                                                                         ^
+SyntaxError: invalid syntax

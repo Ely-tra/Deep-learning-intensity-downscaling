@@ -243,7 +243,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   selected_columns = ["SEASON", "BASIN", "NAME", "LAT", 
                       "LON", "ISO_TIME", "WMO_WIND", 
                       "WMO_PRES", "USA_RMW"]                          #define the important columns, some for search bar, some for interest
-  df=pd.read_csv(csvdataset, usecols=selected_columns); #read data using pandas read csv
+  df=pd.read_csv(csvdataset, usecols=selected_columns, keep_default_na=False); #read data using pandas read csv
   filtered_df = df[
     (df['WMO_WIND'].apply(lambda x: str(x).isnumeric())) & 
     (df['WMO_PRES'].apply(lambda x: str(x).isnumeric())) & 
@@ -319,20 +319,20 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
     outname=str(outname)
     window.to_netcdf(outname) #print out the new file, its name is MERRA_TCW1xW2YYYYMMDDHH.nc
     count=count+1
-    if count % 100 == 0:
+    if (count+faulty) % 1000 == 0:
      endtime=timer()
-     print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.')
+     print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*1000)+ '% done.', flush=True)
      time_used=endtime-starttime
-     print('Time used for last 100 entries: ' +str(time_used))
-     estimate=(entries-count-faulty)/100*time_used
+     print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
+     estimate=(entries-count-faulty)/1000*time_used
      starttime=timer()
      print('Time left: ' +str(estimate))
-  print('Total: ' + str(count) + ' entries processed.')
-  print('With ' +str(faulty) +' faulty entries.')
-  print('Generated ' + str(count-faulty) + ' windows.') 
+  print('Total: ' + str(count) + ' entries processed.', flush=True)
+  print('With ' +str(faulty) +' faulty entries.', flush=True)
+  print('Generated ' + str(count-faulty) + ' windows.', flush=True) 
 datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 from timeit import default_timer as timer
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, ['WP','EP','NA'] , datapath=datapath) 
+merge_data(csvdataset, regions=['WP','EP','NA'] , datapath=datapath) 
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple), datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
