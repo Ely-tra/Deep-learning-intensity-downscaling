@@ -245,6 +245,8 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
         - Center Latitude (float): Latitude of the TC center.
         - Center Longitude (float): Longitude of the TC center.
   """
+  #############################################################################
+  #read CSV data and process the datatype, selecting only TC with defined characteristics
   selected_columns = ["SEASON", "BASIN", "NAME", "LAT", 
                       "LON", "ISO_TIME", "WMO_WIND", 
                       "WMO_PRES", "USA_RMW"]                          #define the important columns, some for search bar, some for interest
@@ -266,6 +268,10 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   filtered_df=trim_pressure_range(filtered_df, maxpres=maxpres, minpres=minpres)
   filtered_df=trim_rmw_range(filtered_df, maxrmw=maxrmw, minrmw=minrmw)
   filtered_df=filtered_df.sort_values('ISO_TIME')
+
+
+  ###############################################################################
+  #Initiate counter value
   count=0
   starttime=timer()
   faulty=0
@@ -274,6 +280,8 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   entries=len(filtered_df)
   latsize=np.ceil(windowsize[0]/2/0.5)+1
   lonsize = np.ceil(windowsize[1] / 2 / 0.625) + 1
+  ################################################################################
+  #Loop through filtered data
   for index, row in filtered_df.iterrows():
    window_df=row
    time=row['ISO_TIME']
@@ -285,43 +293,47 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
    if count<completed:
     count+=1
     continue
+   ################################################################################
+   #Filter out data with unregistered time
    formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename 
    if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').minute !=0:
     print('Faulty entry ' +time+' unexpected minute.', flush=True)
     faulty+=1
-    if (count+faulty) % 1000 == 0:
+    if (count+faulty) % 100 == 0:
       endtime=timer()
       print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
       time_used=endtime-starttime
-      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
-      estimate=(entries-count-faulty)/1000*time_used
+      print('Time used for the last 100 entries: ' +str(time_used), flush=True)
+      estimate=(entries-count-faulty)/100*time_used
       starttime=timer()
       print('Time left: ' +str(estimate), flush=True)
     continue
    if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').second !=0:
     print('Faulty entry ' + time + ' unexpected second.', flush=True)
     faulty+=1
-    if (count+faulty) % 1000 == 0:
+    if (count+faulty) % 100 == 0:
       endtime=timer()
       print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
       time_used=endtime-starttime
-      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
-      estimate=(entries-count-faulty)/1000*time_used
+      print('Time used for the last 100 entries: ' +str(time_used), flush=True)
+      estimate=(entries-count-faulty)/100*time_used
       starttime=timer()
       print('Time left: ' +str(estimate), flush=True)
     continue
    if formatted_datetime[-2:] not in ['00', '03','06', '09', '12', '15', '18', '21']:
     print('Faulty entry ' + time + ' unexpected hour.', flush=True)
     faulty+=1
-    if (count+faulty) % 1000 == 0:
+    if (count+faulty) % 100 == 0:
       endtime=timer()
       print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
       time_used=endtime-starttime
-      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
-      estimate=(entries-count-faulty)/1000*time_used
+      print('Time used for the last 100 entries: ' +str(time_used), flush=True)
+      estimate=(entries-count-faulty)/100*time_used
       starttime=timer()
       print('Time left: ' +str(estimate), flush=True)
     pass
+   #################################################################################
+   #Ensure the windows are of the same size, deal with antimeridian data
    else:
     gblat=(window_df['LAT']+90)//0.5
     lower_index_lat=int(gblat-latsize+1)
@@ -333,7 +345,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
      faulty+=1
      print('Cannot create a window of designed size for this TC, outside of map.', flush=True)
      print('ASDFGHJ' + window_df['ISO_TIME'] + window_df['NAME'] + window_df['BASIN'], flush=True)
-     if (count+faulty) % 1000 == 0:
+     if (count+faulty) % 100 == 0:
       endtime=timer()
       print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
       time_used=endtime-starttime
@@ -346,21 +358,20 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
     # Calculate the lower and upper longitude indices
     lower_index_lon = int(gblon - lonsize + 1)
     upper_index_lon = int(gblon + lonsize + 1)
-    if lower_index_lon < 0 or upper_index_lon > len(dataset.lon)-1:
-     print('TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.',flush=True)
-     print('ASDFGHJ' + window_df['ISO_TIME'] + window_df['NAME'] + window_df['BASIN'], flush=True)
-     faulty+=1
-     if (count+faulty) % 1000 == 0:
-      endtime=timer()
-      print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
-      time_used=endtime-starttime
-      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
-      estimate=(entries-count-faulty)/1000*time_used
-      starttime=timer()
-      print('Time left: ' +str(estimate), flush=True)
-     continue
     window=dataset.sel(time=time) #cut the window
-    window=window.isel(lat=slice(lower_index_lat,upper_index_lat), lon=slice(lower_index_lon, upper_index_lon))
+    full_length=len(window.lon)
+    if upper_index_lon > (full_length-1):
+     window=window.isel(lon=(window.lon < window.lon[upper_index_lon-full_length]) | (window.lon > window.lon[lower_index_lon-1]))
+     window=window.isel(lat=slice(lower_index_lat,upper_index_lat))
+     window=window.roll(lon=full_length-lower_index_lon)
+    elif lower_index_lon < 0:
+     window=window.isel(lon=(window.lon > window.lon[lower_index_lon-1]) | (window.lon < window.lon[upper_index_lon]))
+     window=window.isel(lat=slice(lower_index_lat,upper_index_lat))
+     window=window.roll(lon=-lower_index_lon)
+    else:
+     window=window.isel(lat=slice(lower_index_lat,upper_index_lat), lon=slice(lower_index_lon, upper_index_lon))
+    ##################################################################################
+    #assign attrs and print out
     window=window.assign_attrs(VMAX=window_df['WMO_WIND'], 
                                PMIN=window_df['WMO_PRES'], 
     			       RMW=window_df['USA_RMW'], 
@@ -381,12 +392,12 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
     outname=str(outname)
     window.to_netcdf(outname) #print out the new file, its name is MERRA_TCW1xW2YYYYMMDDHH.nc
     count=count+1
-    if (count+faulty) % 1000 == 0:
+    if (count+faulty) % 100 == 0:
      endtime=timer()
      print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
      time_used=endtime-starttime
-     print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
-     estimate=(entries-count-faulty)/1000*time_used
+     print('Time used for the last 100 entries: ' +str(time_used), flush=True)
+     estimate=(entries-count-faulty)/100*time_used
      starttime=timer()
      print('Time left: ' +str(estimate))
   print('Total: ' + str(entries) + ' entries processed.', flush=True)
@@ -395,6 +406,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
 datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 from timeit import default_timer as timer
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, regions=['NA','WP','EP'] , datapath=datapath) 
+merge_data(csvdataset, regions=['NA','WP','EP'], maxlon=-171+0.625*3 , datapath=datapath)
+#For processing faulty window size, use minlon=171-0.625*3 and maxlon=-171+0.625*3 >>>max-windowsize+3gridsize<<<
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple), datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            

@@ -1,0 +1,1980 @@
+/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/preprocess/MERRA2tc_domain.py:251: DtypeWarning: Columns (1,8,9) have mixed types. Specify dtype option on import or set low_memory=False.
+  df=pd.read_csv(csvdataset, usecols=selected_columns, keep_default_na=False); #read data using pandas read csv
+Faulty entry 2001-08-06 05:00:00 unexpected hour.
+Faulty entry 2001-08-21 10:00:00 unexpected hour.
+Faulty entry 2001-08-21 19:00:00 unexpected hour.
+Faulty entry 2001-08-22 05:00:00 unexpected hour.
+Faulty entry 2001-09-06 22:00:00 unexpected hour.
+Faulty entry 2002-06-09 17:00:00 unexpected hour.
+1000 entries processed over 29383, 3.403328455229214% done.
+Time used for the last 1000 entries: 410.65353890974075
+Time left: 11655.57939487517
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-14 06:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-14 12:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-14 18:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-15 00:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-15 06:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-15 12:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-15 18:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-16 00:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-16 06:00:00FENGSHENWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-20 18:00:00KALMAEGIWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-07-21 00:00:00KALMAEGIWP
+Faulty entry 2002-07-25 11:00:00 unexpected hour.
+Faulty entry 2002-08-05 01:00:00 unexpected hour.
+Faulty entry 2002-08-05 02:00:00 unexpected hour.
+Faulty entry 2002-08-09 08:00:00 unexpected hour.
+Faulty entry 2002-08-19 07:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-26 06:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-26 12:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-26 18:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-28 00:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-28 06:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-28 12:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-28 18:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-29 00:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-29 06:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-29 12:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-29 18:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-30 00:00:00ELEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-30 03:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-30 06:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-30 12:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-30 18:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-31 00:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-31 06:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-31 12:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-08-31 18:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-01 00:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-01 06:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-01 12:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-01 18:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-02 00:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-02 06:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-02 12:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-02 18:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-03 00:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-03 06:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-03 12:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-03 18:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-04 00:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-04 06:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-04 12:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-04 18:00:00ELEWP
+Faulty entry 2002-09-04 23:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-05 00:00:00ELEWP
+Faulty entry 2002-09-05 00:45:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-05 06:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-05 12:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-05 18:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-06 00:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-06 06:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-06 12:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-06 18:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-07 00:00:00ELEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-09-07 06:00:00ELEWP
+Faulty entry 2002-09-12 04:00:00 unexpected hour.
+Faulty entry 2002-09-12 04:30:00 unexpected minute.
+Faulty entry 2002-09-14 08:00:00 unexpected hour.
+2000 entries processed over 29383, 6.806656910458428% done.
+Time used for the last 1000 entries: 421.48834584699944
+Time left: 11541.615374328385
+Faulty entry 2002-09-30 14:00:00 unexpected hour.
+Faulty entry 2002-10-01 11:00:00 unexpected hour.
+Faulty entry 2002-10-01 11:00:00 unexpected hour.
+Faulty entry 2002-10-01 14:00:00 unexpected hour.
+Faulty entry 2002-10-02 20:13:00 unexpected minute.
+Faulty entry 2002-10-03 13:00:00 unexpected hour.
+Faulty entry 2002-10-11 17:00:00 unexpected hour.
+Faulty entry 2002-10-11 22:00:00 unexpected hour.
+Faulty entry 2002-10-16 16:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-24 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-25 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-25 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-25 12:00:00HUKOEP
+Faulty entry 2002-10-25 16:30:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-25 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-26 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-26 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-26 12:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-26 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-27 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-27 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-27 12:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-27 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-28 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-28 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-28 12:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-28 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-29 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-29 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-29 12:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-29 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-30 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-30 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-30 12:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-30 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-31 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-31 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-31 12:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-10-31 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-01 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-01 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-01 12:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-01 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-02 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-02 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-02 12:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-02 18:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-03 00:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-03 06:00:00HUKOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-03 12:00:00HUKOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-03 18:00:00HUKOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-04 00:00:00HUKOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-04 06:00:00HUKOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2002-11-04 12:00:00HUKOWP
+Faulty entry 2003-06-17 20:00:00 unexpected hour.
+Faulty entry 2003-06-19 04:00:00 unexpected hour.
+Faulty entry 2003-06-30 19:00:00 unexpected hour.
+Faulty entry 2003-07-11 10:00:00 unexpected hour.
+Faulty entry 2003-07-15 15:30:00 unexpected minute.
+Faulty entry 2003-08-07 10:00:00 unexpected hour.
+Faulty entry 2003-08-16 10:30:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-28 06:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-28 12:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-28 18:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-29 00:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-29 06:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-29 12:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-29 18:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-30 00:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-30 06:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-30 12:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-30 18:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-31 00:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-31 06:00:00JIMENAEP
+Faulty entry 2003-08-31 11:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-31 12:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-08-31 18:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-01 00:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-01 06:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-01 12:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-01 18:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-02 00:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-02 06:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-02 12:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-02 18:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-03 00:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-03 06:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-03 12:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-03 18:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-04 00:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-04 06:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-04 12:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-04 18:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-05 00:00:00JIMENAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-09-05 06:00:00JIMENAEP
+3000 entries processed over 29383, 10.209985365687642% done.
+Time used for the last 1000 entries: 495.4571864292957
+Time left: 13071.646949564109
+Faulty entry 2003-09-10 19:00:00 unexpected hour.
+Faulty entry 2003-09-18 17:00:00 unexpected hour.
+Faulty entry 2003-09-19 08:00:00 unexpected hour.
+Faulty entry 2003-09-19 22:00:00 unexpected hour.
+Faulty entry 2003-09-22 09:30:00 unexpected minute.
+Faulty entry 2003-10-05 10:00:00 unexpected hour.
+Faulty entry 2003-10-07 08:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-10-26 00:00:00PARMAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2003-10-26 06:00:00PARMAWP
+Faulty entry 2003-12-06 23:00:00 unexpected hour.
+Faulty entry 2005-05-19 17:00:00 unexpected hour.
+Faulty entry 2005-06-10 08:00:00 unexpected hour.
+Faulty entry 2005-06-11 01:00:00 unexpected hour.
+Faulty entry 2005-06-11 19:00:00 unexpected hour.
+Faulty entry 2005-06-28 22:35:00 unexpected minute.
+Faulty entry 2005-07-04 03:30:00 unexpected minute.
+Faulty entry 2005-07-08 02:45:00 unexpected minute.
+Faulty entry 2005-07-08 18:45:00 unexpected minute.
+Faulty entry 2005-07-10 19:30:00 unexpected minute.
+Faulty entry 2005-07-14 07:00:00 unexpected hour.
+Faulty entry 2005-07-18 06:30:00 unexpected minute.
+4000 entries processed over 29383, 13.613313820916856% done.
+Time used for the last 1000 entries: 563.7999489558861
+Time left: 14310.934104347256
+Faulty entry 2005-07-26 11:00:00 unexpected hour.
+Faulty entry 2005-08-04 10:00:00 unexpected hour.
+Faulty entry 2005-08-23 03:30:00 unexpected minute.
+Faulty entry 2005-08-25 17:00:00 unexpected hour.
+Faulty entry 2005-08-25 19:00:00 unexpected hour.
+Faulty entry 2005-08-25 22:30:00 unexpected minute.
+Faulty entry 2005-08-29 11:10:00 unexpected minute.
+Faulty entry 2005-08-29 14:45:00 unexpected minute.
+Faulty entry 2005-09-06 04:00:00 unexpected hour.
+Faulty entry 2005-09-06 05:00:00 unexpected hour.
+Faulty entry 2005-09-06 16:00:00 unexpected hour.
+Faulty entry 2005-09-24 07:40:00 unexpected minute.
+Faulty entry 2005-10-02 10:00:00 unexpected hour.
+Faulty entry 2005-10-05 23:00:00 unexpected hour.
+5000 entries processed over 29383, 17.016642276146072% done.
+Time used for the last 1000 entries: 405.4970370354131
+Time left: 9887.234254034476
+Faulty entry 2005-10-21 21:45:00 unexpected minute.
+Faulty entry 2005-10-22 03:30:00 unexpected minute.
+Faulty entry 2005-10-23 10:00:00 unexpected hour.
+Faulty entry 2005-10-24 10:30:00 unexpected minute.
+Faulty entry 2006-06-13 16:30:00 unexpected minute.
+Faulty entry 2006-07-21 06:45:00 unexpected minute.
+Faulty entry 2006-08-08 22:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-17 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-17 12:00:00IOKEEP
+Faulty entry 2006-08-17 16:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-17 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-18 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-18 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-19 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-19 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-19 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-19 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-20 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-20 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-20 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-21 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-21 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-21 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-21 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-22 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-22 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-22 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-22 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-23 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-23 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-23 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-23 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-24 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-24 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-24 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-24 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-25 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-25 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-25 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-25 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-26 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-26 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-26 12:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-26 18:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-27 00:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-27 06:00:00IOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-27 12:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-27 18:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-28 00:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-28 06:00:00IOKEWP
+Faulty entry 2006-08-28 11:15:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-28 12:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-28 18:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-29 00:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-29 06:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-29 12:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-29 18:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-30 00:00:00IOKEWP
+Faulty entry 2006-08-30 05:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-30 06:00:00IOKEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-08-30 12:00:00IOKEWP
+Faulty entry 2006-09-01 03:40:00 unexpected minute.
+Faulty entry 2006-09-02 02:00:00 unexpected hour.
+6000 entries processed over 29383, 20.419970731375283% done.
+Time used for the last 1000 entries: 482.8293559718877
+Time left: 11289.99883069065
+Faulty entry 2006-09-15 20:00:00 unexpected hour.
+Faulty entry 2006-09-16 19:15:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-21 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-22 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-22 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-22 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-22 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-23 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-23 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-23 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-23 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-26 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-27 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2006-09-27 06:00:00NOT_NAMEDEP
+Faulty entry 2006-10-26 04:00:00 unexpected hour.
+Faulty entry 2007-06-02 13:00:00 unexpected hour.
+Faulty entry 2007-06-02 14:00:00 unexpected hour.
+Faulty entry 2007-07-14 04:00:00 unexpected hour.
+Faulty entry 2007-07-14 05:00:00 unexpected hour.
+Faulty entry 2007-07-14 20:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-07-23 18:00:00COSMEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-07-24 00:00:00COSMEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-07-24 06:00:00COSMEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-07-24 12:00:00COSMEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-07-24 18:00:00COSMEEP
+Faulty entry 2007-08-02 08:00:00 unexpected hour.
+Faulty entry 2007-08-02 16:00:00 unexpected hour.
+Faulty entry 2007-08-16 10:30:00 unexpected minute.
+Faulty entry 2007-08-21 08:30:00 unexpected minute.
+Faulty entry 2007-08-22 16:30:00 unexpected minute.
+7000 entries processed over 29383, 23.823299186604498% done.
+Time used for the last 1000 entries: 549.262770078145
+Time left: 12294.148582659118
+Faulty entry 2007-09-01 08:45:00 unexpected minute.
+Faulty entry 2007-09-03 07:00:00 unexpected hour.
+Faulty entry 2007-09-06 14:00:00 unexpected hour.
+Faulty entry 2007-09-09 15:30:00 unexpected minute.
+Faulty entry 2007-09-13 07:00:00 unexpected hour.
+Faulty entry 2007-09-17 23:00:00 unexpected hour.
+Faulty entry 2007-09-28 05:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-11 18:00:00LINGLINGWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-12 00:00:00LINGLINGWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-12 06:00:00LINGLINGWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-12 12:00:00LINGLINGWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-12 18:00:00LINGLINGWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-13 00:00:00LINGLINGWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-13 06:00:00LINGLINGWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-13 12:00:00LINGLINGWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2007-10-13 18:00:00LINGLINGWP
+Faulty entry 2007-10-29 07:00:00 unexpected hour.
+Faulty entry 2007-11-01 13:15:00 unexpected minute.
+Faulty entry 2007-11-01 17:45:00 unexpected minute.
+Faulty entry 2007-12-11 07:00:00 unexpected hour.
+Faulty entry 2008-05-29 20:00:00 unexpected hour.
+Faulty entry 2008-07-21 05:30:00 unexpected minute.
+Faulty entry 2008-07-23 14:00:00 unexpected hour.
+Faulty entry 2008-07-23 18:20:00 unexpected minute.
+Faulty entry 2008-07-23 20:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-05 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-06 00:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-06 06:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-06 12:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-06 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-07 00:00:00KIKAEP
+8000 entries processed over 29383, 27.226627641833712% done.
+Time used for the last 1000 entries: 497.36177717195824
+Time left: 10635.086881267982
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-07 06:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-07 12:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-07 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-08 00:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-08 06:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-08 12:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-08 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-09 00:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-09 06:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-09 12:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-09 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-10 00:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-10 06:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-10 12:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-10 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-11 00:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-11 06:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-11 12:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-11 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-12 00:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-12 06:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-12 12:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-12 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-13 00:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-13 06:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-13 12:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-13 18:00:00KIKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2008-08-14 00:00:00KIKAEP
+Faulty entry 2008-08-15 14:30:00 unexpected minute.
+Faulty entry 2008-08-16 11:45:00 unexpected minute.
+Faulty entry 2008-08-18 07:00:00 unexpected hour.
+Faulty entry 2008-08-18 20:30:00 unexpected minute.
+Faulty entry 2008-08-19 08:45:00 unexpected minute.
+Faulty entry 2008-08-21 19:00:00 unexpected hour.
+Faulty entry 2008-08-23 06:15:00 unexpected minute.
+Faulty entry 2008-08-29 02:00:00 unexpected hour.
+Faulty entry 2008-08-30 22:00:00 unexpected hour.
+Faulty entry 2008-09-03 19:00:00 unexpected hour.
+Faulty entry 2008-09-06 07:00:00 unexpected hour.
+Faulty entry 2008-09-07 13:00:00 unexpected hour.
+Faulty entry 2008-09-08 02:00:00 unexpected hour.
+Faulty entry 2008-09-09 14:00:00 unexpected hour.
+Faulty entry 2008-09-13 07:00:00 unexpected hour.
+Faulty entry 2008-10-11 17:00:00 unexpected hour.
+Faulty entry 2008-10-12 04:00:00 unexpected hour.
+Faulty entry 2008-10-12 07:00:00 unexpected hour.
+Faulty entry 2008-10-15 12:30:00 unexpected minute.
+Faulty entry 2008-11-09 01:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-10 18:00:00MAKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-11 00:00:00MAKAEP
+9000 entries processed over 29383, 30.629956097062927% done.
+Time used for the last 1000 entries: 518.2783187758178
+Time left: 10564.066971607494
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-11 06:00:00MAKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-11 12:00:00MAKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-11 18:00:00MAKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-12 00:00:00MAKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-12 06:00:00MAKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-12 12:00:00MAKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-12 18:00:00MAKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-13 06:00:00MAKAEP
+Faulty entry 2009-08-17 05:30:00 unexpected minute.
+Faulty entry 2009-08-24 02:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-27 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-27 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-28 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-28 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-28 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-28 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-29 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-29 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-29 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2009-08-29 18:00:00NOT_NAMEDEP
+Faulty entry 2009-08-31 19:00:00 unexpected hour.
+Faulty entry 2009-09-02 13:00:00 unexpected hour.
+Faulty entry 2009-09-02 18:30:00 unexpected minute.
+Faulty entry 2009-10-07 19:00:00 unexpected hour.
+Faulty entry 2009-10-07 20:00:00 unexpected hour.
+Faulty entry 2009-10-21 14:00:00 unexpected hour.
+Faulty entry 2010-05-29 22:30:00 unexpected minute.
+Faulty entry 2010-07-01 02:00:00 unexpected hour.
+Faulty entry 2010-07-08 14:00:00 unexpected hour.
+10000 entries processed over 29383, 34.033284552292145% done.
+Time used for the last 1000 entries: 491.9300475809723
+Time left: 9535.080112261985
+Faulty entry 2010-07-22 23:15:00 unexpected minute.
+Faulty entry 2010-07-23 05:15:00 unexpected minute.
+Faulty entry 2010-07-23 14:30:00 unexpected minute.
+Faulty entry 2010-08-31 08:00:00 unexpected hour.
+Faulty entry 2010-09-04 07:00:00 unexpected hour.
+Faulty entry 2010-09-04 19:00:00 unexpected hour.
+Faulty entry 2010-09-07 02:00:00 unexpected hour.
+Faulty entry 2010-09-07 02:00:00 unexpected hour.
+Faulty entry 2010-09-15 12:45:00 unexpected minute.
+Faulty entry 2010-09-17 16:45:00 unexpected minute.
+Faulty entry 2010-09-22 22:00:00 unexpected hour.
+Faulty entry 2010-09-24 19:00:00 unexpected hour.
+Faulty entry 2010-10-25 00:30:00 unexpected minute.
+Faulty entry 2010-10-30 20:00:00 unexpected hour.
+Faulty entry 2010-11-06 07:30:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2010-12-18 06:00:00OMEKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2010-12-18 12:00:00OMEKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2010-12-18 18:00:00OMEKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2010-12-20 06:00:00OMEKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2010-12-20 12:00:00OMEKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2010-12-20 18:00:00OMEKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2010-12-21 00:00:00OMEKAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2010-12-21 06:00:00OMEKAEP
+Faulty entry 2011-06-30 13:00:00 unexpected hour.
+11000 entries processed over 29383, 37.43661300752136% done.
+Time used for the last 1000 entries: 536.9528194819577
+Time left: 9870.803680536828
+Faulty entry 2011-07-19 14:00:00 unexpected hour.
+Faulty entry 2011-07-30 02:30:00 unexpected minute.
+Faulty entry 2011-08-05 13:00:00 unexpected hour.
+Faulty entry 2011-08-20 17:30:00 unexpected minute.
+Faulty entry 2011-08-21 23:00:00 unexpected hour.
+Faulty entry 2011-08-22 02:00:00 unexpected hour.
+Faulty entry 2011-08-22 05:25:00 unexpected minute.
+Faulty entry 2011-08-24 16:00:00 unexpected hour.
+Faulty entry 2011-08-28 09:35:00 unexpected minute.
+Faulty entry 2011-08-28 13:00:00 unexpected hour.
+Faulty entry 2011-08-31 17:00:00 unexpected hour.
+Faulty entry 2011-09-03 01:00:00 unexpected hour.
+Faulty entry 2011-09-04 10:30:00 unexpected minute.
+Faulty entry 2011-09-11 16:00:00 unexpected hour.
+Faulty entry 2011-09-21 05:00:00 unexpected hour.
+Faulty entry 2011-10-03 10:00:00 unexpected hour.
+12000 entries processed over 29383, 40.839941462750566% done.
+Time used for the last 1000 entries: 431.06636807415634
+Time left: 7493.226676233059
+Faulty entry 2011-10-12 16:00:00 unexpected hour.
+Faulty entry 2011-10-28 02:00:00 unexpected hour.
+Faulty entry 2012-05-27 23:00:00 unexpected hour.
+Faulty entry 2012-05-28 04:10:00 unexpected minute.
+Faulty entry 2012-06-16 01:00:00 unexpected hour.
+Faulty entry 2012-06-19 08:00:00 unexpected hour.
+Faulty entry 2012-06-19 11:00:00 unexpected hour.
+Faulty entry 2012-08-08 01:00:00 unexpected hour.
+Faulty entry 2012-08-08 03:15:00 unexpected minute.
+Faulty entry 2012-08-09 16:15:00 unexpected minute.
+Faulty entry 2012-08-20 05:30:00 unexpected minute.
+13000 entries processed over 29383, 44.24326991797978% done.
+Time used for the last 1000 entries: 516.4970394549891
+Time left: 8461.770997391086
+Faulty entry 2012-08-29 08:00:00 unexpected hour.
+Faulty entry 2012-09-15 22:00:00 unexpected hour.
+Faulty entry 2012-09-29 05:00:00 unexpected hour.
+Faulty entry 2012-09-30 08:00:00 unexpected hour.
+Faulty entry 2012-09-30 10:00:00 unexpected hour.
+Faulty entry 2012-10-24 19:00:00 unexpected hour.
+Faulty entry 2012-10-25 05:25:00 unexpected minute.
+Faulty entry 2012-10-29 23:30:00 unexpected minute.
+Faulty entry 2013-05-29 19:50:00 unexpected minute.
+Faulty entry 2013-06-06 22:00:00 unexpected hour.
+Faulty entry 2013-06-17 22:00:00 unexpected hour.
+Faulty entry 2013-06-20 11:15:00 unexpected minute.
+14000 entries processed over 29383, 47.646598373208995% done.
+Time used for the last 1000 entries: 497.4023131229915
+Time left: 7651.539782770978
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-12 06:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-12 12:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-12 18:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-13 00:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-13 06:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-13 12:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-13 18:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-14 00:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-14 06:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-14 12:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-14 18:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-15 00:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-15 00:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-15 06:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-15 06:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-15 12:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-15 12:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-15 18:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-15 18:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 00:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 00:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 06:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 06:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 12:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 12:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 18:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 18:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-16 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 00:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 00:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 06:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 06:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 12:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 12:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 18:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-17 18:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 00:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 00:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 06:00:00PEWAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 06:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 12:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 12:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 18:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 18:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-18 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 00:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 00:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 06:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 06:00:00UNALAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 12:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-19 18:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-20 00:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-20 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-20 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-20 06:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-20 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-20 12:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-20 18:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-21 00:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-21 06:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-21 12:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-21 18:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-22 00:00:00PEWAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2013-08-22 06:00:00PEWAWP
+Faulty entry 2013-08-26 04:45:00 unexpected minute.
+Faulty entry 2013-09-15 22:00:00 unexpected hour.
+Faulty entry 2013-09-16 11:15:00 unexpected minute.
+Faulty entry 2013-10-15 05:00:00 unexpected hour.
+15000 entries processed over 29383, 51.04992682843821% done.
+Time used for the last 1000 entries: 428.2296199980192
+Time left: 6159.22662443151
+Faulty entry 2013-11-04 05:00:00 unexpected hour.
+Faulty entry 2014-07-04 03:15:00 unexpected minute.
+Faulty entry 2014-07-04 08:00:00 unexpected hour.
+Faulty entry 2014-07-10 17:00:00 unexpected hour.
+Faulty entry 2014-07-10 19:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-22 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-23 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-23 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-23 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-23 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-24 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-24 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-24 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-24 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-25 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-25 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-25 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-25 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-26 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-26 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-26 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-26 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-27 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-27 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-27 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-27 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-28 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-28 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-28 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-28 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-29 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-29 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-29 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-29 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-30 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-30 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-30 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-30 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-31 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-31 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-31 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-07-31 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-01 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-01 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-01 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-01 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-02 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-02 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-02 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-02 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-03 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-03 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-03 12:00:00GENEVIEVEEP
+Faulty entry 2014-08-03 14:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-03 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-04 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-04 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-04 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-04 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-05 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-05 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-05 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-05 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-06 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-06 06:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-06 12:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-06 18:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-07 00:00:00GENEVIEVEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-07 06:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-07 12:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-07 18:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-08 00:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-08 06:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-08 12:00:00GENEVIEVEWP
+Faulty entry 2014-08-08 12:30:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-08 18:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-09 00:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-09 06:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-09 12:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-09 18:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-10 00:00:00GENEVIEVEWP
+Faulty entry 2014-08-10 01:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-10 06:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-10 12:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-10 18:00:00GENEVIEVEWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2014-08-11 00:00:00GENEVIEVEWP
+16000 entries processed over 29383, 54.453255283667424% done.
+Time used for the last 1000 entries: 500.4467009329237
+Time left: 6697.478198585318
+Faulty entry 2014-09-03 01:00:00 unexpected hour.
+Faulty entry 2014-09-03 04:00:00 unexpected hour.
+Faulty entry 2014-09-15 04:45:00 unexpected minute.
+Faulty entry 2014-09-17 16:30:00 unexpected minute.
+Faulty entry 2014-10-05 23:00:00 unexpected hour.
+Faulty entry 2014-10-12 08:10:00 unexpected minute.
+Faulty entry 2014-10-12 23:00:00 unexpected hour.
+Faulty entry 2014-10-13 05:00:00 unexpected hour.
+Faulty entry 2014-10-13 10:00:00 unexpected hour.
+Faulty entry 2014-10-13 11:00:00 unexpected hour.
+Faulty entry 2014-10-13 14:30:00 unexpected minute.
+Faulty entry 2014-10-13 22:45:00 unexpected minute.
+Faulty entry 2014-10-13 23:15:00 unexpected minute.
+Faulty entry 2014-10-18 00:30:00 unexpected minute.
+Faulty entry 2014-10-18 09:15:00 unexpected minute.
+Faulty entry 2014-10-27 16:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-03-11 06:00:00BAVIWP
+Faulty entry 2015-05-10 10:00:00 unexpected hour.
+17000 entries processed over 29383, 57.85658373889664% done.
+Time used for the last 1000 entries: 505.59411120414734
+Time left: 6260.771879040956
+Faulty entry 2015-06-08 10:30:00 unexpected minute.
+Faulty entry 2015-06-08 11:15:00 unexpected minute.
+Faulty entry 2015-06-08 20:30:00 unexpected minute.
+Faulty entry 2015-06-16 16:45:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-03 18:00:00NANGKAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-04 00:00:00NANGKAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-06 18:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-07 00:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-07 06:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-07 12:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-07 18:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-08 00:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-08 06:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-08 12:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-08 18:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-09 00:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-09 06:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-09 12:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-09 18:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-10 00:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-10 06:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-10 12:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-10 18:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-11 00:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-11 06:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-11 12:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-11 18:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-12 00:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-12 06:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-12 12:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-12 18:00:00HALOLAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-13 00:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-13 06:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-13 12:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-13 18:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-14 00:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-14 06:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-14 12:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-14 18:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-15 00:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-15 06:00:00IUNEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-15 06:00:00HALOLAWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-15 12:00:00IUNEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-15 18:00:00IUNEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-16 00:00:00IUNEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-16 06:00:00IUNEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-16 12:00:00IUNEEP
+Faulty entry 2015-07-16 14:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-16 18:00:00IUNEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-17 00:00:00IUNEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-07-17 06:00:00IUNEEP
+Faulty entry 2015-07-26 10:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-19 00:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-19 06:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-19 12:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-19 18:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-20 00:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-20 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-20 06:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-20 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-20 12:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-20 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-20 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-20 18:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-21 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-21 00:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-21 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-21 06:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-21 12:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-21 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-21 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-21 18:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-22 00:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-22 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-22 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-22 06:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-22 12:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-22 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-22 18:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-22 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-23 00:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-23 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-23 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-23 06:00:00LOKEEP
+Faulty entry 2015-08-23 10:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-23 12:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-23 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-23 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-23 18:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-24 00:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-24 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-24 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-24 06:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-24 12:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-24 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-24 18:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-24 18:00:00KILOEP
+Faulty entry 2015-08-24 19:00:00 unexpected hour.
+Faulty entry 2015-08-24 20:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-25 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-25 00:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-25 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-25 06:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-25 12:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-25 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-25 18:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-25 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-26 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-26 00:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-26 06:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-26 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-26 12:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-26 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-26 18:00:00LOKEEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-26 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-27 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-27 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-27 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-27 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-28 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-28 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-28 12:00:00KILOEP
+18000 entries processed over 29383, 61.25991219412585% done.
+Time used for the last 1000 entries: 378.44259969098493
+Time left: 4307.812112282481
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-28 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-29 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-29 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-29 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-29 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-30 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-30 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-30 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-30 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-31 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-31 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-31 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-08-31 18:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-01 00:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-01 06:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-01 12:00:00KILOEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-02 00:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-02 06:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-02 12:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-02 18:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-03 00:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-03 06:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-03 12:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-03 18:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-04 00:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-04 06:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-04 12:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-04 18:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-05 00:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-05 06:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-05 12:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-05 18:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-06 00:00:00KILOWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-17 06:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-17 12:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-17 18:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-18 00:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-18 06:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-18 12:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-18 18:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-19 00:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-19 06:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-19 12:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-19 18:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-20 00:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-20 06:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-20 12:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-20 18:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-21 00:00:00MALIAEP
+Faulty entry 2015-09-21 04:45:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-21 06:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-21 12:00:00MALIAEP
+Faulty entry 2015-09-21 13:45:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-21 18:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-22 00:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-22 06:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-22 12:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-22 18:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-09-23 00:00:00MALIAEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-02 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-02 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-02 12:00:00NOT_NAMEDEP
+Faulty entry 2015-10-02 16:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-02 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-03 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-03 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-03 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-03 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-04 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-04 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-04 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-04 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-05 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-05 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-05 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-05 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-06 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-06 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-10-06 12:00:00NOT_NAMEDEP
+Faulty entry 2015-10-23 23:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-28 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-28 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-28 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-29 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-29 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-29 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-29 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-30 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-30 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-30 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-30 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-31 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-31 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-31 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2015-12-31 18:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-01 00:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-01 06:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-01 12:00:00NOT_NAMEDEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-06 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-06 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-06 12:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-06 18:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-07 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-07 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-07 12:00:00PALIEP
+19000 entries processed over 29383, 64.66324064935507% done.
+Time used for the last 1000 entries: 403.052263493184
+Time left: 4184.891651849729
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-07 18:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-08 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-08 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-08 12:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-08 18:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-09 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-09 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-09 12:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-09 18:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-10 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-10 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-10 12:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-10 18:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-11 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-11 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-11 12:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-11 18:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-12 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-12 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-12 12:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-12 18:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-13 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-13 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-13 12:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-13 18:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-14 00:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-14 06:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-14 12:00:00PALIEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-01-14 18:00:00PALIEP
+Faulty entry 2016-01-15 13:15:00 unexpected minute.
+Faulty entry 2016-05-29 12:30:00 unexpected minute.
+Faulty entry 2016-06-07 02:00:00 unexpected hour.
+Faulty entry 2016-06-20 22:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2016-07-21 12:00:00CELIAEP
+Faulty entry 2016-08-04 04:00:00 unexpected hour.
+Faulty entry 2016-08-06 02:30:00 unexpected minute.
+Faulty entry 2016-08-09 03:30:00 unexpected minute.
+Faulty entry 2016-08-17 08:00:00 unexpected hour.
+Faulty entry 2016-08-22 20:00:00 unexpected hour.
+Faulty entry 2016-08-30 08:00:00 unexpected hour.
+Faulty entry 2016-09-02 05:30:00 unexpected minute.
+Faulty entry 2016-09-02 08:00:00 unexpected hour.
+20000 entries processed over 29383, 68.06656910458429% done.
+Time used for the last 1000 entries: 410.5338585837744
+Time left: 3852.039195091555
+Faulty entry 2016-09-04 16:00:00 unexpected hour.
+Faulty entry 2016-09-06 14:00:00 unexpected hour.
+Faulty entry 2016-09-07 08:30:00 unexpected minute.
+Faulty entry 2016-09-20 02:00:00 unexpected hour.
+Faulty entry 2016-09-20 04:00:00 unexpected hour.
+Faulty entry 2016-09-20 08:00:00 unexpected hour.
+Faulty entry 2016-10-04 11:00:00 unexpected hour.
+Faulty entry 2016-11-24 17:30:00 unexpected minute.
+Faulty entry 2016-11-25 03:30:00 unexpected minute.
+Faulty entry 2017-06-20 02:00:00 unexpected hour.
+Faulty entry 2017-06-22 07:00:00 unexpected hour.
+Faulty entry 2017-07-03 23:00:00 unexpected hour.
+Faulty entry 2017-07-04 07:00:00 unexpected hour.
+21000 entries processed over 29383, 71.4698975598135% done.
+Time used for the last 1000 entries: 621.4002729137428
+Time left: 5209.198487835905
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2017-07-21 06:00:00KULAPWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2017-07-21 12:00:00KULAPWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2017-07-21 18:00:00KULAPWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2017-07-22 00:00:00KULAPWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2017-07-22 06:00:00KULAPWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2017-07-22 12:00:00KULAPWP
+Faulty entry 2017-07-31 14:45:00 unexpected minute.
+Faulty entry 2017-08-05 17:00:00 unexpected hour.
+Faulty entry 2017-08-08 03:45:00 unexpected minute.
+Faulty entry 2017-08-10 05:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2017-08-16 18:00:00BANYANWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2017-08-17 00:00:00BANYANWP
+Faulty entry 2017-08-18 10:00:00 unexpected hour.
+Faulty entry 2017-08-30 08:00:00 unexpected hour.
+Faulty entry 2017-09-06 05:45:00 unexpected minute.
+Faulty entry 2017-09-06 11:15:00 unexpected minute.
+Faulty entry 2017-09-06 16:30:00 unexpected minute.
+Faulty entry 2017-09-08 05:00:00 unexpected hour.
+Faulty entry 2017-09-10 13:00:00 unexpected hour.
+Faulty entry 2017-09-10 19:30:00 unexpected minute.
+Faulty entry 2017-09-17 02:00:00 unexpected hour.
+Faulty entry 2017-09-17 07:00:00 unexpected hour.
+Faulty entry 2017-09-17 13:00:00 unexpected hour.
+22000 entries processed over 29383, 74.87322601504272% done.
+Time used for the last 1000 entries: 445.68611162900925
+Time left: 3290.5005621569753
+Faulty entry 2017-09-19 01:15:00 unexpected minute.
+Faulty entry 2017-09-20 10:15:00 unexpected minute.
+Faulty entry 2017-10-08 05:20:00 unexpected minute.
+Faulty entry 2017-10-16 11:00:00 unexpected hour.
+Faulty entry 2017-10-28 04:00:00 unexpected hour.
+Faulty entry 2017-10-28 11:00:00 unexpected hour.
+Faulty entry 2017-10-28 22:00:00 unexpected hour.
+Faulty entry 2018-06-15 02:00:00 unexpected hour.
+Faulty entry 2018-07-20 23:00:00 unexpected hour.
+Faulty entry 2018-07-28 16:00:00 unexpected hour.
+Faulty entry 2018-07-29 08:00:00 unexpected hour.
+Faulty entry 2018-07-29 14:00:00 unexpected hour.
+23000 entries processed over 29383, 78.27655447027193% done.
+Time used for the last 1000 entries: 780.7293693223037
+Time left: 4983.395564384265
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-07-31 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-07-31 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-01 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-01 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-01 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-01 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-02 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-02 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-02 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-02 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-03 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-03 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-03 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-03 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-04 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-04 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-04 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-04 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-05 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-05 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-05 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-05 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-06 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-06 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-06 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-06 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-07 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-07 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-07 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-07 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-08 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-08 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-08 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-08 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-09 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-09 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-09 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-09 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-10 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-10 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-10 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-10 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-11 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-11 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-11 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-11 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-12 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-12 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-12 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-12 18:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-13 00:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-13 06:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-13 12:00:00HECTOREP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-13 18:00:00HECTORWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-14 00:00:00HECTORWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-14 06:00:00HECTORWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-14 12:00:00HECTORWP
+Faulty entry 2018-08-14 17:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-14 18:00:00HECTORWP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2018-08-15 00:00:00HECTORWP
+Faulty entry 2018-08-23 14:00:00 unexpected hour.
+Faulty entry 2018-09-03 11:15:00 unexpected minute.
+Faulty entry 2018-09-03 13:15:00 unexpected minute.
+Faulty entry 2018-09-04 02:00:00 unexpected hour.
+Faulty entry 2018-09-04 04:00:00 unexpected hour.
+Faulty entry 2018-09-05 03:15:00 unexpected minute.
+Faulty entry 2018-09-14 11:15:00 unexpected minute.
+24000 entries processed over 29383, 81.67988292550113% done.
+Time used for the last 1000 entries: 406.5815601251088
+Time left: 2188.628538153461
+Faulty entry 2018-09-28 00:30:00 unexpected minute.
+Faulty entry 2018-09-30 11:00:00 unexpected hour.
+Faulty entry 2018-10-02 11:00:00 unexpected hour.
+Faulty entry 2018-10-04 06:20:00 unexpected minute.
+Faulty entry 2018-10-10 17:30:00 unexpected minute.
+Faulty entry 2018-10-23 13:30:00 unexpected minute.
+Faulty entry 2018-10-24 01:30:00 unexpected minute.
+Faulty entry 2019-07-26 22:00:00 unexpected hour.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-27 12:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-27 18:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-28 00:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-28 06:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-28 12:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-28 18:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-29 00:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-29 06:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-29 12:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-29 18:00:00ERICKEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2019-07-30 00:00:00ERICKEP
+Faulty entry 2019-08-05 20:00:00 unexpected hour.
+Faulty entry 2019-08-15 02:00:00 unexpected hour.
+25000 entries processed over 29383, 85.08321138073035% done.
+Time used for the last 1000 entries: 596.471868539229
+Time left: 2614.336199807441
+Faulty entry 2019-08-27 01:30:00 unexpected minute.
+Faulty entry 2019-08-27 11:00:00 unexpected hour.
+Faulty entry 2019-08-28 15:30:00 unexpected minute.
+Faulty entry 2019-09-01 16:40:00 unexpected minute.
+Faulty entry 2019-09-02 02:15:00 unexpected minute.
+Faulty entry 2019-09-04 15:30:00 unexpected minute.
+Faulty entry 2019-09-06 12:30:00 unexpected minute.
+Faulty entry 2019-09-08 17:00:00 unexpected hour.
+Faulty entry 2019-09-08 19:00:00 unexpected hour.
+Faulty entry 2019-09-17 17:45:00 unexpected minute.
+Faulty entry 2019-09-24 22:00:00 unexpected hour.
+Faulty entry 2019-09-24 23:00:00 unexpected hour.
+Faulty entry 2019-09-29 14:00:00 unexpected hour.
+Faulty entry 2019-10-20 19:30:00 unexpected minute.
+26000 entries processed over 29383, 88.48653983595956% done.
+Time used for the last 1000 entries: 458.3565777661279
+Time left: 1550.6203025828106
+Faulty entry 2020-05-27 13:30:00 unexpected minute.
+Faulty entry 2020-05-31 10:00:00 unexpected hour.
+Faulty entry 2020-06-03 13:00:00 unexpected hour.
+Faulty entry 2020-06-07 22:00:00 unexpected hour.
+Faulty entry 2020-07-10 20:00:00 unexpected hour.
+Faulty entry 2020-07-25 15:30:00 unexpected minute.
+Faulty entry 2020-07-25 22:00:00 unexpected hour.
+Faulty entry 2020-07-25 23:15:00 unexpected minute.
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2020-07-29 06:00:00DOUGLASEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2020-07-29 12:00:00DOUGLASEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2020-07-29 18:00:00DOUGLASEP
+TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.
+ASDFGHJ2020-07-30 00:00:00DOUGLASEP
+Faulty entry 2020-07-30 16:15:00 unexpected minute.
+Faulty entry 2020-08-01 13:00:00 unexpected hour.
+Faulty entry 2020-08-04 03:10:00 unexpected minute.
+Faulty entry 2020-08-21 20:30:00 unexpected minute.
+Faulty entry 2020-08-21 23:30:00 unexpected minute.
+Faulty entry 2020-08-23 04:30:00 unexpected minute.
+Faulty entry 2020-08-24 02:00:00 unexpected hour.
+Faulty entry 2020-09-14 08:50:00 unexpected minute.
+Faulty entry 2020-09-16 09:45:00 unexpected minute.
+27000 entries processed over 29383, 91.88986829118878% done.
+Time used for the last 1000 entries: 514.4587379279546
+Time left: 1225.955172482316
+Faulty entry 2020-09-18 18:40:00 unexpected minute.
+Faulty entry 2020-09-22 02:45:00 unexpected minute.
+Faulty entry 2020-10-03 16:45:00 unexpected minute.
+Faulty entry 2020-10-07 10:30:00 unexpected minute.
+Faulty entry 2020-10-09 23:00:00 unexpected hour.
+Faulty entry 2020-10-27 03:55:00 unexpected minute.
+Faulty entry 2020-11-08 08:55:00 unexpected minute.
+Faulty entry 2020-11-09 04:00:00 unexpected hour.
+Faulty entry 2020-11-12 09:20:00 unexpected minute.
+Faulty entry 2020-11-17 03:40:00 unexpected minute.
+Faulty entry 2021-06-19 04:30:00 unexpected minute.
+28000 entries processed over 29383, 95.29319674641799% done.
+Time used for the last 1000 entries: 499.588229670655
+Time left: 690.9305216345158
+Faulty entry 2021-06-28 23:20:00 unexpected minute.
+Faulty entry 2021-07-05 18:30:00 unexpected minute.
+Faulty entry 2021-07-07 14:30:00 unexpected minute.
+Faulty entry 2021-07-09 16:30:00 unexpected minute.
+Faulty entry 2021-07-27 20:00:00 unexpected hour.
+Faulty entry 2021-08-08 11:00:00 unexpected hour.
+Faulty entry 2021-08-08 20:00:00 unexpected hour.
+Faulty entry 2021-08-11 17:00:00 unexpected hour.
+Faulty entry 2021-08-16 16:30:00 unexpected minute.
+Faulty entry 2021-08-16 19:00:00 unexpected hour.
+Faulty entry 2021-08-17 14:00:00 unexpected hour.
+Faulty entry 2021-08-19 09:45:00 unexpected minute.
+Faulty entry 2021-08-21 05:30:00 unexpected minute.
+Faulty entry 2021-08-22 15:20:00 unexpected minute.
+Faulty entry 2021-08-22 16:15:00 unexpected minute.
+Faulty entry 2021-08-27 23:25:00 unexpected minute.
+Faulty entry 2021-08-29 16:00:00 unexpected hour.
+Faulty entry 2021-08-29 16:55:00 unexpected minute.
+Faulty entry 2021-09-09 01:15:00 unexpected minute.
+Faulty entry 2021-09-10 02:50:00 unexpected minute.
+Faulty entry 2021-09-11 03:30:00 unexpected minute.
+Faulty entry 2021-09-14 05:30:00 unexpected minute.
+29000 entries processed over 29383, 98.6965252016472% done.
+Time used for the last 1000 entries: 413.35418763617054
+Time left: 158.3146538646533
+Faulty entry 2021-10-13 12:30:00 unexpected minute.
+Faulty entry 2021-10-25 11:00:00 unexpected hour.
+Total: 29383 entries processed.
+With 1130 faulty entries.
+Generated 28253 windows.
