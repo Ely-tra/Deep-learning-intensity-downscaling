@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import xarray as xr #use xarray because it is far more better than netCDF4 
 from datetime import datetime  #Use datetime to name the output files
 
@@ -206,7 +207,11 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
                , maxlat = 90.0, minlon = -180.0, maxlon = 180.0
                , regions='', maxwind=10000, minwind=0, maxpres=10000
                , minpres=0, maxrmw=10000, minrmw=0, windowsize=[18,18]
-               , datapath='', completed=0): #define a search bar for you, csvdataset is the link to the dataset, tc_name are names to search for, years are years to search for, .... Window size is the intended output around the TC center, 18 degree means center+/- 9 degree.
+               , datapath='', completed=0): 
+               #define a search bar for you, csvdataset is the link to the dataset, 
+               #tc_name are names to search for, years are years to search for, .... 
+               #Window size[lat,lon] is the intended output around the TC center, 
+               #18 degree means center+/- 9 degree.
   """
     Merge two datasets of tropical cyclones, create a window for a TC domain with additional attributes, and write to files.
 
@@ -227,7 +232,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
         minpres (int): Minimum pressure. Default is 0.
         maxrmw (int): Maximum USA RMW. Default is 10000.
         minrmw (int): Minimum USA RMW. Default is 0.
-        windowsize (tuple): The intended output window around the TC center. Default is (18, 18).
+        windowsize (tuple): The intended output window around the TC center. Default is (18, 18), lat, lon.
         datapath (str): Path to the data. Default is ''.
 
     Returns:
@@ -267,6 +272,8 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   suffix=0
   previous_time=0 #There can be 2 or more TCs happen at the same time
   entries=len(filtered_df)
+  latsize=np.ceil(windowsize[0]/2/0.5)+1
+  lonsize = np.ceil(windowsize[1] / 2 / 0.625) + 1
   for index, row in filtered_df.iterrows():
    window_df=row
    time=row['ISO_TIME']
@@ -280,26 +287,80 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
     continue
    formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename 
    if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').minute !=0:
-    print('Faulty entry ' +time+' unexpected minute.')
+    print('Faulty entry ' +time+' unexpected minute.', flush=True)
     faulty+=1
+    if (count+faulty) % 1000 == 0:
+      endtime=timer()
+      print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
+      time_used=endtime-starttime
+      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
+      estimate=(entries-count-faulty)/1000*time_used
+      starttime=timer()
+      print('Time left: ' +str(estimate), flush=True)
     continue
    if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').second !=0:
-    print('Faulty entry ' + time + ' unexpected second.')
+    print('Faulty entry ' + time + ' unexpected second.', flush=True)
     faulty+=1
+    if (count+faulty) % 1000 == 0:
+      endtime=timer()
+      print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
+      time_used=endtime-starttime
+      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
+      estimate=(entries-count-faulty)/1000*time_used
+      starttime=timer()
+      print('Time left: ' +str(estimate), flush=True)
     continue
    if formatted_datetime[-2:] not in ['00', '03','06', '09', '12', '15', '18', '21']:
-    print('Faulty unit' + time + ' unexpected hour.')
+    print('Faulty entry ' + time + ' unexpected hour.', flush=True)
     faulty+=1
+    if (count+faulty) % 1000 == 0:
+      endtime=timer()
+      print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
+      time_used=endtime-starttime
+      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
+      estimate=(entries-count-faulty)/1000*time_used
+      starttime=timer()
+      print('Time left: ' +str(estimate), flush=True)
     pass
    else:
-    lowerlat=max(-90,window_df['LAT']-windowsize[0]/2) #define the window
-    upperlat=min(90, lowerlat+windowsize[0])
-    lowerlon=max(-180,window_df['LON']-windowsize[1]/2)
-    upperlon=min(180, lowerlon+windowsize[1])
+    gblat=(window_df['LAT']+90)//0.5
+    lower_index_lat=int(gblat-latsize+1)
+    upper_index_lat=int(gblat+latsize+1)
     formatted_time = pd.to_datetime(time).strftime('%Y%m%d') #read corresponding data file
     dataname=datapath+'MERRA2_'+str(get_runid(formatted_time,datapath))+'.inst3_3d_asm_Np.'+formatted_time+'.nc4'
     dataset = xr.open_dataset(dataname)
-    window=dataset.sel(time=time, lat=slice(lowerlat, upperlat), lon=slice(lowerlon,upperlon)) #cut the window
+    if lower_index_lat<0 or upper_index_lat>len(dataset.lat)-1:
+     faulty+=1
+     print('Cannot create a window of designed size for this TC, outside of map.', flush=True)
+     print('ASDFGHJ' + window_df['ISO_TIME'] + window_df['NAME'] + window_df['BASIN'], flush=True)
+     if (count+faulty) % 1000 == 0:
+      endtime=timer()
+      print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
+      time_used=endtime-starttime
+      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
+      estimate=(entries-count-faulty)/1000*time_used
+      starttime=timer()
+      print('Time left: ' +str(estimate))
+     continue
+    gblon = (window_df['LON'] + 180) // 0.625
+    # Calculate the lower and upper longitude indices
+    lower_index_lon = int(gblon - lonsize + 1)
+    upper_index_lon = int(gblon + lonsize + 1)
+    if lower_index_lon < 0 or upper_index_lon > len(dataset.lon)-1:
+     print('TC at -180 longitude, take too much brain power to resolve, will treat using another script if the number is large enough.',flush=True)
+     print('ASDFGHJ' + window_df['ISO_TIME'] + window_df['NAME'] + window_df['BASIN'], flush=True)
+     faulty+=1
+     if (count+faulty) % 1000 == 0:
+      endtime=timer()
+      print(str(count+faulty) + ' entries processed over '+ str(entries)+ ', '+str((count+faulty)/entries*100)+ '% done.', flush=True)
+      time_used=endtime-starttime
+      print('Time used for the last 1000 entries: ' +str(time_used), flush=True)
+      estimate=(entries-count-faulty)/1000*time_used
+      starttime=timer()
+      print('Time left: ' +str(estimate), flush=True)
+     continue
+    window=dataset.sel(time=time) #cut the window
+    window=window.isel(lat=slice(lower_index_lat,upper_index_lat), lon=slice(lower_index_lon, upper_index_lon))
     window=window.assign_attrs(VMAX=window_df['WMO_WIND'], 
                                PMIN=window_df['WMO_PRES'], 
     			       RMW=window_df['USA_RMW'], 
@@ -309,7 +370,8 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
 			       #assign new attributes, Max wind speed, Min pressure and radius of maximum wind
     formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename
     basin=window_df['BASIN']
-    outname='TC_domain/'+basin 
+    outname='/N/slate/kmluong/'
+    outname=outname+'TC_domain/'+basin 
     if not os.path.exists(outname):
      os.makedirs(outname)
     outname=outname + '/' + formatted_datetime[:4]
@@ -333,6 +395,6 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
 datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 from timeit import default_timer as timer
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, regions=['WP','EP','NA'] , datapath=datapath) 
+merge_data(csvdataset, regions=['NA','WP','EP'] , datapath=datapath) 
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple), datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
