@@ -1,0 +1,32 @@
+00-h TCG prediction:
+Summary of the CNN model performance (06/20/2023):
+Model: 3-conv-32-layer-0-dense.model_00h  --- F1, Recall, Presision: [0.91 0.83 1.  ]
+Model: 3-conv-32-layer-1-dense.model_00h  --- F1, Recall, Presision: [0.93 0.89 0.98]
+Model: 3-conv-32-layer-2-dense.model_00h  --- F1, Recall, Presision: [0.94 0.89 1.  ]
+Model: 5-conv-32-layer-0-dense.model_00h  --- F1, Recall, Presision: [0.88 0.78 1.  ]
+Model: 5-conv-32-layer-1-dense.model_00h  --- F1, Recall, Presision: [0.91 0.83 1.  ]
+Model: 5-conv-32-layer-2-dense.model_00h  --- F1, Recall, Presision: [0.93 0.87 1.  ]
+
+Summary of the CNN model performance (10/5/2023):
+Model: 3-conv-32-layer-0-dense.model_00h  --- F1, Recall, Presision: [0.9  0.82 1.  ]
+Model: 3-conv-32-layer-1-dense.model_00h  --- F1, Recall, Presision: [1. 1. 1.]
+Model: 3-conv-32-layer-2-dense.model_00h  --- F1, Recall, Presision: [0.78 0.64 1.  ]
+Model: 5-conv-32-layer-0-dense.model_00h  --- F1, Recall, Presision: [0.95 0.91 1.  ]
+Model: 5-conv-32-layer-1-dense.model_00h  --- F1, Recall, Presision: [1. 1. 1.]
+Model: 5-conv-32-layer-2-dense.model_00h  --- F1, Recall, Presision: [1. 1. 1.]
+
+Summary of the CNN model performance (10/13/2023):
+Model: 3-conv-32-layer-0-dense.model_00h  --- F1, Recall, Presision: [1. 1. 1.]
+Model: 3-conv-32-layer-1-dense.model_00h  --- F1, Recall, Presision: [0.95 0.91 1.  ]
+Model: 3-conv-32-layer-2-dense.model_00h  --- F1, Recall, Presision: [0.9  0.82 1.  ]
+Model: 5-conv-32-layer-0-dense.model_00h  --- F1, Recall, Presision: [0.9  0.82 1.  ]
+Model: 5-conv-32-layer-1-dense.model_00h  --- F1, Recall, Presision: [0.87 0.91 0.83]
+Model: 5-conv-32-layer-2-dense.model_00h  --- F1, Recall, Presision: [0.95 0.91 1.  ]
+
+
+12-h TCG prediction:
+
+24-h TCG prediction:
+
+
+

@@ -354,6 +354,8 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
       starttime=timer()
       print('Time left: ' +str(estimate))
      continue
+    if window_df['LON']>180:
+     window
     gblon = (window_df['LON'] + 180) // 0.625
     # Calculate the lower and upper longitude indices
     lower_index_lon = int(gblon - lonsize + 1)
