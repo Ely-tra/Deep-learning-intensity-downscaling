@@ -305,8 +305,8 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   previous_time=0 #There can be 2 or more TCs happen at the same time
   entries=len(filtered_df)
   print('Total: ' + str(entries))
-  latsize=np.ceil(windowsize[0]/2/0.5)+1
-  lonsize = np.ceil(windowsize[1] / 2 / 0.625) + 1
+  latsize = int(np.ceil((np.ceil(windowsize[0]/0.625)+1)/2))  #change 0.625 and 0.5 for other dataset
+  lonsize = int(np.ceil((np.ceil(windowsize[1]/0.5)+1)/2))
   filtered_df['LON']=filtered_df['LON'] - 360*np.logical_and(filtered_df['BASIN'].isin(['EP','SP']), filtered_df['LON']>0)
   ################################################################################
   #Loop through filtered data
