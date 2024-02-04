@@ -280,6 +280,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   entries=len(filtered_df)
   latsize=np.ceil(windowsize[0]/2/0.5)+1
   lonsize = np.ceil(windowsize[1] / 2 / 0.625) + 1
+  filtered_df['LON']=filtered_df['LON'] - 360*np.logical_and(filtered_df['BASIN'].isin(['EP','SP']), filtered_df['LON']>0)
   ################################################################################
   #Loop through filtered data
   for index, row in filtered_df.iterrows():
@@ -354,8 +355,6 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
       starttime=timer()
       print('Time left: ' +str(estimate))
      continue
-    if window_df['LON']>180:
-     window
     gblon = (window_df['LON'] + 180) // 0.625
     # Calculate the lower and upper longitude indices
     lower_index_lon = int(gblon - lonsize + 1)
