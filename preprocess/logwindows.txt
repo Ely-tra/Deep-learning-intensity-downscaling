@@ -1,0 +1,11 @@
+/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/preprocess/MERRA2tc_domain.py:279: DtypeWarning: Columns (1,8,9) have mixed types. Specify dtype option on import or set low_memory=False.
+  df=pd.read_csv(csvdataset, usecols=selected_columns, keep_default_na=False); #read data using pandas read csv
+Total: 29383
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/preprocess/MERRA2tc_domain.py", line 401, in <module>
+    merge_data(csvdataset, regions=['WP','NA','EP'], datapath=datapath)
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/preprocess/MERRA2tc_domain.py", line 395, in merge_data
+    process_entries(round(entries*0.01/100)*100)
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/preprocess/MERRA2tc_domain.py", line 19, in process_entries
+    if (count + faulty) % per == 0:
+NameError: name 'count' is not defined. Did you mean: 'round'?
