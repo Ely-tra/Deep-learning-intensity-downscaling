@@ -298,12 +298,20 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
 
   ###############################################################################
   #Initiate counter value
+  global count
   count=0
+  global starttime
   starttime=timer()
+  global faulty
   faulty=0
+  global suffix
   suffix=0
+  global previous_time
   previous_time=0 #There can be 2 or more TCs happen at the same time
+  global entries
   entries=len(filtered_df)
+  global endtime
+  endtime=0
   print('Total: ' + str(entries), flush=True)
   latsize = int(np.ceil((np.ceil(windowsize[0]/0.625)+1)/2))  #change 0.625 and 0.5 for other dataset
   lonsize = int(np.ceil((np.ceil(windowsize[1]/0.5)+1)/2))
