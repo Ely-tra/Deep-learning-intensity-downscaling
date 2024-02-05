@@ -16,6 +16,10 @@ def process_entries(per):
     Returns:
     None
     """
+    global count
+    global starttime
+    global endtime
+    global faulty
     if (count + faulty) % per == 0:
         endtime = timer()
         entries_processed = count + faulty
