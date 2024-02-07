@@ -1,7 +1,18 @@
+#
+# NOTE: This script is to read in MERRA dataset and produces a domain selection
+#       around TC center from the best track data set. The domain will have a 
+#       fixed size, and incorporate the TC information as global attribute
+#
+# 
+# HIST: Jan 26, 2024: created by Khanh Luong
+#
+# AUTH: Khanh Luong (kmluong@iu.edu)
+#
+#====================================================================================
 import os
 import pandas as pd
 import numpy as np
-import xarray as xr #use xarray because it is far more better than netCDF4 
+import xarray as xr            #use xarray because it is far more better than netCDF4 
 from datetime import datetime  #Use datetime to name the output files
 from timeit import default_timer as timer
 
