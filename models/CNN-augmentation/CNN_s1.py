@@ -27,6 +27,8 @@ def dumping_data(root, outdir, outname=['CNNfeatures', 'CNNlabels']):
     for filename in glob.iglob(root + '*/**/*.nc', recursive=True):
         data = xr.open_dataset(filename)
         data_array_x = np.array(data[['U', 'V', 'PS', 'T', 'H']].sel(lev=900).to_array())
+        if np.sum(np.isnan(data_array_x))>0:
+            print(filename)
         data_array_x = data_array_x.reshape([1, data_array_x.shape[0],
                                              data_array_x.shape[1], data_array_x.shape[2]])
         data_array_y = np.array([data.VMAX, data.PMIN, data.RMW])  # knots, mb, nmile
@@ -41,7 +43,7 @@ def dumping_data(root, outdir, outname=['CNNfeatures', 'CNNlabels']):
         i += 1
         if i % 1000 == 0:
             print(str(i) + ' dataset processed.', flush=True)
-
+            break
     print('Total ' + str(i) + ' dataset processed.', flush=True)
 
 dumping_data('/N/slate/kmluong/TC_domain/', '/N/slate/kmluong/Training_data/')
