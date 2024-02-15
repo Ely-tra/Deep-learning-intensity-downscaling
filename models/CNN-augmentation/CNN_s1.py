@@ -26,9 +26,10 @@ def dumping_data(root, outdir, outname=['CNNfeatures', 'CNNlabels'], omit_percen
         data = xr.open_dataset(filename)
         data_array_x = np.array(data[['U', 'V', 'T', 'RH', 'SLP']].sel(lev=850).to_array())
         if np.sum(np.isnan(data_array_x)) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
-            i+=1 
+            i+=1
+            print(filename + ' omitted', flush=True)
             if np.sum(np.isnan(data_array_x)) % 4 != 0:
-                print('Oh gawd')
+                print('Oh gawd', flush=True)
                 break
             if i % 1000 == 0:
                 print(str(i) + ' dataset processed.', flush=True)
