@@ -330,8 +330,8 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   global endtime
   endtime=0
   print('Total: ' + str(entries), flush=True)
-  latsize = int(np.ceil((np.ceil(windowsize[0]/0.625)+1)/2))  #change 0.625 and 0.5 for other dataset
-  lonsize = int(np.ceil((np.ceil(windowsize[1]/0.5)+1)/2))
+  latsize = int(np.ceil((np.ceil(windowsize[0]/0.5)+1)/2))  #change 0.625 and 0.5 for other dataset
+  lonsize = int(np.ceil((np.ceil(windowsize[1]/0.625)+1)/2))
   filtered_df['LON']=filtered_df['LON'] - 360*np.logical_and(filtered_df['BASIN'].isin(['EP','SP']), filtered_df['LON']>0)
   ################################################################################
   #Loop through filtered data
