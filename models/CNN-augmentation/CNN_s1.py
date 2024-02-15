@@ -35,7 +35,6 @@ def dumping_data(root, outdir, outname=['CNNfeatures', 'CNNlabels'], omit_percen
                 break
             if i % 1000 == 0:
                 print(str(i) + ' dataset processed.', flush=True)
-                break
             continue
         data_array_x = data_array_x.reshape([1, data_array_x.shape[0],
                                              data_array_x.shape[1], data_array_x.shape[2]])
@@ -52,8 +51,7 @@ def dumping_data(root, outdir, outname=['CNNfeatures', 'CNNlabels'], omit_percen
         if i % 1000 == 0:
             print(str(i) + ' dataset processed.', flush=True)
             print(str(omit) + ' dataset omitted due to NaNs.', flush = True)
-            break
     print('Total ' + str(i) + ' dataset processed.', flush=True)
-
+    print('With ' + str(omit) + ' dataset omitted due to NaNs.', flush = True)
 dumping_data('/N/slate/kmluong/TC_domain/', '/N/slate/kmluong/Training_data/')
 
