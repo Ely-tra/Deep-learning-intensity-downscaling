@@ -69,7 +69,7 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[]):
                     x = layers.Conv2D(filters=layer_size*4,kernel_size=conv_layer,activation="relu",name="my_conv2d_3")(x)
                     x = layers.MaxPooling2D(pool_size=2,name="my_pooling_3")(x)
     
-                if conv_layer==3:
+                if X.shape[1]>128:
                     x = layers.Conv2D(filters=256,kernel_size=conv_layer,padding='same',activation="relu",name="my_conv2d_4")(x)
                     x = layers.MaxPooling2D(pool_size=2,name="my_pooling_4")(x)
                     x = layers.Conv2D(filters=256,kernel_size=conv_layer,padding='same',activation="relu",name="my_conv2d_5")(x)
