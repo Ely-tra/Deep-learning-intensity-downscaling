@@ -217,5 +217,5 @@ def fix_data(file):
 print('Initialization completed')
 root='/N/slate/kmluong/Training_data/'
 for file in glob.iglob(root + '**/CNNfea*', recursive=True):
-    fix_data(file)
+    print(file[:-4]+'fixed'+'.npy')
 print('Completed')
