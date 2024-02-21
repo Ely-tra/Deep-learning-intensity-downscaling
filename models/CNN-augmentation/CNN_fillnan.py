@@ -1,5 +1,4 @@
 print('Initializing')
-import xarray as xr
 import os
 import numpy as np
 import copy
