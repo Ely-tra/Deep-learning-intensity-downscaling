@@ -213,9 +213,9 @@ def fix_data(file):
         if np.isnan(np.sum(xa[i])):
             filled=np.sum(np.isnan(xa[i]))/4
             xa[i] = fill_nan(xa[i])
-    np.save('fixed'+file, xa)
+    np.save(file[:-4]+'fixed'+'.npy', xa)
 print('Initialization completed')
 root='/N/slate/kmluong/Training_data/'
 for file in glob.iglob(root + '**/CNNfea*', recursive=True):
-    print(file[:-4]+'fixed'+'.npy')
+    fix_data(file)
 print('Completed')
