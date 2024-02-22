@@ -34,6 +34,12 @@ def resize_preprocess(image, HEIGHT, WIDTH, method):
 ##################################################################
 
 def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VMAX'):
+    if target=='VMAX':
+        mtric=keras.metrics.R2Score
+    if target=='PMIN':
+        mtrc=keras.metrics.R2Score
+    if target=='RMW':
+        mtrc=keras.metrics.R2Score
     data_augmentation = keras.Sequential([
         layers.RandomFlip("horizontal"),
         layers.RandomRotation(0.1),
@@ -66,10 +72,9 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
                 outputs = layers.Dense(1,activation='linear',name="my_dense")(x)
                 model = keras.Model(inputs=inputs,outputs=outputs,name="my_functional_model")
                 model.summary()
-                keras.utils.plot_model(model)
             
                 callbacks=[keras.callbacks.ModelCheckpoint(NAME,save_best_only=True)]
-                model.compile(loss="MSE",optimizer="adam",metrics=keras.metrics.MeanAbsoluteError())
+                model.compile(loss=mtric,optimizer="adam",metrics=keras.metrics.MeanAbsoluteError())
                 history = model.fit(X, y, batch_size=512, epochs=30, validation_split=0.1, callbacks=callbacks)
     return history
 
@@ -114,6 +119,7 @@ def build_models(dense_layers=[1],layer_sizes=[32],conv_layers=[3], root='', bas
         count+=1
     print('Completed', flush=True)
     print(str(count)+' models built.', flush=True)
+    
 ##################################################################
 #Run
 ##################################################################
