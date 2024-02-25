@@ -35,11 +35,11 @@ def resize_preprocess(image, HEIGHT, WIDTH, method):
 
 def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VMAX'):
     if target=='VMAX':
-        mtric=keras.metrics.R2Score
+        mtrc='huber'
     if target=='PMIN':
-        mtrc=keras.metrics.R2Score
+        mtrc='MSE'
     if target=='RMW':
-        mtrc=keras.metrics.R2Score
+        mtrc='mean_absolute_percentage_error'
     data_augmentation = keras.Sequential([
         layers.RandomFlip("horizontal"),
         layers.RandomRotation(0.1),
@@ -74,7 +74,7 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
                 model.summary()
             
                 callbacks=[keras.callbacks.ModelCheckpoint(NAME,save_best_only=True)]
-                model.compile(loss=mtric,optimizer="adam",metrics=keras.metrics.MeanAbsoluteError())
+                model.compile(loss=mtrc,optimizer="adam",metrics=keras.metrics.R2Score())
                 history = model.fit(X, y, batch_size=512, epochs=30, validation_split=0.1, callbacks=callbacks)
     return history
 
