@@ -208,11 +208,15 @@ def fix_data(file):
     - None
     """
     xa = np.load(file)
-
+    if xa.shape[0]==5:
+        fillmode=0
+    else:
+        fillmode=1
     for i in range(len(xa)):
         if np.isnan(np.sum(xa[i])):
-            filled=np.sum(np.isnan(xa[i]))/4
-            xa[i] = fill_nan(xa[i])
+            if fillmode==1:
+                xa[i][4:8] = fill_nan(xa[i][4:8])
+            xa[i][0:4] = fill_nan(xa[i][0:4])
     np.save(file[:-4]+'fixed'+'.npy', xa)
 print('Initialization completed')
 root='/N/slate/kmluong/Training_data/'
