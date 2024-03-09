@@ -9,7 +9,7 @@ import math
 
 print('Initiation completed.', flush=True)
 
-def dumping_data(root, outdir, outname=['CNNfeatures9', 'CNNlabels9'], omit_percent=5):
+def dumping_data(root, outdir, outname=['CNNfeatures13', 'CNNlabels13'], omit_percent=5):
     """
     Dump data from NetCDF files to NumPy arrays.
 
@@ -25,7 +25,9 @@ def dumping_data(root, outdir, outname=['CNNfeatures9', 'CNNlabels9'], omit_perc
     omit=0
     for filename in glob.iglob(root + '*/**/*.nc', recursive=True):
         data = xr.open_dataset(filename)
+        
         data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=850).to_array())
+        data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=950).to_array())
         data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH', 'SLP']].sel(lev=750).to_array()), axis=0)
         if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
             i+=1
