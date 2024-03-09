@@ -10,30 +10,30 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
         layers.RandomFlip("horizontal"),
         #layers.RandomFlip("vertical"),
         layers.RandomRotation(0.2),
-        layers.RandomZoom(0.1)])
+        layers.RandomZoom(0.2)])
     for dense_layer in dense_layers:
         for layer_size in layer_sizes:
             for conv_layer in conv_layers:
-                NAME =root+'model/'+'9testmodel6'
+                NAME =root+'model/'+'9testmodel2'
                 print('--> Running configuration: ',NAME)
                 inputs = keras.Input(shape=X.shape[1:])
                 x = data_augmentation(inputs)
-                #x = inputs
+                x = inputs
                 #x = layers.Conv2D(filters=256,kernel_size=7, padding='same' ,activation="relu",name="my_conv2d_1")(x)
                 x = layers.Conv2D(filters=96,kernel_size=7, padding='same',activation=activ,name="my_conv2d_11")(x)
                 #x = layers.Conv2D(filters=layer_size*2,kernel_size=3, activation="relu",name="my_conv2d_12")(x)
                 x = layers.MaxPooling2D(pool_size=2,name="my_pooling_1")(x)
-                x=tf.keras.layers.BatchNormalization()(x)
+                #x=tf.keras.layers.BatchNormalization()(x)
                 x = layers.Conv2D(filters=64,kernel_size=7,padding='same', activation=activ,name="my_conv2d_2")(x)
                 x = layers.MaxPooling2D(pool_size=2,name="my_pooling_2")(x)
-                x=tf.keras.layers.BatchNormalization()(x)
-                x = layers.Conv2D(filters=128,kernel_size=3 ,activation=activ,name="my_conv2d_3")(x)
+                #x=tf.keras.layers.BatchNormalization()(x)
+                x = layers.Conv2D(filters=128,kernel_size=conv_layer,activation=activ,name="my_conv2d_3")(x)
                 #x = layers.Conv2D(filters=layer_size*2,kernel_size=conv_layer, activation=activ,name="my_conv2d_31")(x)
                 #x = layers.Conv2D(filters=layer_size*4,kernel_size=3,padding='same',activation="relu",name="my_conv2d_32")(x)
                 x = layers.MaxPooling2D(pool_size=2,name="my_pooling_3")(x)
 
-                x=tf.keras.layers.BatchNormalization()(x)
-                x = layers.Conv2D(filters=layer_size*8,kernel_size=3, padding='same', activation=activ,name="my_conv2d_4")(x)
+                #x=tf.keras.layers.BatchNormalization()(x)
+                x = layers.Conv2D(filters=layer_size*4,kernel_size=3, padding='same', activation=activ,name="my_conv2d_4")(x)
                 
                 #x = layers.Conv2D(filters=layer_size*2,kernel_size=3, activation=activ,name="my_conv2d_5")(x)
                 #x = layers.MaxPooling2D(pool_size=2,name="my_pooling_4")(x)

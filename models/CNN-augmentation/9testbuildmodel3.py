@@ -10,11 +10,11 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
         layers.RandomFlip("horizontal"),
         #layers.RandomFlip("vertical"),
         layers.RandomRotation(0.2),
-        layers.RandomZoom(0.1)])
+        layers.RandomZoom(0.2)])
     for dense_layer in dense_layers:
         for layer_size in layer_sizes:
             for conv_layer in conv_layers:
-                NAME =root+'model/'+'9testmodel6'
+                NAME =root+'model/'+'9testmodel3'
                 print('--> Running configuration: ',NAME)
                 inputs = keras.Input(shape=X.shape[1:])
                 x = data_augmentation(inputs)
@@ -33,14 +33,14 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
                 x = layers.MaxPooling2D(pool_size=2,name="my_pooling_3")(x)
 
                 x=tf.keras.layers.BatchNormalization()(x)
-                x = layers.Conv2D(filters=layer_size*8,kernel_size=3, padding='same', activation=activ,name="my_conv2d_4")(x)
+                x = layers.Conv2D(filters=layer_size*4,kernel_size=3, padding='same', activation=activ,name="my_conv2d_4")(x)
                 
                 #x = layers.Conv2D(filters=layer_size*2,kernel_size=3, activation=activ,name="my_conv2d_5")(x)
                 #x = layers.MaxPooling2D(pool_size=2,name="my_pooling_4")(x)
                 #x = layers.Conv2D(filters=layer_size*4,kernel_size=3, activation=activ,name="my_conv2d_5")(x)
                 #x=tf.keras.layers.BatchNormalization()(x)
                 x = layers.Flatten(name="my_flatten")(x)
-                x = layers.Dropout(0.2)(x)
+                x = layers.Dropout(0.4)(x)
                 for _ in range(dense_layer):
                     x = layers.Dense(layer_size,activation=activ)(x)                
                 
@@ -50,9 +50,9 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
                 
                 def lr_scheduler(epoch, lr):
                   lr0=0.001
-                  lr = -0.0497 + (1.0 - (-0.0497)) / (1 + (epoch / 107.0) ** 1.35)
-                  if epoch>940:
-                    lr=0.0001
+                  #lr = -0.0497 + (1.0 - (-0.0497)) / (1 + (epoch / 107.0) ** 1.35)
+                  #if epoch>0:
+                  lr=1
                   return lr*lr0
                 
                 

@@ -14,7 +14,7 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
     for dense_layer in dense_layers:
         for layer_size in layer_sizes:
             for conv_layer in conv_layers:
-                NAME =root+'model/'+'9testmodel6'
+                NAME =root+'model/'+'9testmodel5'
                 print('--> Running configuration: ',NAME)
                 inputs = keras.Input(shape=X.shape[1:])
                 x = data_augmentation(inputs)
