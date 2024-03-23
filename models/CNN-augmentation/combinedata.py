@@ -1,7 +1,7 @@
 root='/N/slate/kmluong/Training_data/'
 import numpy as np
 name=['NA','WP','EP']
-for mode in ['','9']:
+for mode in ['13']:
   for xy in ['features','labels']:
     if xy=='features':
       end='fixed'
