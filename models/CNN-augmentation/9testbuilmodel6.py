@@ -14,34 +14,34 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
     for dense_layer in dense_layers:
         for layer_size in layer_sizes:
             for conv_layer in conv_layers:
-                NAME =root+'model/'+'9testmodel11'
+                NAME =root+'model/'+'9testmodel6'
                 print('--> Running configuration: ',NAME)
                 inputs = keras.Input(shape=X.shape[1:])
                 x = data_augmentation(inputs)
                 #x = inputs
                 #x = layers.Conv2D(filters=256,kernel_size=7, padding='same' ,activation="relu",name="my_conv2d_1")(x)
-                x = layers.Conv2D(filters=98,kernel_size=15, padding='same',activation=activ,name="my_conv2d_11")(x)
+                x = layers.Conv2D(filters=98,kernel_size=7, padding='same',activation=activ,name="my_conv2d_11")(x)
                 #x = layers.Conv2D(filters=layer_size*4,kernel_size=7, padding='same',  activation="relu",name="my_conv2d_12")(x)
                 x = layers.MaxPooling2D(pool_size=2,name="my_pooling_1")(x)
                 x=tf.keras.layers.BatchNormalization()(x)
-                x = layers.Conv2D(filters=64,kernel_size=15,padding='same', activation=activ,name="my_conv2d_2")(x)
+                x = layers.Conv2D(filters=64,kernel_size=7,padding='same', activation=activ,name="my_conv2d_2")(x)
                 x = layers.MaxPooling2D(pool_size=2,name="my_pooling_2")(x)
                 x=tf.keras.layers.BatchNormalization()(x)
-                x = layers.Conv2D(filters=256,kernel_size=3, activation=activ,name="my_conv2d_3")(x)
+                x = layers.Conv2D(filters=128,kernel_size=3 ,activation=activ,name="my_conv2d_3")(x)
                 #x = layers.Conv2D(filters=layer_size*2,kernel_size=conv_layer, activation=activ,name="my_conv2d_31")(x)
                 #x = layers.Conv2D(filters=layer_size*4,kernel_size=3,padding='same',activation="relu",name="my_conv2d_32")(x)
                 x = layers.MaxPooling2D(pool_size=2,name="my_pooling_3")(x)
 
                 x=tf.keras.layers.BatchNormalization()(x)
-                x = layers.Conv2D(filters=layer_size*16,kernel_size=7, padding='same', activation=activ,name="my_conv2d_4")(x)
+                x = layers.Conv2D(filters=layer_size*16,kernel_size=3, padding='same', activation=activ,name="my_conv2d_4")(x)
                 
                 #x = layers.Conv2D(filters=layer_size*2,kernel_size=3, activation=activ,name="my_conv2d_5")(x)
                 #x = layers.MaxPooling2D(pool_size=2,name="my_pooling_4")(x)
-                x = layers.Conv2D(filters=layer_size*16,kernel_size=7, padding='same', activation=activ,name="my_conv2d_5")(x)
+                x = layers.Conv2D(filters=layer_size*16,kernel_size=3, padding='same', activation=activ,name="my_conv2d_5")(x)
                 #x=tf.keras.layers.BatchNormalization()(x)
                 x = layers.Flatten(name="my_flatten")(x)
-                x = layers.Dropout(0.4)(x)
-                for _ in range(2):
+                x = layers.Dropout(0.2)(x)
+                for _ in range(dense_layer):
                     x = layers.Dense(layer_size,activation=activ)(x)                
                 
                 outputs = layers.Dense(1,activation=activ ,name="my_dense")(x)
@@ -59,7 +59,7 @@ def main(dense_layers=[1],layer_sizes=[32],conv_layers=[3],X=[],y=[], target='VM
                 
                 callbacks=[keras.callbacks.ModelCheckpoint(NAME,save_best_only=True), keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1)]
                 model.compile(loss=loss,optimizer="adam",metrics=['MAE',tf.keras.metrics.RootMeanSquaredError()])
-                history = model.fit(X, y, batch_size=1024, epochs=1000, validation_split=2/9,verbose=2, callbacks=callbacks)
+                history = model.fit(X, y, batch_size=128, epochs=1000, validation_split=2/9,verbose=2, callbacks=callbacks)
     return history
 def resize_preprocess(image, HEIGHT, WIDTH, method):
     image = tf.image.resize(image, (HEIGHT, WIDTH), method=method)
