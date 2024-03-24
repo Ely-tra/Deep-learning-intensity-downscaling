@@ -220,7 +220,7 @@ def fix_data(file):
     for i in range(len(xa)):
         if np.isnan(np.sum(xa[i])):
             for j in range(len(xa[i])//4):
-              xa[i,j*4:4*j+4] = fill_nan(xa[i,j*4:4*j+4])
+              xa[i,j*4:4*j+5] = fill_nan(xa[i,j*4:4*j+5])
     #print(np.sum(np.isnan(xa)), flush=True)
     np.save(file[:-4]+'fixed'+'.npy', xa)
 print('Initialization completed')
