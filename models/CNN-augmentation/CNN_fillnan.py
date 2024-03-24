@@ -193,6 +193,7 @@ def fill_nan(array):
     while np.sum(np.isnan(array[0, 1:-1, 1:-1])) > 0:
         array = fill4(array)
         array = fill3(array)
+        array = fill2(array)
 
     array = array[:, 1:-1, 1:-1]
     return array
