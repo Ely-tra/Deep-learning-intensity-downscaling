@@ -9,7 +9,7 @@ import math
 
 print('Initiation completed.', flush=True)
 
-def dumping_data(root, outdir, outname=['CNNfeatures13', 'CNNlabels13'], omit_percent=5):
+def dumping_data(root, outdir, outname=['CNNfeatures13.25x25', 'CNNlabels13.25x25'], omit_percent=5, windowsize=[18,18]):
     """
     Dump data from NetCDF files to NumPy arrays.
 
@@ -24,6 +24,10 @@ def dumping_data(root, outdir, outname=['CNNfeatures13', 'CNNlabels13'], omit_pe
     i = 0
     omit=0
     for filename in glob.iglob(root + '*/**/*.nc', recursive=True):
+        if (str(windowsize[0])+'x'+str(windowsize[1])) in filename:
+          pass
+        else:
+          continue
         data = xr.open_dataset(filename)
         
         data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=850).to_array())
@@ -56,5 +60,5 @@ def dumping_data(root, outdir, outname=['CNNfeatures13', 'CNNlabels13'], omit_pe
             print(str(omit) + ' dataset omitted due to NaNs.', flush = True)
     print('Total ' + str(i) + ' dataset processed.', flush=True)
     print('With ' + str(omit) + ' dataset omitted due to NaNs.', flush = True)
-dumping_data('/N/slate/kmluong/TC_domain/', '/N/slate/kmluong/Training_data/')
+dumping_data('/N/slate/kmluong/TC_domain/', '/N/slate/kmluong/Training_data/', windowsize=[25,25])
 

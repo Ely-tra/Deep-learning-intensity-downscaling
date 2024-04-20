@@ -1,13 +1,12 @@
 #!/bin/bash
 
-#SBATCH -J window
-#SBATCH -p general
-#SBATCH -o logwindows.txt
-#SBATCH -e logerrorwindows.err
+#SBATCH -J TCIntensity
+#SBATCH -p gpu --gpus 1
 #SBATCH --time=10:00:00
 #SBATCH -A r00043
+#SBATCH --mem=128G
 #SBATCH --mail-user=kmluon@iu.edu
 
 module load python/gpu/3.10.10
 cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/CNN-augmentation/
-srun run.sh
+srun python Pparam13model2.py 2>&1 | tee logfile.log
