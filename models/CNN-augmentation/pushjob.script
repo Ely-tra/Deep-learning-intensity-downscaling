@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J TCIntensity
-#SBATCH -p gpu --gpus 1
+#SBATCH -p general
 #SBATCH --time=10:00:00
 #SBATCH -A r00043
 #SBATCH --mem=128G
@@ -9,4 +9,4 @@
 
 module load python/gpu/3.10.10
 cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/CNN-augmentation/
-srun python Pparam13model2.py 2>&1 | tee logfile.log
+srun python CNN_extract.py 2>&1 | tee logfile.log

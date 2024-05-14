@@ -1,0 +1,49 @@
+Initiating.
+Initiation completed.
+1000 dataset processed.
+406 dataset omitted due to NaNs.
+2000 dataset processed.
+3000 dataset processed.
+1484 dataset omitted due to NaNs.
+4000 dataset processed.
+2072 dataset omitted due to NaNs.
+5000 dataset processed.
+6000 dataset processed.
+7000 dataset processed.
+8000 dataset processed.
+4601 dataset omitted due to NaNs.
+9000 dataset processed.
+10000 dataset processed.
+5663 dataset omitted due to NaNs.
+11000 dataset processed.
+5884 dataset omitted due to NaNs.
+12000 dataset processed.
+13000 dataset processed.
+14000 dataset processed.
+6972 dataset omitted due to NaNs.
+15000 dataset processed.
+7319 dataset omitted due to NaNs.
+16000 dataset processed.
+7634 dataset omitted due to NaNs.
+17000 dataset processed.
+7983 dataset omitted due to NaNs.
+18000 dataset processed.
+8364 dataset omitted due to NaNs.
+19000 dataset processed.
+20000 dataset processed.
+21000 dataset processed.
+22000 dataset processed.
+9501 dataset omitted due to NaNs.
+23000 dataset processed.
+24000 dataset processed.
+25000 dataset processed.
+10387 dataset omitted due to NaNs.
+26000 dataset processed.
+10586 dataset omitted due to NaNs.
+27000 dataset processed.
+10845 dataset omitted due to NaNs.
+28000 dataset processed.
+11088 dataset omitted due to NaNs.
+29000 dataset processed.
+Total 29011 dataset processed.
+With 11436 dataset omitted due to NaNs.

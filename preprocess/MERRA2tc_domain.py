@@ -423,7 +423,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
   print('Generated ' + str(count) + ' windows.', flush=True) 
 datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, regions=['EP', 'NA', 'WP'],windowsize=[25,25], datapath=datapath)
+merge_data(csvdataset, regions=['EP', 'NA', 'WP'],windowsize=[30,30], datapath=datapath)
 #For processing faulty window size, use minlon=171-0.625*3 and maxlon=-171+0.625*3 >>>max-windowsize+3gridsize<<<
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple) default [18,18], datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
