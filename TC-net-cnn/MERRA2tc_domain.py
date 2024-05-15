@@ -31,8 +31,8 @@ def process_entries(per):
     global starttime
     global endtime
     global faulty
-    if per==0:
-     per=100
+    if per == 0:
+        per = 100
     if (count + faulty) % per == 0:
         endtime = timer()
         entries_processed = count + faulty
@@ -45,6 +45,7 @@ def process_entries(per):
         estimate = (entries - count - faulty) / per * time_used
         starttime = timer()
         print(f'Time left: {estimate:.2f}', flush=True)
+
 
 
 #####################################
@@ -74,7 +75,7 @@ def get_runid(formatted_time, datapath=''):
     range_1 = (0, 19911231)
     range_2 = (19920101, 20001231)
     range_3 = (20010101, 20101231)
-    filename = datapath+f"MERRA2_401.inst3_3d_asm_Np.{formatted_time}.nc4"
+    filename = datapath + f"MERRA2_401.inst3_3d_asm_Np.{formatted_time}.nc4"
     # Check the date range and return the corresponding runid
     if range_1[0] <= numeric_time <= range_1[1]:
         return 100
@@ -88,9 +89,10 @@ def get_runid(formatted_time, datapath=''):
         return 400  # Return None if the date doesn't fall into any defined range
 
 
+
 ######################################
-def process_years(years,df):
-  """
+def process_years(years, df):
+    """
     Process the 'SEASON' column in the DataFrame based on the provided years.
 
     Parameters:
@@ -99,22 +101,23 @@ def process_years(years,df):
 
     Returns:
     - DataFrame: The filtered DataFrame based on the specified years.
-  """
-  if years=='':  
-	#pass if no search value is given
-    pass
-  else:
-    if isinstance(years, list):  #if search value is a list, then search for a list
-        years_int = [int(year) for year in years]  #convert search value into int
-        df = df[df['SEASON'].isin(years_int)] #filter the dataframe
-    elif years is not None: #if it is not a list, then search for a year
-        df = df[df['SEASON'] == int(years)]
-  return df
+    """
+    if years == '':  
+        # Pass if no search value is given
+        pass
+    else:
+        if isinstance(years, list):  # If search value is a list, then search for a list
+            years_int = [int(year) for year in years]  # Convert search value into int
+            df = df[df['SEASON'].isin(years_int)]  # Filter the DataFrame
+        elif years is not None:  # If it is not a list, then search for a year
+            df = df[df['SEASON'] == int(years)]
+    return df
+
 
 #######################################
 
 def process_name(names, df):
-  """
+    """
     Process the 'NAME' column in the DataFrame based on the provided names.
 
     Parameters:
@@ -123,22 +126,22 @@ def process_name(names, df):
 
     Returns:
     - DataFrame: The filtered DataFrame based on the specified names.
-  """ 
-  if names=='':
-    pass
-	#pass if no search value is given
-  else:
-    if isinstance(names, list) and all(isinstance(elem, str) for elem in names):
-      df = df[df['NAME'].isin(names)]
-    if isinstance(names, str):
-      df = df[df['NAME'] == names]
-  return df
+    """ 
+    if names == '':
+        pass  # Pass if no search value is given
+    else:
+        if isinstance(names, list) and all(isinstance(elem, str) for elem in names):
+            df = df[df['NAME'].isin(names)]  # Filter the DataFrame by list of names
+        if isinstance(names, str):
+            df = df[df['NAME'] == names]  # Filter the DataFrame by a single name
+    return df
+
 
 #########################################
 
 
 def trim_area(df, maxlat, minlat, maxlon, minlon):
-  """
+    """
     Trim the DataFrame based on specified latitude and longitude bounds.
 
     Parameters:
@@ -150,12 +153,13 @@ def trim_area(df, maxlat, minlat, maxlon, minlon):
 
     Returns:
     - DataFrame: The trimmed DataFrame based on the specified bounds.
-  """
-  if minlat == -90.0 and maxlat == 90.0 and minlon == -180.0 and maxlon == 180.0:  #default value, pass to save computational power
-    pass
-  else:
-    df = df[(df['LAT'] <= maxlat) & (df['LAT'] >= minlat) & (df['LON'] >= minlon) & (df['LON'] <= maxlon)]
-  return df
+    """
+    if minlat == -90.0 and maxlat == 90.0 and minlon == -180.0 and maxlon == 180.0:  # Default value, pass to save computational power
+        pass
+    else:
+        df = df[(df['LAT'] <= maxlat) & (df['LAT'] >= minlat) & (df['LON'] >= minlon) & (df['LON'] <= maxlon)]
+    return df
+
 
 #########################################
 
@@ -172,19 +176,19 @@ def process_regions(regions, df):
     - DataFrame: The filtered DataFrame based on the specified regions.
     """
     if regions == '':
-        pass
+        pass  # Do nothing if no region is specified
     else:
         if isinstance(regions, list) and all(isinstance(elem, str) for elem in regions):
-            df = df[df['BASIN'].isin(regions)]
+            df = df[df['BASIN'].isin(regions)]  # Filter by a list of regions
         elif isinstance(regions, str):
-            df = df[df['BASIN'] == regions]
+            df = df[df['BASIN'] == regions]  # Filter by a single region
     return df
 
 #########################################
 
 
-def trim_wind_range(df, maxwind, minwind): 
-  """
+def trim_wind_range(df, maxwind, minwind):
+    """
     Trim the DataFrame based on specified maximum and minimum wind speeds.
 
     Parameters:
@@ -194,17 +198,17 @@ def trim_wind_range(df, maxwind, minwind):
 
     Returns:
     - DataFrame: The trimmed DataFrame based on the specified wind speed range.
-  """
-  if maxwind==10000 and minwind==0:
-    pass
-  else:
-    df = df[(df['WMO_WIND'] <= maxwind) & (df['WMO_WIND'] >= minwind)]
-  return df
+    """
+    if maxwind == 10000 and minwind == 0:
+        pass  # Do nothing if default extreme values are used
+    else:
+        df = df[(df['WMO_WIND'] <= maxwind) & (df['WMO_WIND'] >= minwind)]
+    return df
 
 #########################################
 
 
-def trim_pressure_range(df,maxpres,minpres):
+def trim_pressure_range(df, maxpres, minpres):
     """
     Trim the DataFrame based on specified maximum and minimum pressure values.
 
@@ -216,11 +220,12 @@ def trim_pressure_range(df,maxpres,minpres):
     Returns:
     - DataFrame: The trimmed DataFrame based on the specified pressure range.
     """
-    if maxpres==10000 and minpres==0:
-        pass
+    if maxpres == 10000 and minpres == 0:
+        pass  # Do nothing if default extreme values are used
     else:
         df = df[(df['WMO_PRES'] <= maxpres) & (df['WMO_PRES'] >= minpres)]
     return df
+
 
 #########################################
 
@@ -238,7 +243,7 @@ def trim_rmw_range(df, maxrmw, minrmw):
     - DataFrame: The trimmed DataFrame based on the specified USA RMW range.
     """
     if maxrmw == 10000 and minrmw == 0:
-        pass
+        pass  # Do nothing if default extreme values are used
     else:
         df = df[(df['USA_RMW'] <= maxrmw) & (df['USA_RMW'] >= minrmw)]
     return df
@@ -246,16 +251,10 @@ def trim_rmw_range(df, maxrmw, minrmw):
 #########################################
 
 
-def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
-               , maxlat = 90.0, minlon = -180.0, maxlon = 180.0
-               , regions='', maxwind=10000, minwind=0, maxpres=10000
-               , minpres=0, maxrmw=10000, minrmw=0, windowsize=[18,18]
-               , datapath='', completed=0): 
-               #define a search bar for you, csvdataset is the link to the dataset, 
-               #tc_name are names to search for, years are years to search for, .... 
-               #Window size[lat,lon] is the intended output around the TC center, 
-               #18 degree means center+/- 9 degree.
-  """
+def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, minlon = -180.0, maxlon = 180.0,
+               regions='', maxwind=10000, minwind=0, maxpres=10000, minpres=0, maxrmw=10000, minrmw=0, windowsize=[18,18],
+               datapath='', completed=0): 
+    """
     Merge two datasets of tropical cyclones, create a window for a TC domain with additional attributes, and write to files.
 
     Args:
@@ -287,140 +286,140 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0
         - RMW (float): Radius of maximum wind.
         - Center Latitude (float): Latitude of the TC center.
         - Center Longitude (float): Longitude of the TC center.
-  """
-  #############################################################################
-  #read CSV data and process the datatype, selecting only TC with defined characteristics
-  selected_columns = ["SEASON", "BASIN", "NAME", "LAT", 
-                      "LON", "ISO_TIME", "WMO_WIND", 
-                      "WMO_PRES", "USA_RMW"]                          #define the important columns, some for search bar, some for interest
-  df=pd.read_csv(csvdataset, usecols=selected_columns, keep_default_na=False); #read data using pandas read csv
-  filtered_df = df[
-    (df['WMO_WIND'].apply(lambda x: str(x).isnumeric())) & 
-    (df['WMO_PRES'].apply(lambda x: str(x).isnumeric())) & 
-    (df['USA_RMW'].apply(lambda x: str(x).isnumeric()))][selected_columns] #pick only where max wind speed, min pressure, and RMW are numbers
-  filtered_df["WMO_WIND"] = filtered_df["WMO_WIND"].astype(float) 
-  #still need to convert them to number, because >>some<< entries are strings, that's why I have to use isnumeric.
-  filtered_df["WMO_PRES"] = filtered_df["WMO_PRES"].astype(float)
-  filtered_df["USA_RMW"] = filtered_df["USA_RMW"].astype(float)
-  del df #liberate some data, for other users
-  filtered_df=process_years(years, filtered_df) #search bar
-  filtered_df=process_name(tc_name, filtered_df)
-  filtered_df=process_regions(regions, filtered_df)
-  filtered_df=trim_area(filtered_df, maxlat=maxlat,minlat=minlat,maxlon=maxlon,minlon=minlon)
-  filtered_df=trim_wind_range(filtered_df, maxwind=maxwind, minwind=minwind)
-  filtered_df=trim_pressure_range(filtered_df, maxpres=maxpres, minpres=minpres)
-  filtered_df=trim_rmw_range(filtered_df, maxrmw=maxrmw, minrmw=minrmw)
-  filtered_df=filtered_df.sort_values('ISO_TIME')
+    """
+    #############################################################################
+    # read CSV data and process the datatype, selecting only TC with defined characteristics
+    selected_columns = ["SEASON", "BASIN", "NAME", "LAT", 
+                        "LON", "ISO_TIME", "WMO_WIND", 
+                        "WMO_PRES", "USA_RMW"]                          # define the important columns, some for search bar, some for interest
+    df = pd.read_csv(csvdataset, usecols=selected_columns, keep_default_na=False)  # read data using pandas read csv
+    filtered_df = df[
+        (df['WMO_WIND'].apply(lambda x: str(x).isnumeric())) & 
+        (df['WMO_PRES'].apply(lambda x: str(x).isnumeric())) & 
+        (df['USA_RMW'].apply(lambda x: str(x).isnumeric()))][selected_columns]  # pick only where max wind speed, min pressure, and RMW are numbers
+    filtered_df["WMO_WIND"] = filtered_df["WMO_WIND"].astype(float) 
+    # still need to convert them to number, because >>some<< entries are strings, that's why I have to use isnumeric.
+    filtered_df["WMO_PRES"] = filtered_df["WMO_PRES"].astype(float)
+    filtered_df["USA_RMW"] = filtered_df["USA_RMW"].astype(float)
+    del df  # liberate some data, for other users
+    filtered_df = process_years(years, filtered_df)  # search bar
+    filtered_df = process_name(tc_name, filtered_df)
+    filtered_df = process_regions(regions, filtered_df)
+    filtered_df = trim_area(filtered_df, maxlat=maxlat, minlat=minlat, maxlon=maxlon, minlon=minlon)
+    filtered_df = trim_wind_range(filtered_df, maxwind=maxwind, minwind=minwind)
+    filtered_df = trim_pressure_range(filtered_df, maxpres=maxpres, minpres=minpres)
+    filtered_df = trim_rmw_range(filtered_df, maxrmw=maxrmw, minrmw=minrmw)
+    filtered_df = filtered_df.sort_values('ISO_TIME')
 
+    ###############################################################################
+    # Initiate counter value
+    global count
+    count = 0
+    global starttime
+    starttime = timer()
+    global faulty
+    faulty = 0
+    global suffix
+    suffix = 0
+    global previous_time
+    previous_time = 0  # There can be 2 or more TCs happen at the same time
+    global entries
+    entries = len(filtered_df)
+    global endtime
+    endtime = 0
+    print('Total: ' + str(entries), flush=True)
+    latsize = int(np.ceil((np.ceil(windowsize[0]/0.5)+1)/2))  # change 0.625 and 0.5 for other dataset
+    lonsize = int(np.ceil((np.ceil(windowsize[1]/0.625)+1)/2))
+    filtered_df['LON'] = filtered_df['LON'] - 360*np.logical_and(filtered_df['BASIN'].isin(['EP','SP']), filtered_df['LON'] > 0)
+    ################################################################################
+    # Loop through filtered data
+    for index, row in filtered_df.iterrows():
+        window_df = row
+        time = row['ISO_TIME']
+        if time == previous_time:
+            suffix += 1
+        elif time != previous_time:
+            suffix = 0
+        previous_time = time
+        if count < completed:
+            count += 1
+            continue
+        ################################################################################
+        # Filter out data with unregistered time
+        formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H')  # take YYYYMMDDHH format to build filename 
+        if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').minute != 0:
+            print('Faulty entry ' + time + ' unexpected minute.', flush=True)
+            faulty += 1
+            process_entries(round(entries * 0.01 / 100) * 100)
+            continue
+        if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').second != 0:
+            print('Faulty entry ' + time + ' unexpected second.', flush=True)
+            faulty += 1
+            process_entries(round(entries * 0.01 / 100) * 100)
+            continue
+        if formatted_datetime[-2:] not in ['00', '03', '06', '09', '12', '15', '18', '21']:
+            print('Faulty entry ' + time + ' unexpected hour.', flush=True)
+            faulty += 1
+            process_entries(round(entries * 0.01 / 100) * 100)
+            pass
+        #################################################################################
+        # Ensure the windows are of the same size, deal with antimeridian data
+        else:
+            gblat = (window_df['LAT'] + 90) // 0.5
+            lower_index_lat = int(gblat - latsize + 1)
+            upper_index_lat = int(gblat + latsize + 1)
+            formatted_time = pd.to_datetime(time).strftime('%Y%m%d')  # read corresponding data file
+            dataname = datapath + 'MERRA2_' + str(get_runid(formatted_time, datapath)) + '.inst3_3d_asm_Np.' + formatted_time + '.nc4'
+            dataset = xr.open_dataset(dataname)
+            if lower_index_lat < 0 or upper_index_lat > len(dataset.lat) - 1:
+                faulty += 1
+                print('Cannot create a window of designed size for this TC, outside of map.', flush=True)
+                print('ASDFGHJ' + window_df['ISO_TIME'] + window_df['NAME'] + window_df['BASIN'], flush=True)
+                process_entries(round(entries * 0.01 / 100) * 100)
+                continue
+            gblon = (window_df['LON'] + 180) // 0.625
+            # Calculate the lower and upper longitude indices
+            lower_index_lon = int(gblon - lonsize + 1)
+            upper_index_lon = int(gblon + lonsize + 1)
+            window = dataset.sel(time=time)  # cut the window
+            full_length = len(window.lon)
+            if upper_index_lon > (full_length - 1):
+                window = window.isel(lon=(window.lon < window.lon[upper_index_lon - full_length]) | (window.lon > window.lon[lower_index_lon - 1]))
+                window = window.isel(lat=slice(lower_index_lat, upper_index_lat))
+                window = window.roll(lon=full_length - lower_index_lon)
+            elif lower_index_lon < 0:
+                window = window.isel(lon=(window.lon > window.lon[lower_index_lon - 1]) | (window.lon < window.lon[upper_index_lon]))
+                window = window.isel(lat=slice(lower_index_lat, upper_index_lat))
+                window = window.roll(lon=-lower_index_lon)
+            else:
+                window = window.isel(lat=slice(lower_index_lat, upper_index_lat), lon=slice(lower_index_lon, upper_index_lon))
+            ##################################################################################
+            # assign attrs and print out
+            window = window.assign_attrs(VMAX=window_df['WMO_WIND'], 
+                                         PMIN=window_df['WMO_PRES'], 
+                                         RMW=window_df['USA_RMW'], 
+                                         CLAT=window_df['LAT'], 
+                                         CLON=window_df['LON'], 
+                                         TCNAME=window_df['NAME']) 
+                                         # assign new attributes, Max wind speed, Min pressure and radius of maximum wind
+            formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H')  # take YYYYMMDDHH format to build filename
+            basin = window_df['BASIN']
+            outname = '/N/slate/kmluong/'
+            outname = outname + 'TC_domain/' + basin 
+            if not os.path.exists(outname):
+                os.makedirs(outname)
+            outname = outname + '/' + formatted_datetime[:4]
+            if not os.path.exists(outname):
+                os.makedirs(outname)
+            outname = outname + '/' + 'MERRA_TC' + str(windowsize[0]) + 'x' + str(windowsize[1]) + formatted_datetime + '_' + str(suffix) + '.nc'
+            outname = str(outname)
+            window.to_netcdf(outname)  # print out the new file, its name is MERRA_TCW1xW2YYYYMMDDHH.nc
+            count = count + 1
+            process_entries(round(entries * 0.01 / 100) * 100)
+    print('Total: ' + str(entries) + ' entries processed.', flush=True)
+    print('With ' + str(faulty) + ' faulty entries.', flush=True)
+    print('Generated ' + str(count) + ' windows.', flush=True)
 
-  ###############################################################################
-  #Initiate counter value
-  global count
-  count=0
-  global starttime
-  starttime=timer()
-  global faulty
-  faulty=0
-  global suffix
-  suffix=0
-  global previous_time
-  previous_time=0 #There can be 2 or more TCs happen at the same time
-  global entries
-  entries=len(filtered_df)
-  global endtime
-  endtime=0
-  print('Total: ' + str(entries), flush=True)
-  latsize = int(np.ceil((np.ceil(windowsize[0]/0.5)+1)/2))  #change 0.625 and 0.5 for other dataset
-  lonsize = int(np.ceil((np.ceil(windowsize[1]/0.625)+1)/2))
-  filtered_df['LON']=filtered_df['LON'] - 360*np.logical_and(filtered_df['BASIN'].isin(['EP','SP']), filtered_df['LON']>0)
-  ################################################################################
-  #Loop through filtered data
-  for index, row in filtered_df.iterrows():
-   window_df=row
-   time=row['ISO_TIME']
-   if time==previous_time:
-    suffix+=1
-   elif time!= previous_time:
-    suffix=0
-   previous_time=time
-   if count<completed:
-    count+=1
-    continue
-   ################################################################################
-   #Filter out data with unregistered time
-   formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename 
-   if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').minute !=0:
-    print('Faulty entry ' +time+' unexpected minute.', flush=True)
-    faulty+=1
-    process_entries(round(entries*0.01/100)*100)
-    continue
-   if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').second !=0:
-    print('Faulty entry ' + time + ' unexpected second.', flush=True)
-    faulty+=1
-    process_entries(round(entries*0.01/100)*100)
-    continue
-   if formatted_datetime[-2:] not in ['00', '03','06', '09', '12', '15', '18', '21']:
-    print('Faulty entry ' + time + ' unexpected hour.', flush=True)
-    faulty+=1
-    process_entries(round(entries*0.01/100)*100)
-    pass
-   #################################################################################
-   #Ensure the windows are of the same size, deal with antimeridian data
-   else:
-    gblat=(window_df['LAT']+90)//0.5
-    lower_index_lat=int(gblat-latsize+1)
-    upper_index_lat=int(gblat+latsize+1)
-    formatted_time = pd.to_datetime(time).strftime('%Y%m%d') #read corresponding data file
-    dataname=datapath+'MERRA2_'+str(get_runid(formatted_time,datapath))+'.inst3_3d_asm_Np.'+formatted_time+'.nc4'
-    dataset = xr.open_dataset(dataname)
-    if lower_index_lat<0 or upper_index_lat>len(dataset.lat)-1:
-     faulty+=1
-     print('Cannot create a window of designed size for this TC, outside of map.', flush=True)
-     print('ASDFGHJ' + window_df['ISO_TIME'] + window_df['NAME'] + window_df['BASIN'], flush=True)
-     process_entries(round(entries*0.01/100)*100)
-     continue
-    gblon = (window_df['LON'] + 180) // 0.625
-    # Calculate the lower and upper longitude indices
-    lower_index_lon = int(gblon - lonsize + 1)
-    upper_index_lon = int(gblon + lonsize + 1)
-    window=dataset.sel(time=time) #cut the window
-    full_length=len(window.lon)
-    if upper_index_lon > (full_length-1):
-     window=window.isel(lon=(window.lon < window.lon[upper_index_lon-full_length]) | (window.lon > window.lon[lower_index_lon-1]))
-     window=window.isel(lat=slice(lower_index_lat,upper_index_lat))
-     window=window.roll(lon=full_length-lower_index_lon)
-    elif lower_index_lon < 0:
-     window=window.isel(lon=(window.lon > window.lon[lower_index_lon-1]) | (window.lon < window.lon[upper_index_lon]))
-     window=window.isel(lat=slice(lower_index_lat,upper_index_lat))
-     window=window.roll(lon=-lower_index_lon)
-    else:
-     window=window.isel(lat=slice(lower_index_lat,upper_index_lat), lon=slice(lower_index_lon, upper_index_lon))
-    ##################################################################################
-    #assign attrs and print out
-    window=window.assign_attrs(VMAX=window_df['WMO_WIND'], 
-                               PMIN=window_df['WMO_PRES'], 
-    			       RMW=window_df['USA_RMW'], 
-			       CLAT=window_df['LAT'], 
-			       CLON=window_df['LON'], 
-			       TCNAME=window_df['NAME']) 
-			       #assign new attributes, Max wind speed, Min pressure and radius of maximum wind
-    formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H') #take YYYYMMDDHH format to build filename
-    basin=window_df['BASIN']
-    outname='/N/slate/kmluong/'
-    outname=outname+'TC_domain/'+basin 
-    if not os.path.exists(outname):
-     os.makedirs(outname)
-    outname=outname + '/' + formatted_datetime[:4]
-    if not os.path.exists(outname):
-     os.makedirs(outname)
-    outname=outname + '/' + 'MERRA_TC' + str(windowsize[0])+'x'+str(windowsize[1])+formatted_datetime + '_'+str(suffix)+ '.nc'
-    outname=str(outname)
-    window.to_netcdf(outname) #print out the new file, its name is MERRA_TCW1xW2YYYYMMDDHH.nc
-    count=count+1
-    process_entries(round(entries*0.01/100)*100)
-  print('Total: ' + str(entries) + ' entries processed.', flush=True)
-  print('With ' +str(faulty) +' faulty entries.', flush=True)
-  print('Generated ' + str(count) + ' windows.', flush=True) 
 datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
 merge_data(csvdataset, regions=['EP', 'NA', 'WP'],windowsize=[30,30], datapath=datapath)
