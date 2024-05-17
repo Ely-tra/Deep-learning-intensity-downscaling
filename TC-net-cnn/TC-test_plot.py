@@ -15,11 +15,58 @@ from keras import backend as K
 # Constants and configuration settings
 #==============================================================================================
 
-mode = 'VMAX'
-number_of_channel = 13
-windowsize = [30, 30]
-model_name = 'VMAX_retrieval_model'
-x_size = 64
+# Define the directory containing the files
+directory = "/N/slate/kmluong/Training_data/"
+# List all files in the directory
+files = os.listdir(directory+'model/')
+files.sort()  # Optional: sort the files alphabetically
+
+# Print all files with an index
+for index, file in enumerate(files):
+    print(f"{index} {file}")
+
+# Ask the user to choose a file number
+file_number = int(input("Enter the number to select a model: "))
+
+# Ensure the input number is within the valid range
+if 0 <= file_number < len(files):
+    selected_file = files[file_number]
+    print(f"You selected: {selected_file}")
+else:
+    print("Invalid file number.")
+
+directory = "/N/slate/kmluong/Training_data/"
+
+all_files = os.listdir(directory+'data/')
+
+# Filter and pair feature and label files
+paired_files = []
+for file in all_files:
+    if "features" in file:
+        label_file = file.replace("features", "labels")
+        if label_file in all_files:
+            paired_files.append((file, label_file))
+
+# Sort pairs alphabetically by the feature file name
+paired_files.sort()
+
+# Print paired files with an index
+for index, (feature, label) in enumerate(paired_files):
+    print(f"{index} - Features: {feature}, Labels: {label}")
+
+# Ask the user to choose a pair number
+pair_number = int(input("Enter the number to select a training set: "))
+
+# Ensure the input number is within the valid range
+if 0 <= pair_number < len(paired_files):
+    fea_path, lab_path = paired_files[pair_number]
+    print(f"You selected: Features: {fea_path}, Labels: {lab_path}")
+else:
+    print("Invalid pair number.")
+mode = str(input('Pick a mode, VMAX, PMIN, RMW: '))
+
+
+x_size = int(input('Set the square input image size, if the dataset is of image larger than 26 by 26 degree, this number should be 128, else 64: ')
 
 #==============================================================================================
 # Metric and preprocessing function definitions
@@ -91,13 +138,6 @@ elif mode == 'RMW':
     t = 'Radius of Maximum Wind'
     u = 'Kilometers'
 
-# Configure channel and window size based on inputs
-number_of_channel = '' if number_of_channel == 5 else str(number_of_channel)
-windowsize = '' if windowsize == [18, 18] else '.' + str(windowsize[0]) + 'x' + str(windowsize[1])
-
-# Construct file paths for features and labels
-fea_path = root + prefix + 'test' + number_of_channel + 'x' + windowsize + '.npy'
-lab_path = root + prefix + 'test' + number_of_channel + 'x' + windowsize + '.npy'
 
 # Load and preprocess data
 y = np.load(lab_path)[:, b]
