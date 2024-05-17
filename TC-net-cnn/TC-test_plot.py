@@ -16,7 +16,7 @@ from keras import backend as K
 #==============================================================================================
 
 # Define the directory containing the files
-directory = "/N/slate/kmluong/Training_data/"
+directory = "/N/slate/kmluong/Training_data/Split/"
 # List all files in the directory
 files = os.listdir(directory+'model/')
 files.sort()  # Optional: sort the files alphabetically
