@@ -30,8 +30,8 @@ file_number = int(input("Enter the number to select a model: "))
 
 # Ensure the input number is within the valid range
 if 0 <= file_number < len(files):
-    selected_file = files[file_number]
-    print(f"You selected: {selected_file}")
+    model_name = files[file_number]
+    print(f"You selected: {model_name}")
 else:
     print("Invalid file number.")
 
@@ -173,4 +173,5 @@ axs[1].fill_between(np.arange(y.min(), y.max()), np.arange(y.min(), y.max()) + d
 axs[1].legend()
 plt.savefig('Model:' + str(name) + '.png')
 print(f'Saved the result as Model:{name}.png')
+print('RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE'])))
 print('Completed!')
