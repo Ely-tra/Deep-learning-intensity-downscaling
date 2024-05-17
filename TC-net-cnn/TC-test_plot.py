@@ -59,7 +59,9 @@ pair_number = int(input("Enter the number to select a training set: "))
 
 # Ensure the input number is within the valid range
 if 0 <= pair_number < len(paired_files):
-    fea_path, lab_path = directory + 'data/' + paired_files[pair_number]
+    fea_path, lab_path = paired_files[pair_number]
+    fea_path = directory + 'data/' + fea_path
+    lab_path = directory + 'data/' + lab_path
     print(f"You selected: Features: {fea_path}, Labels: {lab_path}")
 else:
     print("Invalid pair number.")
@@ -170,4 +172,5 @@ axs[1].plot(np.arange(y.min(), y.max()), np.arange(y.min(), y.max()), 'r-', alph
 axs[1].fill_between(np.arange(y.min(), y.max()), np.arange(y.min(), y.max()) + datadict[name + 'MAE'], np.arange(y.min(), y.max()) - datadict[name + 'MAE'], color='red', alpha=0.3, label='MAE')
 axs[1].legend()
 plt.savefig('Model:' + str(name) + '.png')
-
+print(f'Saved the result as Model:{name}.png')
+print('Completed!')
