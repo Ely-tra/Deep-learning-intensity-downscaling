@@ -17,7 +17,7 @@ from keras import backend as K
 
 mode = 'VMAX'
 number_of_channel = 13
-windowsize = [18, 18]
+windowsize = [30, 30]
 model_name = 'VMAX_retrieval_model'
 x_size = 64
 
