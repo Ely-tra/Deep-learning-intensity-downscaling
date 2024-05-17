@@ -131,6 +131,8 @@ prefix = 'Split/data/'
 
 # Determine labels and units based on mode
 if mode == 'VMAX':
+    print(1)
+    print(lab_path, fea_path, model_name)
     b = 0
     t = 'Maximum wind speed'
     u = 'Knots'
