@@ -42,8 +42,8 @@ all_files = os.listdir(directory+'data/')
 # Filter and pair feature and label files
 paired_files = []
 for file in all_files:
-    if "features" in file:
-        label_file = file.replace("features", "labels")
+    if "test" in file and 'x.' in file:
+        label_file = file.replace("x.", "y.")
         if label_file in all_files:
             paired_files.append((file, label_file))
 
