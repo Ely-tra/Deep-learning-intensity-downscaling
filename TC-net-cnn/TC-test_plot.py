@@ -118,7 +118,10 @@ def normalize_channels(X, y):
 
 # Initialize dictionary to store results
 datadict = {}
-
+custom_objects = {
+    'mae_1': mae_for_output(0),
+    'rmse_1': rmse_for_output(0)
+}
 #==============================================================================================
 # File paths and mode configuration
 #==============================================================================================
