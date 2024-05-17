@@ -60,12 +60,12 @@ pair_number = int(input("Enter the number to select a training set: "))
 # Ensure the input number is within the valid range
 if 0 <= pair_number < len(paired_files):
     fea_path, lab_path = paired_files[pair_number]
+    print(f"You selected: Features: {fea_path}, Labels: {lab_path}")
     fea_path = directory + 'data/' + fea_path
     lab_path = directory + 'data/' + lab_path
-    print(f"You selected: Features: {fea_path}, Labels: {lab_path}")
 else:
     print("Invalid pair number.")
-mode = str(input('Pick a mode, VMAX, PMIN, RMW: '))
+mode = str(input('Pick a mode, VMAX, PMIN, RMW (enter string): '))
 
 
 x_size = int(input('Set the square input image size, if the dataset is of image larger than 26 by 26 degree, this number should be 128, else 64: '))
