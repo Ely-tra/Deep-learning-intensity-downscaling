@@ -151,7 +151,7 @@ x = np.transpose(x, (0, 2, 3, 1))
 x = resize_preprocess(x, x_size, x_size, 'lanczos5')
 
 # Load model and perform predictions
-model = tf.keras.models.load_model(root + 'model/' + model_name, custom_objects=custom_objects)
+model = tf.keras.models.load_model(root + '/Split/model/' + model_name, custom_objects=custom_objects)
 name = model_name
 predict = model.predict(x)
 
