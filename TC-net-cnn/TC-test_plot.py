@@ -66,7 +66,7 @@ else:
 mode = str(input('Pick a mode, VMAX, PMIN, RMW: '))
 
 
-x_size = int(input('Set the square input image size, if the dataset is of image larger than 26 by 26 degree, this number should be 128, else 64: ')
+x_size = int(input('Set the square input image size, if the dataset is of image larger than 26 by 26 degree, this number should be 128, else 64: '))
 
 #==============================================================================================
 # Metric and preprocessing function definitions
