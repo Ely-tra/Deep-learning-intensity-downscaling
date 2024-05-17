@@ -131,8 +131,6 @@ prefix = 'Split/data/'
 
 # Determine labels and units based on mode
 if mode == 'VMAX':
-    print(1)
-    print(lab_path, fea_path, model_name)
     b = 0
     t = 'Maximum wind speed'
     u = 'Knots'
@@ -150,6 +148,7 @@ elif mode == 'RMW':
 y = np.load(lab_path)[:, b]
 x = np.load(fea_path)
 x = np.transpose(x, (0, 2, 3, 1))
+x, y = normalize_channels(x,y)
 x = resize_preprocess(x, x_size, x_size, 'lanczos5')
 
 # Load model and perform predictions
