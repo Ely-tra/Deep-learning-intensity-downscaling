@@ -59,7 +59,7 @@ pair_number = int(input("Enter the number to select a training set: "))
 
 # Ensure the input number is within the valid range
 if 0 <= pair_number < len(paired_files):
-    fea_path, lab_path = paired_files[pair_number]
+    fea_path, lab_path = directory + 'data/' + paired_files[pair_number]
     print(f"You selected: Features: {fea_path}, Labels: {lab_path}")
 else:
     print("Invalid pair number.")
