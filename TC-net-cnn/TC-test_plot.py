@@ -35,7 +35,7 @@ if 0 <= file_number < len(files):
 else:
     print("Invalid file number.")
 
-directory = "/N/slate/kmluong/Training_data/"
+directory = "/N/slate/kmluong/Training_data/Split/"
 
 all_files = os.listdir(directory+'data/')
 
