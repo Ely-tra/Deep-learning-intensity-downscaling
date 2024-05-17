@@ -45,6 +45,8 @@ Step 5: Execute TC-Split.py to generate separate training and testing datasets, 
 
 Step 6: Train models with prepared datasets using retrieval scripts. Refer to the script's last section for adjustments to model or data paths.
 
+Step 7 (optional): To evaluate model performance on a test set, execute the script TC-test_set.py and follow the provided instructions. Note that all test sets are named according to the convention test{number_of_channel}x/y.{domain_size}.npy.
+ 
 This project is funded by the United States National Science Foundation (NSF), and therefore, any dissemination of information or data must be in accordance with NSF guidelines and regulations.
 
 It is executed by Minh Khanh Luong from the Department of Earth and Atmospheric Science at Indiana University Bloomington, under the advisement of Assoc. Prof. Chanh Kieu, also from the same department. For further details, please contact kmluong@iu.edu or mk223338@gmail.com.
