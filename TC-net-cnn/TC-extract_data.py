@@ -105,7 +105,7 @@ def dumping_data(root, outdir, outname=['CNNfeatures13.30x30test', 'CNNlabels13.
         data_array_y = np.array([data.VMAX, data.PMIN, data.RMW])  # knots, mb, nmile
         data_array_y = data_array_y.reshape([1, data_array_y.shape[0]])
         if regionize==True:
-          addon=filename[27:29]
+          addon=filename[len(root):len(root)+2]
         else:
           addon=''
 
