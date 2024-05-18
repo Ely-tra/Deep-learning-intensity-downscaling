@@ -85,7 +85,7 @@ def dumping_data(root, outdir, outname=['CNNfeatures13.30x30test', 'CNNlabels13.
         # Check for NaN percentage within the first level (which is 850mb)
 
         if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
-            print(data_array_x[0].shape, np.sum(np.isnan(data_array_x[0:4])), np.sum(np.isnan(data_array_x[0][12:51,10:41])), flush=True)
+            #print(data_array_x[0].shape, np.sum(np.isnan(data_array_x[0:4])), np.sum(np.isnan(data_array_x[0][12:51,10:41])), flush=True)
             i+=1
             #print(filename + ' omitted', flush=True)
             omit+=1
@@ -104,11 +104,11 @@ def dumping_data(root, outdir, outname=['CNNfeatures13.30x30test', 'CNNlabels13.
                                              data_array_x.shape[1], data_array_x.shape[2]])
         data_array_y = np.array([data.VMAX, data.PMIN, data.RMW])  # knots, mb, nmile
         data_array_y = data_array_y.reshape([1, data_array_y.shape[0]])
-        if regionize==True:
+        if regionize:
           addon=filename[len(root):len(root)+2]
         else:
           addon=''
-
+        print(addon)
         with NpyAppendArray(outdir + outname[0] + addon + '.npy', delete_if_exists=False) as npaax:
             npaax.append(data_array_x)
 
