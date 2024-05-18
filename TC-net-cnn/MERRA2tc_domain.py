@@ -9,6 +9,12 @@
 # AUTH: Khanh Luong (kmluong@iu.edu)
 #
 #====================================================================================
+
+import warnings
+
+# Suppress all warnings
+warnings.filterwarnings("ignore")
+
 import os
 import pandas as pd
 import numpy as np
