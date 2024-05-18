@@ -108,7 +108,6 @@ def dumping_data(root, outdir, outname=['CNNfeatures13.30x30test', 'CNNlabels13.
           addon=filename[len(root):len(root)+2]
         else:
           addon=''
-        print(addon)
         with NpyAppendArray(outdir + outname[0] + addon + '.npy', delete_if_exists=False) as npaax:
             npaax.append(data_array_x)
 
@@ -121,4 +120,4 @@ def dumping_data(root, outdir, outname=['CNNfeatures13.30x30test', 'CNNlabels13.
             print(str(omit) + ' dataset omitted due to NaNs.', flush = True)
     print('Total ' + str(i) + ' dataset processed.', flush=True)
     print('With ' + str(omit) + ' dataset omitted due to NaNs.', flush = True)
-dumping_data('/N/slate/kmluong/TC_domain/', '/N/slate/kmluong/Training_data/', windowsize=[30,30], regionize=True)
+dumping_data('/N/slate/kmluong/TC_domain/', '/N/slate/kmluong/Training_data/', windowsize=[30,30], regionize=False)
