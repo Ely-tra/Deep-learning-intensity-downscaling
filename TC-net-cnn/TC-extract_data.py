@@ -79,7 +79,7 @@ def dumping_data(root, outdir, outname=['CNNfeatures13.30x30test', 'CNNlabels13.
         # Choosing bands and level, data is taken from raw MERRA2 dataset, so the choice is not limited to atm level.
 
         data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=850).to_array())
-        data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=950).to_array())
+        data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH', 'SLP']].sel(lev=950).to_array()), axis=0)
         data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH', 'SLP']].sel(lev=750).to_array()), axis=0)
 
         # Check for NaN percentage within the first level (which is 850mb)
