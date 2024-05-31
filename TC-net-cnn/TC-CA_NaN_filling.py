@@ -1,56 +1,65 @@
 #
-# SCRIPT NAME: Context-Aware NaN Filling for Atmospheric Data Arrays
+# DESCRIPTION: This script focuses on context-aware filling of NaN values in multidimensional 
+#       arrays, where the filling strategy is guided by the surrounding wind field characteristics. 
+#       This method uses calculations of vector fields, element-wise operations, and directional 
+#       weightings to enhance the data filling accuracy. The script processes files within a 
+#       specified directory, applies the context-aware filling methods, and saves the modified 
+#       data back to disk.
 #
-# DESCRIPTION: This script initializes essential libraries and defines functions designed for the
-#              sophisticated handling of atmospheric data. The primary functionality focuses on 
-#              context-aware filling of NaN values in multidimensional arrays, where the filling 
-#              strategy is guided by the surrounding wind field characteristics. This method uses 
-#              calculations of vector fields, element-wise operations, and directional weightings to 
-#              enhance the data filling accuracy. The script processes files within a specified directory,
-#              applies the context-aware filling methods, and saves the modified data back to disk.
+#       Note that step 2 discards data that have too much NaN values, but still retains data
+#       with less than 5% of the NaN. This script will further fix all the NaN values in these
+#       files before feeding into DL models. Should be a class with different NaN filling 
+#       method, so it can be re-used.
 #
 # FUNCTIONS:
-#   - calfield: Calculates normalized vector fields from 2D arrays.
-#   - elewise_dot: Computes element-wise dot products between two vectors.
-#   - weight_field: Calculates weights for vector fields based on predefined directions.
-#   - shift: Shifts array elements along specified axis and fills shifted positions with zeros.
-#   - extract_bound: Identifies boundary elements in 2D arrays adjacent to NaN values.
-#   - fill4, fill3, fill2: Fill NaN values using 4-cell, 3-cell, and 2-cell patterns, considering
-#                          vector fields to maintain spatial coherence in wind data.
-#   - fill_nan: Coordinates the sequence of filling functions to ensure comprehensive coverage of NaNs.
-#   - fix_data: Applies NaN filling operations to data files, ensuring data consistency and reliability.
+#       - calfield: Calculates normalized vector fields from 2D arrays.
+#       - elewise_dot: Computes element-wise dot products between two vectors.
+#       - weight_field: Calculates weights for vector fields based on predefined directions.
+#       - shift: Shifts array elements along specified axis and fills shifted positions with zeros.
+#       - extract_bound: Identifies boundary elements in 2D arrays adjacent to NaN values.
+#       - fill4, fill3, fill2: Fill NaN values using 4-cell, 3-cell, and 2-cell patterns, considering
+#         vector fields to maintain spatial coherence in wind data.
+#       - fill_nan: Coordinates the sequence of filling functions to ensure comprehensive coverage of NaNs.
+#       - fix_data: Applies NaN filling operations to data files, ensuring data consistency and reliability.
 #
 # USAGE: Adjust the root directory to point to your data files and run the script. It will automatically
-#        find and process files that require NaN filling and save the corrected files.
+#       find and process files that require NaN filling and save the corrected files.
 #
 # NOTE: The script fills NaN values by evaluating the wind field around each missing point within a 3x3 pixel 
 #       area. The filling method assigns weights to neighboring pixels based on how closely their wind vectors 
 #       align towards or away from the center pixel with missing data. This alignment is quantified using the 
 #       dot product between wind vectors and predefined directional arrays, where a higher dot product indicates 
 #       stronger alignment and results in a higher weight. By leveraging this directional weighting, the script 
-#       ensures that filled values are consistent with the local wind patterns, enhancing the data's accuracy and relevance.
+#       ensures that filled values are consistent with the local wind patterns, enhancing the data's accuracy 
+#       and relevance.
 #
-# NOTE: The algorithm is not completed, and should not be used for dataset with > 5% missing data. One should find a way
-#       to handle large border missing patterns or any big rip near the center of the domain. Also loop filling is not
-#       efficient, see line 225.
+#       The algorithm is not completed, and should not be used for dataset with > 5% missing data. One should 
+#       find a way to handle large border missing patterns or any big rip near the center of the domain. 
+#       Also loop filling is not efficient, see line 225.
 #
-# AUTHOR: Minh Khanh Luong
-# CREATED DATE: May 14 2024
+# HIST: - May 14, 2024: Created by Khanh Luong
+#       - May 16, 2024: cleaned up and added more note by CK
+#       - May 18, 2024: added var_num and window size to the input for better control the input by CK
 #
+# AUTH: Minh Khanh Luong
 #==============================================================================================
-
 print('Initializing')
 import os
 import numpy as np
 import copy
 import glob
-
 np.seterr(invalid='ignore')
+#
+# Set input parameters and data path properly before running. All input and output
+# are stored under the same experiment name exp_{$channel}features_$windowsize
+#
+workdir='/N/project/Typhoon-deep-learning/output/'
+var_num = 13
+windowsize = [20,20]
 
-#==============================================================================================
-# Defining mathematical base functions
-#==============================================================================================
-
+#####################################################################################
+# DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
+#####################################################################################
 def calfield(array):
     """
     Calculate the normalized vector field from a given array.
@@ -82,7 +91,6 @@ def elewise_dot(vector1, vector2):
 #==============================================================================================
 # Filling algorithm function
 #==============================================================================================
-
 def weight_field(vector):
     """
     Calculate weights for a given vector field.
@@ -145,6 +153,7 @@ def extract_bound(array):
     s4 = np.logical_and(notnan, shift(nan, -1, mode=1))
     bound = np.logical_or(s1, np.logical_or(s2, np.logical_or(s3, s4)))
     return bound
+
 def fill4(array):
     """
     Fills NaN values in the input array with a 4-cell pattern.
@@ -225,6 +234,7 @@ def fill2(array):
             array[j, i[0], i[1]] = np.nansum(array[j, i[0] - 1:i[0] + 2, i[1] - 1:i[1] + 2] * weight)
 
     return array
+
 def fill_nan(array):
     """
     Fills NaN values in the input array using a sequence of fill functions.
@@ -252,6 +262,7 @@ def fill_nan(array):
 
     array = array[:, 1:-1, 1:-1]
     return array
+
 def fix_data(file):
     """
     Fixes NaN values in the data stored in the given file using the fill_nan function.
@@ -275,14 +286,12 @@ def fix_data(file):
                 xa[i,j*4:4*j+5] = fill_nan(xa[i,j*4:4*j+5])
     #print(np.sum(np.isnan(xa)), flush=True)
     np.save(file[:-4]+'fixed'+'.npy', xa)
-print('Initialization completed')
-
-#==============================================================================================
-# Execution
-#==============================================================================================
-
-root='/N/slate/kmluong/Training_data/'
-for file in glob.iglob(root + '**/CNNfea*', recursive=True):
+#
+# MAIN CALL: 
+#
+windows = str(windowsize[0])+'x'+str(windowsize[1])
+root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/'
+for file in glob.iglob(root + '**/CNNfeatures'+str(var_num)+'_'+windows+'.npy', recursive=True):
     print(file)
     if 'fixed' in file:
         continue

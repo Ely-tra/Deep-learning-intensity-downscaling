@@ -1,44 +1,44 @@
+# DESCRIPTION: This script utilizes TensorFlow to implement a (CNN) designed for correcting 
+#       TC intensity/structure from grided climate data, using the workflow inherited from the
+#       previous TC formation project (https://github.com/kieucq/tcg_deep_learning). The model 
+#       consists of several layers with varying functionalities including convolutional layers 
+#       for TC feature extraction and dense layers for regression. Special attention is given 
+#       to preprocessing steps like normalization and resizing, and the model is tuned to adapt 
+#       its learning rate over epochs.
 #
-# SCRIPT NAME: Convolutional Neural Network for Tropical Cyclones intensity correction.
-#
-# DESCRIPTION: This script utilizes TensorFlow to implement a Convolutional Neural Network (CNN) designed for correcting 
-#              TC intensity parameters from spatial data arrays. The model integrates several layers with varying functionalities 
-#              including convolutional layers for feature extraction and dense layers for regression. Special attention is given 
-#              to preprocessing steps like normalization and resizing, and the model is tuned to adapt its learning rate over epochs.
+#       Note that one can re-design the model by looking at the model's layer configurations 
+#       and loss functions (see line ???), set the dataset paths (see line ???), and run the 
+#       script. The model architecture (see line ???) can be adjusted by modifying the parameters 
+#       for convolutional and dense layers.   
 #
 # MODEL LAYERS:
-#   - Layer 1 (Conv2D): 128 filters, 15x15 kernel, uses 'relu' activation, processes input with shape defined by the dataset.
-#   - Layer 2 (MaxPooling2D): Pool size of 2, reduces spatial dimensions by half.
-#   - Layer 3 (Conv2D): 64 filters, 15x15 kernel, uses 'relu' activation.
-#   - Layer 4 (MaxPooling2D): Pool size of 2, further reduces spatial dimensions.
-#   - Layer 5 (Conv2D): 256 filters, 9x9 kernel, uses 'relu' activation.
-#   - Layer 6 (MaxPooling2D): Pool size of 2, reduces spatial dimensions.
-#   - Layer 7 (Conv2D): Configurable number of filters, 5x5 kernel, uses 'relu' activation for deep feature extraction.
-#   - Layer 8 (Conv2D): Same as previous, but with 'valid' padding to adjust output size.
-#   - Flatten and Dense layers: Transform convolutional output to 1D and connect to the output layer with dropout for regularization.
+#       - Layer 1 (Conv2D): 128 filters, 15x15 kernel, 'relu' activation, input shape=input data
+#       - Layer 2 (MaxPooling2D): Pool size of 2, reduces spatial dimensions by half.
+#       - Layer 3 (Conv2D): 64 filters, 15x15 kernel, uses 'relu' activation.
+#       - Layer 4 (MaxPooling2D): Pool size of 2, further reduces spatial dimensions.
+#       - Layer 5 (Conv2D): 256 filters, 9x9 kernel, uses 'relu' activation.
+#       - Layer 6 (MaxPooling2D): Pool size of 2, reduces spatial dimensions.
+#       - Layer 7 (Conv2D): Configurable number of filters, 5x5 kernel, uses 'relu' activation 
+#       - Layer 8 (Conv2D): Same as previous, but with 'valid' padding to adjust output size.
+#       - Flatten and Dense layers: Transform convolutional output to 1D .
 #
 # FUNCTIONS:
-#   - mae_for_output: Custom mean absolute error function for specific outputs. Interchangable with TF MAE metric
-#   - rmse_for_output: Custom root mean squared error function for specific outputs. Interchangable with TF RMSE metric.
-#   - main: Orchestrates model construction, compilation, and training using specified parameters and datasets.
-#   - resize_preprocess: Resizes images to a specified height and width.
-#   - normalize_channels: Normalizes data channels within the input array.
+#       - mae_for_output: Custom mean absolute error function for specific outputs. Interchangable 
+#         with TF MAE metric
+#       - rmse_for_output: Custom root mean squared error function for specific outputs. 
+#         Interchangable with TF RMSE metric.
+#       - main: Orchestrates model construction, compilation, and training using specified 
+#         parameters and datasets.
+#       - resize_preprocess: Resizes images to a specified height and width.
+#       - normalize_channels: Normalizes data channels within the input array.
 #
-# USAGE: Define the model's layer configurations and loss functions (see line 161), set the dataset paths (see line 103), and run the script. 
-#        The model architecture (see line 161) can be adjusted by modifying the parameters for convolutional and dense layers.
+# USAGE: Users need to modify the main call with proper paths and parameters before running 
 #
-# AUTHOR: Minh Khanh Luong
-# CREATED DATE: May 14 2024
+# HIST: - May 14, 2024: created by Khanh Luong
+#       - May 18, 2024: cross-checked and cleaned up by CK
 #
+# AUTH: Minh Khanh Luong
 #==============================================================================================
-
-mode = 'PMIN'
-end_model_name = 'PMIN_retrieval_model'
-
-#==============================================================================================
-# Import libs
-#==============================================================================================
-
 import tensorflow as tf
 import numpy as np
 import time
@@ -46,11 +46,18 @@ import sys
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import TensorBoard
+#
+# Edit the parameters properly before running this script
+#
+workdir = '/N/project/Typhoon-deep-learning/output/'
+var_num = 13
+windowsize = [20,20]
+mode = 'PMIN'
 
-#==============================================================================================
+#####################################################################################
+# DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
+#####################################################################################
 # Defining metrics
-#==============================================================================================
-
 def mae_for_output(index):
     # Mean absolute error, Interchangable with Tensorflow's MAE metrics but can work with multiple outputs.
     def mae(y_true, y_pred):
@@ -78,7 +85,6 @@ def resize_preprocess(image, HEIGHT, WIDTH, method):
 # NOTE: normalize only features, not labels (althought requires labels as input)
 # NOTE: normalize by sample, not batch normalization.
 #==============================================================================================
-
 def normalize_channels(X,y):
     """
     Normalizes each channel in each sample individually.
@@ -100,33 +106,8 @@ def normalize_channels(X,y):
     return X,y
 
 #==============================================================================================
-# Reading data
-#==============================================================================================
-
-root='/N/slate/kmluong/Training_data/Split/'
-X = np.load(root+'data/train13x.npy')
-X=np.transpose(X, (0, 2, 3, 1))  
-
-if mode=='VMAX':
-  b=0
-if mode=='PMIN':
-  b=1
-if mode=='RMW':
-  b=2
-
-y = np.load(root+'data/train13y.npy')[:,b]
-x_train,y_train = normalize_channels(X,y)
-x_train=resize_preprocess(x_train, 64,64, 'lanczos5')
-number_channels=X.shape[3]
-
-print('Input shape of the X features data: ',X.shape)
-print('Input shape of the y label data: ',y.shape)
-print('Number of input channel extracted from X is: ',number_channels)
-
-#==============================================================================================
 # Defining custom learning rate
 #==============================================================================================
-
 def lr_scheduler(epoch, lr):
     """
     Adjusts the learning rate based on the current training epoch.
@@ -156,18 +137,14 @@ def lr_scheduler(epoch, lr):
     # Multiply the new learning rate by the base learning rate
     return lr * lr0
 
-
 #==============================================================================================
 # Model
 #==============================================================================================
-
-def main(X, y, loss='huber', activ='relu'):
+def main(X, y, loss='huber', activ='relu', NAME='best_model'):
     data_augmentation = keras.Sequential([
         layers.RandomRotation(0.1),
         layers.RandomZoom(0.2)
     ])
-
-    NAME = root + 'model/' + end_model_name
     print('--> Running configuration: ', NAME)
 
     inputs = keras.Input(shape=X.shape[1:])
@@ -206,8 +183,29 @@ def main(X, y, loss='huber', activ='relu'):
 
     history = model.fit(X, y, batch_size=128, epochs=1000, validation_split=2/9, verbose=2, callbacks=callbacks)
     return history
-#==============================================================================================
-# Execution
-#==============================================================================================
 
-history = main(X=x_train, y=y_train)
+#==============================================================================================
+# MAIN CALL:
+#==============================================================================================
+windows = str(windowsize[0])+'x'+str(windowsize[1])
+root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/'
+best_model_name = root + '/model_PMIN'+str(var_num)+'_'+windows
+X = np.load(root+'/train'+str(var_num)+'x_'+windows+'.npy')
+X=np.transpose(X, (0, 2, 3, 1))
+
+if mode=='VMAX':
+  b=0
+if mode=='PMIN':
+  b=1
+if mode=='RMW':
+  b=2
+y = np.load(root+'/train'+str(var_num)+'y_'+windows+'.npy')[:,b]
+x_train,y_train = normalize_channels(X,y)
+x_train=resize_preprocess(x_train, 64,64, 'lanczos5')
+number_channels=X.shape[3]
+
+print('Input shape of the X features data: ',X.shape)
+print('Input shape of the y label data: ',y.shape)
+print('Number of input channel extracted from X is: ',number_channels)
+
+history = main(X=x_train, y=y_train, NAME=best_model_name)

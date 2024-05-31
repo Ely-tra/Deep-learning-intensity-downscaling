@@ -1,28 +1,45 @@
 #
-# NOTE: This script is to read in MERRA dataset and produces a domain selection
-#       around TC center from the best track data set. The domain will have a 
-#       fixed size, and incorporate the TC information as global attribute
+# DESCRIPTION: This script is to read in MERRA dataset and produces a domain selection
+#       around TC center from the best track data set. The domain will have a
+#       fixed size, and incorporate the TC information as global attribute. This
+#       script will produce output data centered on the best track data with a
+#       given domain size, with the same as, e.g., "MERRA_TC30x302021090818_4.nc"
 #
-# 
-# HIST: Jan 26, 2024: created by Khanh Luong
+#       Because there may have more than 1 storm each time, the prefix "_n.nc" in
+#       each file name is needed to indicate different storms at each time. 
+#
+# HIST: - Jan 26, 2024: created by Khanh Luong
+#       - May 14, 2024: cross-checked and cleaned up by CK
+#
+# USAGE: please edit the data paths and parameters under right below before running
+#
+# NOTE: This script will produce some error messages related to cfgrib and eccodes
+#       libraries. However, it still runs properly as can be checked from the output
+#       location.
 #
 # AUTH: Khanh Luong (kmluong@iu.edu)
-#
 #====================================================================================
-
 import warnings
-
-# Suppress all warnings
-warnings.filterwarnings("ignore")
-
+warnings.filterwarnings("ignore") # Suppress all warnings
 import os
 import pandas as pd
 import numpy as np
-import xarray as xr            #use xarray because it is far more better than netCDF4 
-from datetime import datetime  #Use datetime to name the output files
+import xarray as xr               # use xarray as it is better than netCDF4 
+from datetime import datetime     # Use datetime to name the output files
 from timeit import default_timer as timer
+#
+# Users need to edit input data paths for both reanlysis
+# and best track data, and an output data path here.
+#
+datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2-full/'
+workdir='/N/project/Typhoon-deep-learning/output/'
+csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
+windowsize=[20,20]
+regions=['EP', 'NA', 'WP']
 
-#####################################
+#####################################################################################
+# DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
+#####################################################################################
 def process_entries(per):
     """
     Print progress information based on the count and specified interval.
@@ -52,10 +69,7 @@ def process_entries(per):
         starttime = timer()
         print(f'Time left: {estimate:.2f}', flush=True)
 
-
-
 #####################################
-
 def get_runid(formatted_time, datapath=''):
     """
     Convert formatted_time to a numeric representation (assuming it's a date in YYYYMMDD format)
@@ -94,8 +108,6 @@ def get_runid(formatted_time, datapath=''):
     else:
         return 400  # Return None if the date doesn't fall into any defined range
 
-
-
 ######################################
 def process_years(years, df):
     """
@@ -121,7 +133,6 @@ def process_years(years, df):
 
 
 #######################################
-
 def process_name(names, df):
     """
     Process the 'NAME' column in the DataFrame based on the provided names.
@@ -142,10 +153,7 @@ def process_name(names, df):
             df = df[df['NAME'] == names]  # Filter the DataFrame by a single name
     return df
 
-
 #########################################
-
-
 def trim_area(df, maxlat, minlat, maxlon, minlon):
     """
     Trim the DataFrame based on specified latitude and longitude bounds.
@@ -168,8 +176,6 @@ def trim_area(df, maxlat, minlat, maxlon, minlon):
 
 
 #########################################
-
-
 def process_regions(regions, df):
     """
     Filter the DataFrame based on specified regions in the 'BASIN' column.
@@ -191,8 +197,6 @@ def process_regions(regions, df):
     return df
 
 #########################################
-
-
 def trim_wind_range(df, maxwind, minwind):
     """
     Trim the DataFrame based on specified maximum and minimum wind speeds.
@@ -212,8 +216,6 @@ def trim_wind_range(df, maxwind, minwind):
     return df
 
 #########################################
-
-
 def trim_pressure_range(df, maxpres, minpres):
     """
     Trim the DataFrame based on specified maximum and minimum pressure values.
@@ -232,10 +234,7 @@ def trim_pressure_range(df, maxpres, minpres):
         df = df[(df['WMO_PRES'] <= maxpres) & (df['WMO_PRES'] >= minpres)]
     return df
 
-
 #########################################
-
-
 def trim_rmw_range(df, maxrmw, minrmw):
     """
     Trim the DataFrame based on specified maximum and minimum Radius of Maximum Wind values.
@@ -255,11 +254,9 @@ def trim_rmw_range(df, maxrmw, minrmw):
     return df
 
 #########################################
-
-
 def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, minlon = -180.0, maxlon = 180.0,
                regions='', maxwind=10000, minwind=0, maxpres=10000, minpres=0, maxrmw=10000, minrmw=0, windowsize=[18,18],
-               datapath='', completed=0): 
+               datapath='', completed=0, outputpath=''): 
     """
     Merge two datasets of tropical cyclones, create a window for a TC domain with additional attributes, and write to files.
 
@@ -282,6 +279,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
         minrmw (int): Minimum USA RMW. Default is 0.
         windowsize (tuple): The intended output window around the TC center. Default is (18, 18), lat, lon.
         datapath (str): Path to the data. Default is ''.
+        outputpath (str): Path to the output. Default is ''.
 
     Returns:
         None
@@ -293,8 +291,9 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
         - Center Latitude (float): Latitude of the TC center.
         - Center Longitude (float): Longitude of the TC center.
     """
-    #############################################################################
+    # 
     # read CSV data and process the datatype, selecting only TC with defined characteristics
+    #
     selected_columns = ["SEASON", "BASIN", "NAME", "LAT", 
                         "LON", "ISO_TIME", "WMO_WIND", 
                         "WMO_PRES", "USA_RMW"]                          # define the important columns, some for search bar, some for interest
@@ -316,9 +315,9 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
     filtered_df = trim_pressure_range(filtered_df, maxpres=maxpres, minpres=minpres)
     filtered_df = trim_rmw_range(filtered_df, maxrmw=maxrmw, minrmw=minrmw)
     filtered_df = filtered_df.sort_values('ISO_TIME')
-
-    ###############################################################################
+    #
     # Initiate counter value
+    #
     global count
     count = 0
     global starttime
@@ -337,8 +336,9 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
     latsize = int(np.ceil((np.ceil(windowsize[0]/0.5)+1)/2))  # change 0.625 and 0.5 for other dataset
     lonsize = int(np.ceil((np.ceil(windowsize[1]/0.625)+1)/2))
     filtered_df['LON'] = filtered_df['LON'] - 360*np.logical_and(filtered_df['BASIN'].isin(['EP','SP']), filtered_df['LON'] > 0)
-    ################################################################################
+    #
     # Loop through filtered data
+    #
     for index, row in filtered_df.iterrows():
         window_df = row
         time = row['ISO_TIME']
@@ -350,8 +350,9 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
         if count < completed:
             count += 1
             continue
-        ################################################################################
+        #
         # Filter out data with unregistered time
+        # 
         formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H')  # take YYYYMMDDHH format to build filename 
         if datetime.strptime(time, '%Y-%m-%d %H:%M:%S').minute != 0:
             print('Faulty entry ' + time + ' unexpected minute.', flush=True)
@@ -368,8 +369,9 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
             faulty += 1
             process_entries(round(entries * 0.01 / 100) * 100)
             pass
-        #################################################################################
+        #
         # Ensure the windows are of the same size, deal with antimeridian data
+        #
         else:
             gblat = (window_df['LAT'] + 90) // 0.5
             lower_index_lat = int(gblat - latsize + 1)
@@ -399,8 +401,9 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
                 window = window.roll(lon=-lower_index_lon)
             else:
                 window = window.isel(lat=slice(lower_index_lat, upper_index_lat), lon=slice(lower_index_lon, upper_index_lon))
-            ##################################################################################
+            #
             # assign attrs and print out
+            #
             window = window.assign_attrs(VMAX=window_df['WMO_WIND'], 
                                          PMIN=window_df['WMO_PRES'], 
                                          RMW=window_df['USA_RMW'], 
@@ -410,7 +413,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
                                          # assign new attributes, Max wind speed, Min pressure and radius of maximum wind
             formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H')  # take YYYYMMDDHH format to build filename
             basin = window_df['BASIN']
-            outname = '/N/slate/kmluong/'
+            outname = outputpath
             outname = outname + 'TC_domain/' + basin 
             if not os.path.exists(outname):
                 os.makedirs(outname)
@@ -425,10 +428,10 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
     print('Total: ' + str(entries) + ' entries processed.', flush=True)
     print('With ' + str(faulty) + ' faulty entries.', flush=True)
     print('Generated ' + str(count) + ' windows.', flush=True)
-
-datapath='/N/u/tqluu/BigRed200/@PUBLIC/nasa-merra2-full/'
-csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-merge_data(csvdataset, regions=['EP', 'NA', 'WP'],windowsize=[30,30], datapath=datapath)
+#
+# MAIN CALL: 
+#
+merge_data(csvdataset,regions=regions,windowsize=windowsize,datapath=datapath,outputpath=workdir)
 #For processing faulty window size, use minlon=171-0.625*3 and maxlon=-171+0.625*3 >>>max-windowsize+3gridsize<<<
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple) default [18,18], datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            

@@ -1,6 +1,29 @@
+#
+# DESCRIPTION: This script is to split the input data after fixing NaN and selecting
+#       specific variables into a training and test dataset. It requires data from
+#       Step 3(or 4) that is in the Numpy format with both features and labels. 
+#
+# HIST: - May 16, 2024: created by Khanh Luong
+#       - May 18, 2024: cross-checked and cleaned up by CK
+#
+# USAGE: edit the main call with proper paths and parameters before running this script
+#
+# AUTH: Khanh Luong (kmluong@iu.edu)
+#====================================================================================
 import numpy as np
+import os
 from sklearn.utils import shuffle
+#
+# Set the path and parameters before running this script to split the data
+#
+workdir = '/N/project/Typhoon-deep-learning/output'
+windowsize = [20,20]
+split_ratio = 10
+var_num = 13
 
+#####################################################################################
+# DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
+#####################################################################################
 def split_data(features, labels, test_percentage=10):
     """
     Shuffle and split the data into training and testing datasets.
@@ -30,22 +53,27 @@ def split_data(features, labels, test_percentage=10):
     train_labels = labels[split_idx:]
 
     return train_features, train_labels, test_features, test_labels
-
-# Set the path to the data
-data_directory = '/N/slate/kmluong/Training_data/'
-feature_file = 'CNNfeatures13.25x25fixed.npy'
-label_file = 'CNNlabels13.25x25.npy'
+#
+# MAIN CALL: 
+#
+windows = str(windowsize[0])+'x'+str(windowsize[1])
+data_directory = workdir+'/exp_'+str(var_num)+'features_'+windows+'/'
+feature_file = 'CNNfeatures'+str(var_num)+'_'+windows+'fixed.npy'
+label_file = 'CNNlabels'+str(var_num)+'_'+windows+'.npy'
+if not os.path.exists(data_directory):
+    print("Must have the input data by now....exit",data_directory)
+    exit
 
 # Load the data
 features = np.load(data_directory + feature_file)
 labels = np.load(data_directory + label_file)
 
 # Split the data
-train_features, train_labels, test_features, test_labels = split_data(features, labels, test_percentage=10)
+train_features, train_labels, test_features, test_labels = split_data(features, labels, test_percentage=split_ratio)
 
 # Save the split data
-np.save(data_directory + 'Split/data/train13x.25x25.npy', train_features)
-np.save(data_directory + 'Split/data/test13x.25x25.npy', test_features)
-np.save(data_directory + 'Split/data/train13y.25x25.npy', train_labels)
-np.save(data_directory + 'Split/data/test13y.25x25.npy', test_labels)
+np.save(data_directory + 'train'+str(var_num)+'x_'+windows+'.npy', train_features)
+np.save(data_directory + 'test'+str(var_num)+'x_'+windows+'.npy', test_features)
+np.save(data_directory + 'train'+str(var_num)+'y_'+windows+'.npy', train_labels)
+np.save(data_directory + 'test'+str(var_num)+'y_'+windows+'.npy', test_labels)
 
