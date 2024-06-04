@@ -43,11 +43,17 @@ import math
 # Edit the input data path and parameters before running this script.
 # Note that all output will be stored under the same exp name.
 #
-inputpath='/N/project/Typhoon-deep-learning/output/TC_domain/'
-workdir='/N/project/Typhoon-deep-learning/output/'
-windowsize=[20,20]
+inputpath='/N/slate/kmluong/TC-net-cnn_workdir/TC_domain/'
+workdir='/N/slate/kmluong/TC-net-cnn_workdir/TC_domain_data/'
+windowsize=[25,25]
 var_num = 13
 print('Initiation completed.', flush=True)
+
+# 
+# Rewrite the whole dataset if it's processed before?
+#
+
+force_rewrite = True 
 
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
@@ -146,6 +152,23 @@ outputpath = workdir+'/exp_'+str(var_num)+'features_'+str(windowsize[0])+'x'+str
 if not os.path.exists(inputpath):
     print("Must have the input data from Step 1 by now....exit",inputpath)
     exit
+
+for entry in os.scandir(outputpath):
+    if entry.is_file():  # Check for any file entry
+        print(f"Output directory '{outputpath}' is not empty. Data is processed before.", flush = True)
+        second_check = True
+        break  # Exit loop after finding a file
+    else:
+        second_check = False
+        continue
+if second_check:
+    if force_rewrite:
+        print('Force rewrite is True, rewriting the whole dataset.', flush = True)
+    else:
+        print('Will use the processed dataset, terminating this step.', flush = True)
+        exit()
+    
+
 outname=['CNNfeatures'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
          'CNNlabels'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1])]
 dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, 
