@@ -106,7 +106,7 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
         # Check for NaN percentage within the first level (which is 850mb)
         #
         if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
-            print(data_array_x[0].shape, np.sum(np.isnan(data_array_x[0:4])), 
+            #print(data_array_x[0].shape, np.sum(np.isnan(data_array_x[0:4])), 
                   np.sum(np.isnan(data_array_x[0][12:51,10:41])), flush=True)
             i+=1
             #print(filename + ' omitted', flush=True)
