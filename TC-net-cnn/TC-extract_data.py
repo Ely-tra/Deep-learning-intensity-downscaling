@@ -44,7 +44,7 @@ import math
 # Note that all output will be stored under the same exp name.
 #
 inputpath='/N/slate/kmluong/TC-net-cnn_workdir/TC_domain/'
-workdir='/N/slate/kmluong/TC-net-cnn_workdir/TC_domain_data/'
+workdir='/N/slate/kmluong/TC-net-cnn_workdir/'
 windowsize=[25,25]
 var_num = 13
 print('Initiation completed.', flush=True)
@@ -107,7 +107,7 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
         #
         if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
             #print(data_array_x[0].shape, np.sum(np.isnan(data_array_x[0:4])), 
-                  np.sum(np.isnan(data_array_x[0][12:51,10:41])), flush=True)
+            #      np.sum(np.isnan(data_array_x[0][12:51,10:41])), flush=True)
             i+=1
             #print(filename + ' omitted', flush=True)
             omit+=1
