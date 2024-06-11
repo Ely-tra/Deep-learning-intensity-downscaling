@@ -44,7 +44,7 @@ import math
 # Note that all output will be stored under the same exp name.
 #
 inputpath='/N/slate/kmluong/TC-net-cnn_workdir/TC_domain/'
-workdir='/N/slate/kmluong/TC-net-cnn_workdir/'
+workdir='/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
 windowsize=[25,25]
 var_num = 13
 print('Initiation completed.', flush=True)
@@ -59,7 +59,7 @@ force_rewrite = True
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
 def dumping_data(root='', outdir='', outname=['features', 'labels'],
-                 regionize=True, omit_percent=5, windowsize=[18,18]):
+                 regionize=True, omit_percent=5, windowsize=[18,18], cold_start=False):
     """
     Select and convert data from NetCDF files to NumPy arrays.
 
@@ -100,11 +100,16 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
         # Choosing bands and level, data is taken from raw MERRA2 dataset, so the choice is not limited to atm level.
         #
         data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=850).to_array())
-        data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH', 'SLP']].sel(lev=950).to_array()), axis=0)
+        data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH']].sel(lev=950).to_array()), axis=0)
         data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH', 'SLP']].sel(lev=750).to_array()), axis=0)
         #
-        # Check for NaN percentage within the first level (which is 850mb)
+        # Check for NaN percentage within the first level (which is 850mb), set up for a cold start
         #
+        delete_if_exists = False
+        if cold_start and i == 0:
+            delete_if_exists = True
+        else:
+            delete_if_exists = False
         if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
             #print(data_array_x[0].shape, np.sum(np.isnan(data_array_x[0:4])), 
             #      np.sum(np.isnan(data_array_x[0][12:51,10:41])), flush=True)
@@ -132,11 +137,10 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
             addon = filename[len(root):len(root)+2]
         else:
             addon = ''
-
-        with NpyAppendArray(outdir + outname[0] + addon + '.npy', delete_if_exists=False) as npaax:
+        with NpyAppendArray(outdir + outname[0] + addon + '.npy', delete_if_exists=delete_if_exists) as npaax:
             npaax.append(data_array_x)
 
-        with NpyAppendArray(outdir + outname[1] + addon + '.npy', delete_if_exists=False) as npaay:
+        with NpyAppendArray(outdir + outname[1] + addon + '.npy', delete_if_exists=delete_if_exists) as npaay:
             npaay.append(data_array_y)
 
         i += 1
@@ -153,23 +157,27 @@ if not os.path.exists(inputpath):
     print("Must have the input data from Step 1 by now....exit",inputpath)
     exit
 
-for entry in os.scandir(outputpath):
-    if entry.is_file():  # Check for any file entry
-        print(f"Output directory '{outputpath}' is not empty. Data is processed before.", flush = True)
-        second_check = True
-        break  # Exit loop after finding a file
-    else:
-        second_check = False
-        continue
+second_check = False
+try:
+    for entry in os.scandir(outputpath):
+        if entry.is_file():  # Check for any file entry
+            print(f"Output directory '{outputpath}' is not empty. Data is processed before.", flush = True)
+            second_check = True
+            break  # Exit loop after finding a file
+        else:
+            second_check = False
+            continue
+except:
+    second_check = False
+
+
 if second_check:
     if force_rewrite:
         print('Force rewrite is True, rewriting the whole dataset.', flush = True)
     else:
         print('Will use the processed dataset, terminating this step.', flush = True)
-        exit()
-    
-
+        exit()    
 outname=['CNNfeatures'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
          'CNNlabels'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1])]
 dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, 
-             outname=outname, regionize=False)
+             outname=outname, regionize=False, cold_start = force_rewrite)
