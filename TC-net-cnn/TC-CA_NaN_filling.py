@@ -53,9 +53,9 @@ np.seterr(invalid='ignore')
 # Set input parameters and data path properly before running. All input and output
 # are stored under the same experiment name exp_{$channel}features_$windowsize
 #
-workdir='/N/project/Typhoon-deep-learning/output/'
+workdir='/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
 var_num = 13
-windowsize = [20,20]
+windowsize = [25,25]
 
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
@@ -292,7 +292,7 @@ def fix_data(file):
 windows = str(windowsize[0])+'x'+str(windowsize[1])
 root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/'
 for file in glob.iglob(root + '**/CNNfeatures'+str(var_num)+'_'+windows+'.npy', recursive=True):
-    print(file)
+    print("Filling ", file)
     if 'fixed' in file:
         continue
     fix_data(file)
