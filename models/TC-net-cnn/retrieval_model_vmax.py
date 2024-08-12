@@ -49,7 +49,7 @@ from tensorflow.keras.callbacks import TensorBoard
 #
 # Edit the parameters properly before running this script
 #
-workdir = '/N/project/Typhoon-deep-learning/output/'
+workdir = '/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
 var_num = 13
 windowsize = [25,25]
 mode = 'VMAX'
