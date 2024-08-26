@@ -43,6 +43,8 @@ CNNfeatures{number of channel used}AL.{domain size}fixed.npy
 
 Step 5: Execute TC-Split.py to generate separate training and testing datasets, configuring size and details within the script. Ensure proper file naming for manual setup in model building. Input: Features and labels files; Output: Training and testing sets in .npy format.
 
+For this step 5, if one wants to check for each season, use the script TC-Split_seasonal.py to generate (x,y) test data for each season (month)
+
 Step 6: Train models with prepared datasets using retrieval scripts. Refer to the script's last section for adjustments to model or data paths.
 
 Step 7 (optional): To evaluate model performance on a test set, execute the script TC-test_set.py and follow the provided instructions. Note that all test sets are named according to the convention test{number_of_channel}x/y.{domain_size}.npy.
