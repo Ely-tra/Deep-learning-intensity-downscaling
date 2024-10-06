@@ -41,6 +41,7 @@
 #==============================================================================================
 import tensorflow as tf
 import numpy as np
+import os
 import time
 import sys
 from tensorflow import keras
@@ -52,8 +53,11 @@ from tensorflow.keras.callbacks import TensorBoard
 workdir = '/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
 var_num = 13
 windowsize = [18,18]
-mode = 'RMW'
-
+mode = 'VMAX'
+if len(sys.argv) > 1:
+    xfold = int(sys.argv[1])
+else:
+    xfold = ''
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
@@ -75,6 +79,44 @@ def rmse_for_output(index):
 #==============================================================================================
 # Resize data into desired height and width. Input should be in form [height, width, channel].
 #==============================================================================================
+def load_data_excluding_fold(data_directory, xfold):
+    months = range(1, 13)  # Months labeled 1 to 12
+    k = 10  # Total number of folds
+
+    all_features = []
+    all_labels = []
+
+    # Loop over each fold
+    for fold in range(1, k+1):
+        if fold == xfold:
+            continue  # Skip the excluded fold
+
+        # Loop over each month
+        for month in months:
+            feature_filename = f'test_features_fold{fold}_18x18{month:02d}fixed.npy'
+            label_filename = f'test_labels_fold{fold}_18x18{month:02d}fixed.npy'
+            #print(f'Loading {feature_filename}')
+            # Construct full paths
+            feature_path = os.path.join(data_directory, feature_filename)
+            label_path = os.path.join(data_directory, label_filename)
+
+            # Check if files exist before loading
+            if os.path.exists(feature_path) and os.path.exists(label_path):
+                # Load the data
+                features = np.load(feature_path)
+                labels = np.load(label_path)
+
+                # Append to lists
+                all_features.append(features)
+                all_labels.append(labels)
+            else:
+                print(f"Warning: Files not found for fold {fold} and month {month}")
+
+    # Concatenate all loaded data into single arrays
+    all_features = np.concatenate(all_features, axis=0)
+    all_labels = np.concatenate(all_labels, axis=0)
+
+    return all_features, all_labels
 
 def resize_preprocess(image, HEIGHT, WIDTH, method):
     image = tf.image.resize(image, (HEIGHT, WIDTH), method=method)
@@ -140,7 +182,7 @@ def lr_scheduler(epoch, lr):
 #==============================================================================================
 # Model
 #==============================================================================================
-def main(X, y, loss='huber', activ='relu', NAME='best_model'):
+def main(X, y, loss=tf.keras.losses.LogCosh(), activ='relu', NAME='best_model'):
     data_augmentation = keras.Sequential([
         layers.RandomRotation(0.1),
         layers.RandomZoom(0.2)
@@ -149,20 +191,19 @@ def main(X, y, loss='huber', activ='relu', NAME='best_model'):
 
     inputs = keras.Input(shape=X.shape[1:])
     x = data_augmentation(inputs)
-    x = layers.Conv2D(filters=128, kernel_size=15, padding='same', activation=activ, name="my_conv2d_11")(x)
+    x = layers.Conv2D(filters=32, kernel_size=7, padding='same', activation=activ, name="my_conv2d_11")(x)
     x = layers.MaxPooling2D(pool_size=2, name="my_pooling_1")(x)
     x = layers.BatchNormalization()(x)
-    x = layers.Conv2D(filters=64, kernel_size=15, padding='same', activation=activ, name="my_conv2d_2")(x)
+    x = layers.Conv2D(filters=64, kernel_size=7, padding='same', activation=activ, name="my_conv2d_2")(x)
     x = layers.MaxPooling2D(pool_size=2, name="my_pooling_2")(x)
     x = layers.BatchNormalization()(x)
-    x = layers.Conv2D(filters=256, kernel_size=9, padding='same', activation=activ, name="my_conv2d_3")(x)
+    x = layers.Conv2D(filters=128, kernel_size=7, padding='same', activation=activ, name="my_conv2d_3")(x)
     x = layers.MaxPooling2D(pool_size=2, name="my_pooling_3")(x)
-    x = layers.Conv2D(filters=512, kernel_size=5, padding='same', activation=activ, name="my_conv2d_4")(x)
-    x = layers.Conv2D(filters=512, kernel_size=5, padding='valid', activation=activ, name="my_conv2d_5")(x)
+    x = layers.Conv2D(filters=256, kernel_size=7, padding='same', activation=activ, name="my_conv2d_4")(x)
+    x = layers.Conv2D(filters=512, kernel_size=7, padding='valid', activation=activ, name="my_conv2d_5")(x)
     x = layers.BatchNormalization()(x)
     x = layers.Flatten(name="my_flatten")(x)
     x = layers.Dropout(0.4)(x)
-
     for _ in range(2):
         x = layers.Dense(512 - _ * 200, activation=activ)(x)
 
@@ -181,16 +222,18 @@ def main(X, y, loss='huber', activ='relu', NAME='best_model'):
         metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
     )
 
-    history = model.fit(X, y, batch_size=128, epochs=1000, validation_split=2/9, verbose=2, callbacks=callbacks)
+    history = model.fit(X, y, batch_size=128, epochs=1000, validation_split=2/9, verbose=0, callbacks=callbacks)
     return history
 
 #==============================================================================================
 # MAIN CALL:
 #==============================================================================================
 windows = str(windowsize[0])+'x'+str(windowsize[1])
-root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/'
-best_model_name = root + '/model_'+mode+str(var_num)+'_'+windows+'v1'
-X = np.load(root+'/train'+str(var_num)+'x_'+windows+'.npy')
+root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/kfold/'
+best_model_name = root + '/model_VMAX'+str(var_num)+'_'+windows + f'fold{xfold}'
+print(best_model_name)
+X, y = load_data_excluding_fold(root, xfold)
+y=y[:,0]
 X=np.transpose(X, (0, 2, 3, 1))
 
 if mode=='VMAX':
@@ -199,11 +242,10 @@ if mode=='PMIN':
   b=1
 if mode=='RMW':
   b=2
-y = np.load(root+'/train'+str(var_num)+'y_'+windows+'.npy')[:,b]
 x_train,y_train = normalize_channels(X,y)
 x_train=resize_preprocess(x_train, 64,64, 'lanczos5')
 number_channels=X.shape[3]
-
+#print(np.max(x_train))
 print('Input shape of the X features data: ',X.shape)
 print('Input shape of the y label data: ',y.shape)
 print('Number of input channel extracted from X is: ',number_channels)

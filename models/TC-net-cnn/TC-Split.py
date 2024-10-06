@@ -16,8 +16,8 @@ from sklearn.utils import shuffle
 #
 # Set the path and parameters before running this script to split the data
 #
-workdir = '/N/project/Typhoon-deep-learning/output'
-windowsize = [25,25]
+workdir = '/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
+windowsize = [18,18]
 split_ratio = 10
 var_num = 13
 

@@ -9,15 +9,17 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from keras import backend as K
+from matplotlib.lines import Line2D
 #
 # Define parameters and data path. Note that x_size is the input data size. By default
 # is (64x64) after resized for windowsize < 26x26. For a larger windown size, set it
 # to 128.
 #
-workdir = "/N/project/Typhoon-deep-learning/output/"
+workdir = '/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
+var_num = 13
 windowsize = [25,25]
+mode = 'PMIN'
 x_size = 64
-mode = "PMIN"
 exp_name = "exp_13features_" + str(windowsize[0])+'x'+str(windowsize[1])
 model_name = "model_"+mode+"13_" + str(windowsize[0])+'x'+str(windowsize[1])
 directory = workdir + exp_name
@@ -117,21 +119,41 @@ datadict[name + 'rmse'] = root_mean_squared_error(predict, y)
 datadict[name + 'MAE'] = MAE(predict, y)
 datadict[name] = predict
 
-# Visualization
+
 fig, axs = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={'width_ratios': [1.2, 1]})
-plt.suptitle(name + ' RMSE ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' MAE ' + str("{:.2f}".format(datadict[name + 'MAE'])))
-axs[0].boxplot([datadict[name].reshape(-1), y], labels=['Predicted', 'Truth'])
-axs[0].set_title(t)
-axs[0].set_ylabel(u)
+axs[0].boxplot([datadict[name].reshape(-1), y])
 axs[0].grid(True)
+axs[0].set_ylabel('Milibars', fontsize=20)
+axs[0].text(0.95, 0.05, '(a)', transform=axs[0].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
+            bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
+axs[0].tick_params(axis='both', which='major', labelsize=14)
+axs[0].set_xticklabels(['Predicted', 'Truth'], fontsize=20)
+
+
+# Second subplot
 axs[1].scatter(y, datadict[name].reshape(-1))
 axs[1].grid()
-axs[1].set_xlabel('Truth')
-axs[1].set_ylabel('Prediction')
-axs[1].plot(np.arange(y.min(), y.max()), np.arange(y.min(), y.max()), 'r-', alpha=0.8)
-axs[1].fill_between(np.arange(y.min(), y.max()), np.arange(y.min(), y.max()) + datadict[name + 'MAE'], np.arange(y.min(), y.max()) - datadict[name + 'MAE'], color='red', alpha=0.3, label='MAE')
-axs[1].legend()
+axs[1].set_xlabel('Truth', fontsize=20)
+axs[1].set_ylabel('Prediction', fontsize=20)
+axs[1].text(0.95, 0.05, '(b)', transform=axs[1].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
+            bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
+axs[1].plot(np.arange(min(y), max(y)), np.arange(min(y), max(y)), 'r-', alpha=0.8)
+mae = datadict[name+'MAE']
+rmse = datadict[name+'rmse']
+axs[1].fill_between(np.arange(min(y), max(y)), np.arange(min(y), max(y)) + mae, np.arange(min(y), max(y)) - mae, color='red', alpha=0.3)
+axs[1].tick_params(axis='both', which='major', labelsize=14)
+
+# Legends with RMSE and MAE without markers
+custom_lines = [
+                Line2D([0], [0], color='red', lw=4, alpha=0.3),
+                Line2D([0], [0], color='none', marker='', label=f'RMSE: {rmse:.2f}'),
+                Line2D([0], [0], color='none', marker='', label=f'MAE: {mae:.2f}')]
+
+axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
+
 plt.savefig(directory + '/fig_' + str(name) + '.png')
 print(f'Saved the result as Model:{name}.png')
 print('RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE'])))
 print('Completed!')
+                                                                             
+

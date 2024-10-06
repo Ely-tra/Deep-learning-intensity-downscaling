@@ -63,6 +63,14 @@ def cold_delete(filepath):
         print("You do not have permission to remove the file.")
     except Exception as e:
         print(f"An error occurred: {e}")
+def get_file_year_and_month(filename, id1):
+    position = filename.find(id1)
+    if position != -1:
+        filedate = filename[position + len(id1): position + len(id1) + 8]
+        #print(filedate)
+        year = int(filedate[:4])
+        month = int(filedate[4:6])
+        return year, month
 def check_date_within_range(date_str):
     # Convert string to date object
     date = datetime.strptime(date_str, '%Y%m%d')

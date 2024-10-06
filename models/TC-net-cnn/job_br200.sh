@@ -12,10 +12,10 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn
 #python TC-extract_data.py
 #python TC-CA_NaN_filling.py
 #python TC-Split.py
-python retrieval_model_vmax.py
-#python retrieval_model_pmin.py
-#python retrieval_model_rmw.py
-python test_plot_vmax.py
+#python retrieval_model_vmax_18x18_v2.py
+python retrieval_model_pmin.py
+python retrieval_model_rmw.py
+#python test_plot_vmax.py
 #python test_plot_pmin.py
 #python test_plot_rmw.py
 

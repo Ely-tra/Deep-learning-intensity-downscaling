@@ -51,8 +51,8 @@ from tensorflow.keras.callbacks import TensorBoard
 #
 workdir = '/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
 var_num = 13
-windowsize = [18,18]
-mode = 'RMW'
+windowsize = [30,30]
+mode = 'PMIN'
 
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
@@ -149,16 +149,16 @@ def main(X, y, loss='huber', activ='relu', NAME='best_model'):
 
     inputs = keras.Input(shape=X.shape[1:])
     x = data_augmentation(inputs)
-    x = layers.Conv2D(filters=128, kernel_size=15, padding='same', activation=activ, name="my_conv2d_11")(x)
+    x = layers.Conv2D(filters=32, kernel_size=7, padding='same', activation=activ, name="my_conv2d_11")(x)
     x = layers.MaxPooling2D(pool_size=2, name="my_pooling_1")(x)
     x = layers.BatchNormalization()(x)
-    x = layers.Conv2D(filters=64, kernel_size=15, padding='same', activation=activ, name="my_conv2d_2")(x)
+    x = layers.Conv2D(filters=64, kernel_size=7, padding='same', activation=activ, name="my_conv2d_2")(x)
     x = layers.MaxPooling2D(pool_size=2, name="my_pooling_2")(x)
     x = layers.BatchNormalization()(x)
-    x = layers.Conv2D(filters=256, kernel_size=9, padding='same', activation=activ, name="my_conv2d_3")(x)
+    x = layers.Conv2D(filters=128, kernel_size=7, padding='same', activation=activ, name="my_conv2d_3")(x)
     x = layers.MaxPooling2D(pool_size=2, name="my_pooling_3")(x)
-    x = layers.Conv2D(filters=512, kernel_size=5, padding='same', activation=activ, name="my_conv2d_4")(x)
-    x = layers.Conv2D(filters=512, kernel_size=5, padding='valid', activation=activ, name="my_conv2d_5")(x)
+    x = layers.Conv2D(filters=256, kernel_size=7, padding='same', activation=activ, name="my_conv2d_4")(x)
+    x = layers.Conv2D(filters=512, kernel_size=7, padding='valid', activation=activ, name="my_conv2d_5")(x)
     x = layers.BatchNormalization()(x)
     x = layers.Flatten(name="my_flatten")(x)
     x = layers.Dropout(0.4)(x)
@@ -189,7 +189,7 @@ def main(X, y, loss='huber', activ='relu', NAME='best_model'):
 #==============================================================================================
 windows = str(windowsize[0])+'x'+str(windowsize[1])
 root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/'
-best_model_name = root + '/model_'+mode+str(var_num)+'_'+windows+'v1'
+best_model_name = root + '/model_'+mode+str(var_num)+'_'+windows
 X = np.load(root+'/train'+str(var_num)+'x_'+windows+'.npy')
 X=np.transpose(X, (0, 2, 3, 1))
 
