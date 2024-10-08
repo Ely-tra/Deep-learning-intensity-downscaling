@@ -44,7 +44,7 @@ from datetime import datetime
 # Note that all output will be stored under the same exp name.
 #
 inputpath='/N/slate/kmluong/TC-net-cnn_workdir/TC_domain/'
-workdir='/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
+workdir='/N/slate/kmluong/TC-net-ViT_workdir/Domain_data/'
 windowsize=[18,18]
 var_num = 13
 force_rewrite = True    # overwrite previous dataset option
@@ -53,6 +53,30 @@ print('Initiation completed.', flush=True)
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
+def convert_date_to_cyclic(date_str):
+    """
+    Convert a date in 'YYYYMMDD' format to a cyclic representation using sine and cosine.
+    
+    Args:
+    date_str (str): Date string in 'YYYYMMDD' format.
+    
+    Returns:
+    tuple: A tuple containing the sine and cosine representations of the day of the year.
+    """
+    # Parse the date string to datetime object
+    date = datetime.strptime(date_str, "%Y%m%d")
+    
+    # Calculate the day of the year
+    day_of_year = date.timetuple().tm_yday
+    
+    # Number of days in the year (handling leap years)
+    days_in_year = 366 if date.year % 4 == 0 and (date.year % 100 != 0 or date.year % 400 == 0) else 365
+    
+    # Convert to cyclic
+    sin_component = np.sin(2 * np.pi * day_of_year / days_in_year)
+    cos_component = np.cos(2 * np.pi * day_of_year / days_in_year)
+    
+    return sin_component, cos_component
 def cold_delete(filepath):
     try:
         os.remove(filepath)
@@ -120,6 +144,7 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
                 month_str = f"{m:02d}"
                 cold_delete(outdir + outname[0] + month_str + '.npy')
                 cold_delete(outdir + outname[1] + month_str + '.npy')
+                cold_delete(outdir + outname[2] + month_str + '.npy')
         data = xr.open_dataset(filename)
         data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=850).to_array())
         data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH']].sel(lev=950).to_array()), axis=0)
@@ -129,16 +154,19 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
             i += 1
             omit += 1
             continue
-        
+        sin_day, cos_day = convert_date_to_cyclic(filedate)
         data_array_x = data_array_x.reshape([1, data_array_x.shape[0], data_array_x.shape[1], data_array_x.shape[2]])
+        data_array_z = np.array([sin_day, cos_day, data.CLAT, data.CLON]) #day in year to sincos, central lat lon
         data_array_y = np.array([data.VMAX, data.PMIN, data.RMW])  # knots, mb, nmile
+        data_array_z = data_array_z.reshape([1, data_array_z.shape[0]])
         data_array_y = data_array_y.reshape([1, data_array_y.shape[0]])
 
         with NpyAppendArray(outdir + outname[0] + month + '.npy') as npaax:
             npaax.append(data_array_x)
         with NpyAppendArray(outdir + outname[1] + month + '.npy') as npaay:
             npaay.append(data_array_y)
-        
+        with NpyAppendArray(outdir + outname[2] + month + '.npy') as npaay:
+            npaay.append(data_array_z)
         i += 1
         if i % 1000 == 0:
             print(str(i) + ' dataset processed.', flush=True)
@@ -148,7 +176,7 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
     print('With ' + str(omit) + ' dataset omitted due to NaNs.', flush=True)
 
 # MAIN CALL:
-outputpath = workdir + '/exp_' + str(var_num) + 'features_' + str(windowsize[0]) + 'x' + str(windowsize[1]) + '/monthly/' 
+outputpath = workdir + '/exp_' + str(var_num) + 'features_' + str(windowsize[0]) + 'x' + str(windowsize[1]) 
 if not os.path.exists(inputpath):
     print("Must have the input data from Step 1 by now....exit", inputpath)
     exit
@@ -169,6 +197,7 @@ if second_check:
         print('Will use the processed dataset, terminating this step.', flush=True)
         exit()
 outname=['CNNfeatures'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
-         'CNNlabels'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1])]
+         'CNNlabels'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
+         'CNNspace_time_info'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1])]
 dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, 
              outname=outname, cold_start = force_rewrite)
