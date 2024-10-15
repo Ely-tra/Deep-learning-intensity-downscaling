@@ -20,29 +20,22 @@ For example, the file NA/2001/MERRA_TC18x182001010112_4 corresponds to one (the 
 If any pathway related problem arises, it is from MERRA2TC_domain.py.
 ============
 
-Step 2: Use TC-extract_data_TSU.py to extract wind field, temperature, and humidity from Step 1 outputs, saving as numpy files following the established naming convention. Input: Step 1 outputs; Output: Numpy savefiles with matching dimensions.
+Step 2: Use TC-extract_data_TSU.py to extract wind field, temperature, and humidity from the Step 1 outputs, along with the label files containing TC intensity information and another space-time file that includes the location of the TC center and the day of the year in the form of sines and cosines, indicating when the frame is taken. Files are separeted into months. Save the extracted data as NumPy files following the established naming convention.
 
+Input: Step 1 outputs
+Output: NumPy save files with matching dimensions
 === NOTE ===
 Naming convention: CNNfeatures{number of channel used}{basin}.{domain size}{month}.npy
 ============
 
-Step 3: Apply TC-CA_NaN_filling.py to eliminate NaN values from datasets, ensuring compatibility with subsequent modeling scripts. Input: Step 2 outputs; Output: NaN-free datasets.
+Step 3: Apply TC-CA_NaN_filling_KFold.py to eliminate NaN values from datasets, ensuring compatibility with subsequent modeling scripts. Input: Step 2 outputs; Output: NaN-free datasets.
 
 === NOTE ===
 Naming convention: Step 2 names with suffix "fixed" before .npy
-CNNfeatures{number of channel used}{basin}.{domain size}fixed.npy
+CNNfeatures{number of channel used}{basin}.{domain size}{month}fixed.npy
 ============
 
-Step 4 (optional): Merge data from different basins into a single dataset if not training across multiple basins. Skip if 'regionize' parameter in TC-extract_data.py is False. Inputs: Basin-named files; Output: Unified features and labels with adjusted naming.
-
-=== NOTE ===
-Naming convention: change {basin} to AL
-CNNfeatures{number of channel used}AL.{domain size}fixed.npy
-============
-
-Step 5: Execute TC-Split.py to generate separate training and testing datasets, configuring size and details within the script. Ensure proper file naming for manual setup in model building. Input: Features and labels files; Output: Training and testing sets in .npy format.
-
-For this step 5, if one wants to check for each season, use the script TC-Split_seasonal.py to generate (x,y) test data for each season (month)
+Step 5: Execute /kfold/TC-Split_KFold.py to generate separate training and testing datasets, configuring size and details within the script. Ensure proper file naming for manual setup in model building. Input: Features and labels files; Output: Training and testing sets in .npy format.
 
 Step 6: Train models with prepared datasets using retrieval scripts. Refer to the script's last section for adjustments to model or data paths.
 

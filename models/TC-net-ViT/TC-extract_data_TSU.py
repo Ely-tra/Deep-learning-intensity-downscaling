@@ -176,7 +176,7 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
     print('With ' + str(omit) + ' dataset omitted due to NaNs.', flush=True)
 
 # MAIN CALL:
-outputpath = workdir + '/exp_' + str(var_num) + 'features_' + str(windowsize[0]) + 'x' + str(windowsize[1]) 
+outputpath = workdir + '/exp_' + str(var_num) + 'features_' + str(windowsize[0]) + 'x' + str(windowsize[1]) + '/data/' 
 if not os.path.exists(inputpath):
     print("Must have the input data from Step 1 by now....exit", inputpath)
     exit

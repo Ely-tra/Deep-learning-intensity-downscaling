@@ -53,7 +53,7 @@ np.seterr(invalid='ignore')
 # Set input parameters and data path properly before running. All input and output
 # are stored under the same experiment name exp_{$channel}features_$windowsize
 #
-workdir='/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
+workdir='/N/slate/kmluong/TC-net-ViT_workdir/Domain_data/'
 var_num = 13
 windowsize = [18,18]
 
@@ -290,8 +290,11 @@ def fix_data(file):
 # MAIN CALL: 
 #
 windows = str(windowsize[0])+'x'+str(windowsize[1])
-root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/'
-for file in glob.iglob(root + '**/CNNfeatures'+str(var_num)+'_'+windows+'.npy', recursive=True):
+root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/data/'
+pattern = f'{root}**/CNNfeatures{var_num}_{windows}*.npy'
+
+# Find and process the files
+for file in glob.iglob(pattern, recursive=True):
     print("Filling ", file)
     if 'fixed' in file:
         continue
