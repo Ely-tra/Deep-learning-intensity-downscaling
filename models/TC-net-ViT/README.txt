@@ -1,4 +1,4 @@
-Step: MERRA2TCdomain, TC-extract_data_TSU, TC-CA_nan filling, TC-build_model (before I have the time to write the full readme file)
+Step: MERRA2TCdomain, TC-extract_data_TSU, TC-CA_nan filling, TC-Split_KFold, TC-build_model (before I have the time to write the full readme file)
 
 Tropical Cyclone Intensity Correction using CNN
 
