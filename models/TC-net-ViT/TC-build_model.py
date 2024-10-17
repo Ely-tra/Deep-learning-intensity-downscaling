@@ -73,7 +73,7 @@ model_dir = work_dir + 'model/'
 model_name = 'ViT_model1'
 xfold = 7 # vi co ta sinh ngay 17-10
 st_embed = True
-model_name = model_name + '_fold' + str(xfold) + ('_st' if st_embed else '')
+model_name = model_name + '_fold' + str(xfold) + '_' + mode  + ('_st' if st_embed else '')
 #==============================================================================================
 # Configurable parameters
 #==============================================================================================
