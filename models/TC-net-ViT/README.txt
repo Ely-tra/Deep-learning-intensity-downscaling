@@ -1,3 +1,5 @@
+Step: MERRA2TCdomain, TC-extract_data_TSU, TC-CA_nan filling, TC-Split_KFold, TC-build_model (before I have the time to write the full readme file)
+
 Tropical Cyclone Intensity Correction using CNN
 
 This collection of scripts processes MERRA2 datasets around historical Tropical Cyclone centers. The primary goal is to develop a Convolutional Neural Network (CNN) that corrects the predicted intensities of tropical cyclones. This addresses limitations of numerical models like WRF and MERRA, which often fail to capture the true intensity of these storms.
