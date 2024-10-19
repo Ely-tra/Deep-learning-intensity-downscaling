@@ -40,9 +40,7 @@ import tensorflow as tf
 import numpy as np
 import scipy.misc
 from tensorflow import keras
-from tensorflow.keras.applications.resnet_v2 import ResNet50V2
 from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.resnet_v2 import preprocess_input, decode_predictions
 from tensorflow.keras import layers
 from tensorflow.keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D
 from tensorflow.keras.models import Model, load_model
