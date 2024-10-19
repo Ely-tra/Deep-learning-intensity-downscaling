@@ -34,7 +34,7 @@ from timeit import default_timer as timer
 datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2-full/'
 workdir='/N/project/Typhoon-deep-learning/output/'
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-windowsize=[30,30]
+windowsize=[19,19]
 regions=['EP', 'NA', 'WP']
 
 #####################################################################################

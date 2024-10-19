@@ -2,7 +2,7 @@
 
 ## DESCRIPTION:
 This workflow processes MERRA2 datasets around historical Tropical Cyclone centers using 
-VIT architectures to correct TC intensities of in climate reanalysi dataset. This addresses 
+VIT architectures to correct TC intensities of in climate reanalysis dataset. This addresses 
 the limitations of grided climate data outputs from numerical models like WRF or renalaysis 
 data like MERRA, which often could not capture true TC intensity.
 
@@ -30,6 +30,7 @@ with Python/GPU/3.10.10 on the IU's native BigRed200 HPC environment.
 ## HOW TO RUN:
 **Step 1**: Run `MERRA2TC_domain.py` to generate TC domains from IBTracts CSV data and MERRA2 data, 
         given a specific basins, years, and TC names.  
+
 _Notes_:
 - Input: MERRA2 model outputs and IbTrACs data. Output: NETCDF files containing  MERRA2 data centered on each TC center, with a given dimension.
 - Domain files are organized by basin, year, and storm name in the following structure: BASIN/YEAR/NAME. 

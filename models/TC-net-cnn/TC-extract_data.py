@@ -45,7 +45,7 @@ import math
 #
 inputpath='/N/project/Typhoon-deep-learning/output/TC_domain/'
 workdir='/N/project/Typhoon-deep-learning/output/'
-windowsize=[25,25]      # domain size (degree) centered on TC center
+windowsize=[19,19]      # domain size (degree) centered on TC center
 var_num = 13            # number of channels for input
 force_rewrite = True    # overwrite previous dataset option
 print('Initiation completed.', flush=True)

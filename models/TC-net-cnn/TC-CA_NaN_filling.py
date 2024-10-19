@@ -55,7 +55,7 @@ np.seterr(invalid='ignore')
 #
 workdir='/N/project/Typhoon-deep-learning/output/'
 var_num = 13
-windowsize = [25,25]
+windowsize = [19,19]
 
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT

@@ -15,8 +15,8 @@ from matplotlib.lines import Line2D
 # is (64x64) after resized for windowsize < 26x26. For a larger windown size, set it
 # to 128.
 #
-workdir = "/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/"
-windowsize = [30,30]
+workdir = '/N/project/Typhoon-deep-learning/output/'
+windowsize = [19,19]
 x_size = 64
 mode = "VMAX"
 exp_name = "exp_13features_" + str(windowsize[0])+'x'+str(windowsize[1])
