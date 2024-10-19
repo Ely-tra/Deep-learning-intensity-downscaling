@@ -1,4 +1,4 @@
-Tropical Cyclone Intensity Retrieval using Vision Transformer (VIT)
+# Tropical Cyclone Intensity Retrieval using Vision Transformer (VIT)
 
 DESCRIPTION:
 This workflow processes MERRA2 datasets around historical Tropical Cyclone centers using 
