@@ -25,13 +25,14 @@
 #
 # USAGE: Users need to modify the main call with proper paths and parameters before running 
 #
-# HIST: ????
-#       ????
+# HIST: - Sep, 09, 2024: created by Tri Nguyen from the previous TCG's projection, using the 
+#                        available VIT model from Keras Image classification with Vision 
+#                        Transformer.
+#       - Oct, 18, 2024: cleaned up and noted by CK for better flows
 #
 # AUTH: Tri Huu Minh Nguyen
 #      
 #==============================================================================================
-
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -55,49 +56,42 @@ import sys
 import libtcg_utils as tcg_utils
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-
-
-
-#==============================================================================================
-# Directories
-# Data Selection
-#==============================================================================================
-root = '/N/slate/kmluong/TC-net-ViT_workdir/Domain_data/'
+#
+# Edit data path and model parameters below
+#
+root = '/N/project/Typhoon-deep-learning/output/'
 var_num = 13
-windowsize = [18,18]
+windowsize = [19,19]
 mode = 'VMAX'
 windows = f'{windowsize[0]}x{windowsize[1]}'
 work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
 data_dir = work_dir + 'data/'
 model_dir = work_dir + 'model/'
 model_name = 'ViT_model1'
-xfold = 7 # vi co ta sinh ngay 17-10
+xfold = 7 
 st_embed = True
 model_name = model_name + '_fold' + str(xfold) + '_' + mode  + ('_st' if st_embed else '')
-#==============================================================================================
-# Configurable parameters
-#==============================================================================================
+#
+# Configurable VIT parameters
+#
 learning_rate = 0.001
 weight_decay = 0.0001
 batch_size = 256
-num_epochs = 100  # For real training, use num_epochs=100. 10 is a test value
-image_size = 72  # We'll resize input images to this size
-patch_size = 12  # Size of the patches to be extract from the input images
-num_patches = (image_size // patch_size) ** 2
-projection_dim = 64
-num_heads = 4
-num_classes = 1
-transformer_units = [
-    projection_dim * 2,
-    projection_dim,
-]  # Size of the transformer layers
+num_epochs = 100        	# For real training, use num_epochs=100. 10 is a test value
+image_size = 72  		# We'll resize input images to this size
+patch_size = 12  		# Size of the patches to be extract from the input images
+projection_dim = 64             # embedding dim
+num_heads = 4			# number of heads
+num_classes = 1			# number of class
+transformer_units = [		# Size of the transformer layers
+    projection_dim*2,
+    projection_dim]  		
 transformer_layers = 8
-mlp_head_units = [
-    2048,
-    1024,
-]
+mlp_head_units = [2048,1024]
+num_patches = (image_size // patch_size) ** 2
+
 #==============================================================================================
-# Configurable parameters
+# All functions are below
 #==============================================================================================
 def mode_switch(mode):
     switcher = {
@@ -107,6 +101,7 @@ def mode_switch(mode):
     }
     # Return the corresponding value if mode is found, otherwise return None or a default value
     return switcher.get(mode, None)
+
 def load_data_excluding_fold(data_directory, xfold = xfold, mode = mode):
     months = range(1, 13)  # Months labeled 1 to 12
     k = 10  # Total number of folds
@@ -121,9 +116,9 @@ def load_data_excluding_fold(data_directory, xfold = xfold, mode = mode):
 
         # Loop over each month
         for month in months:
-            feature_filename = f'test_features_fold{fold}_18x18{month:02d}fixed.npy'
-            label_filename = f'test_labels_fold{fold}_18x18{month:02d}fixed.npy'
-            space_time_filename = f'test_spacetime_fold{fold}_18x18{month:02d}fixed.npy'
+            feature_filename = f'test_features_fold{fold}_{windows}{month:02d}fixed.npy'
+            label_filename = f'test_labels_fold{fold}_{windows}{month:02d}fixed.npy'
+            space_time_filename = f'test_spacetime_fold{fold}_{windows}{month:02d}fixed.npy'
             #print(f'Loading {feature_filename}')
             # Construct full paths
             feature_path = os.path.join(data_directory, feature_filename)
@@ -141,15 +136,13 @@ def load_data_excluding_fold(data_directory, xfold = xfold, mode = mode):
                 all_space_times.append(space_time)
             else:
                 print(f"Warning: Files not found for fold {fold} and month {month}")
+                print(label_path,feature_path)
 
     # Concatenate all loaded data into single arrays
     all_features = np.concatenate(all_features, axis=0)
     all_labels = np.concatenate(all_labels, axis=0)
     all_space_times = np.concatenate(all_space_times, axis=0)
     return all_features, all_labels, all_space_times
-
-
-
 
 def mlp(x, hidden_units, dropout_rate):
     for units in hidden_units:

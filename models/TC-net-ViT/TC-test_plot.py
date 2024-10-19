@@ -1,9 +1,15 @@
-"""
-This script loads test data for a specific model, performs preprocessing and normalization,
-then uses the model to predict outcomes. The results are then analyzed by computing RMSE
-and MAE metrics, and visualized through boxplots and scatter plots to compare predicted
-values against true values.
-"""
+#
+# DESCRIPTION:
+#	This script plots test data for a trained model, performs preprocessing/norm,
+#	then uses the model to predict outcomes. The results are then computed RMSE
+#	and MAE metrics, and visualized through box/scatter plots to compare predicted
+#	values against true values.
+#
+# HIST: - Jan 26, 2024: created by Khanh Luong for CNN
+#       - Oct 02, 2024: adapted for VIT by Tri Nguyen
+#       - Oct 19, 2024: cross-checked and cleaned up by CK
+#
+#====================================================================================
 import tensorflow as tf
 import numpy as np
 import os
@@ -16,9 +22,8 @@ from tensorflow.keras import layers
 # is (64x64) after resized for windowsize < 26x26. For a larger windown size, set it
 # to 128.
 #
-
-workdir = "/N/slate/kmluong/TC-net-ViT_workdir/Domain_data/"
-windowsize = [18,18]
+workdir = "/N/project/Typhoon-deep-learning/output/"
+windowsize = [19,19]
 mode = "VMAX"
 st_embed = True
 xfold = 7 #vi co ta sinh ngay 17-10
@@ -27,19 +32,18 @@ exp_name = "exp_13features_" + str(windowsize[0])+'x'+str(windowsize[1])
 directory = workdir + exp_name
 data_dir = directory + '/data/'
 model_dir = directory + '/model/' + model_name
-
-
-
-
-
+######################################################################################
+# All fucntions below
+######################################################################################
 def mode_switch(mode):
     switcher = {
         'VMAX': 0,
         'PMIN': 1,
         'RMW': 2
     }
-    # Return the corresponding value if mode is found, otherwise return None or a default value
+    # Return the corresponding value if mode is found, otherwise return None as default
     return switcher.get(mode, None)
+
 def load_data_fold(data_directory, xfold = xfold, mode = mode):
     months = range(1, 13)  # Months labeled 1 to 12
     b = mode_switch(mode)
@@ -49,9 +53,9 @@ def load_data_fold(data_directory, xfold = xfold, mode = mode):
 
     # Process only the specified fold
     for month in months:
-        feature_filename = f'test_features_fold{xfold}_18x18{month:02d}fixed.npy'
-        label_filename = f'test_labels_fold{xfold}_18x18{month:02d}fixed.npy'
-        space_time_filename = f'test_spacetime_fold{xfold}_18x18{month:02d}fixed.npy'
+        feature_filename = f'test_features_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
+        label_filename = f'test_labels_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
+        space_time_filename = f'test_spacetime_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
 
         # Construct full paths
         feature_path = os.path.join(data_directory, feature_filename)
@@ -69,6 +73,7 @@ def load_data_fold(data_directory, xfold = xfold, mode = mode):
             print(f"Warning: Files not found for fold {xfold} and month {month}")
 
     return features, labels, space_times
+
 def root_mean_squared_error(y_true, y_pred):
     """Calculate root mean squared error."""
     m = tf.keras.metrics.RootMeanSquaredError()

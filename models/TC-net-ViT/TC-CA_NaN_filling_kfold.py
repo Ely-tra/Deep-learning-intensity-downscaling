@@ -53,9 +53,9 @@ np.seterr(invalid='ignore')
 # Set input parameters and data path properly before running. All input and output
 # are stored under the same experiment name exp_{$channel}features_$windowsize
 #
-workdir='/N/slate/kmluong/TC-net-ViT_workdir/Domain_data/'
+workdir='/N/project/Typhoon-deep-learning/output/'
 var_num = 13
-windowsize = [18,18]
+windowsize = [19,19]
 
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT

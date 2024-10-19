@@ -31,10 +31,10 @@ from timeit import default_timer as timer
 # Users need to edit input data paths for both reanlysis
 # and best track data, and an output data path here.
 #
-datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2-full/'
+datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'
 workdir='/N/project/Typhoon-deep-learning/output/'
 csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-windowsize=[30,30]
+windowsize=[19,19]
 regions=['EP', 'NA', 'WP']
 
 #####################################################################################

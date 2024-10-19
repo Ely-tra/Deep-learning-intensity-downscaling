@@ -1,4 +1,5 @@
-#       DESCRIPTION: This script is to read a post-processed data in the NETCDF format centered
+# DESCRIPTION: 
+#       This script is to read a post-processed data in the NETCDF format centered
 #       on each TC from the previous script MERRA2tc_domain.py, and then seclect a specific
 #       group of variables before writing them out in the Numpy array format. This latter
 #       format will help the DL model to read in and train more efficiently without the 
@@ -27,6 +28,7 @@
 #
 # HIST: - May 14, 2024: created by Khanh Luong
 #       - May 16, 2024: clean up and added more note by CK
+#       - Oct 19, 2024: added a list of vars to be processed by CK
 #
 # AUTH: Minh Khanh Luong @ Indiana University Bloomington (email: kmluong@iu.edu)
 #==========================================================================================
@@ -43,13 +45,16 @@ from datetime import datetime
 # Edit the input data path and parameters before running this script.
 # Note that all output will be stored under the same exp name.
 #
-inputpath='/N/slate/kmluong/TC-net-cnn_workdir/TC_domain/'
-workdir='/N/slate/kmluong/TC-net-ViT_workdir/Domain_data/'
-windowsize=[18,18]
-var_num = 13
+inputpath='/N/project/Typhoon-deep-learning/output/TC_domain/'
+workdir='/N/project/Typhoon-deep-learning/output/'
+windowsize=[19,19]
 force_rewrite = True    # overwrite previous dataset option
 print('Initiation completed.', flush=True)
-
+list_vars = [('U', 850), ('V', 850), ('T', 850), ('RH', 850), 
+             ('U', 950), ('V', 950), ('T', 950), ('RH', 950),
+	     ('U', 750), ('V', 750), ('T', 750), ('RH', 750),
+             ('SLP', 750)]
+var_num = len(list_vars)
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
@@ -77,6 +82,7 @@ def convert_date_to_cyclic(date_str):
     cos_component = np.cos(2 * np.pi * day_of_year / days_in_year)
     
     return sin_component, cos_component
+
 def cold_delete(filepath):
     try:
         os.remove(filepath)
@@ -87,6 +93,7 @@ def cold_delete(filepath):
         print("You do not have permission to remove the file.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
 def get_file_year_and_month(filename, id1):
     position = filename.find(id1)
     if position != -1:
@@ -95,6 +102,7 @@ def get_file_year_and_month(filename, id1):
         year = int(filedate[:4])
         month = int(filedate[4:6])
         return year, month
+
 def check_date_within_range(date_str):
     # Convert string to date object
     date = datetime.strptime(date_str, '%Y%m%d')
@@ -105,6 +113,7 @@ def check_date_within_range(date_str):
     
     # Check if the date falls within the range
     return start_date <= date <= end_date
+
 def dumping_data(root='', outdir='', outname=['features', 'labels'],
                  regionize=True, omit_percent=5, windowsize=[18,18], cold_start=False):
     """
@@ -146,10 +155,20 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
                 cold_delete(outdir + outname[1] + month_str + '.npy')
                 cold_delete(outdir + outname[2] + month_str + '.npy')
         data = xr.open_dataset(filename)
+        #
+        # make loop below with a list of var/level, with the list given from namelist
+        #
         data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=850).to_array())
         data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH']].sel(lev=950).to_array()), axis=0)
         data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH', 'SLP']].sel(lev=750).to_array()), axis=0)
-
+        """
+        for i,(var,vlev) in enumerate(list_vars):
+            print(f"Extract variable {var[0]} at level {var[1]}")
+            if i == 0:
+                data_array_x = np.array(data[[var]].sel(lev=vlev))
+            else:
+                data_array_x = np.append(data_array_x, np.array(data[[var]].sel(lev=vlev)), axis=0)
+        """ 
         if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
             i += 1
             omit += 1
@@ -176,7 +195,7 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
     print('With ' + str(omit) + ' dataset omitted due to NaNs.', flush=True)
 
 # MAIN CALL:
-outputpath = workdir + '/exp_' + str(var_num) + 'features_' + str(windowsize[0]) + 'x' + str(windowsize[1]) + '/data/' 
+outputpath = workdir+'/exp_'+str(var_num)+'features_'+str(windowsize[0])+'x'+str(windowsize[1])+'/data/' 
 if not os.path.exists(inputpath):
     print("Must have the input data from Step 1 by now....exit", inputpath)
     exit

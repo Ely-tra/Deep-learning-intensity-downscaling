@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold
 # Set the path and parameters before running this script to split the data
 #
 workdir = '/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
-windowsize = [18,18]
+windowsize = [19,19]
 var_num = 13
 k = 10
 def split_data(features, labels, spacetime=0, test_percentage=10):
