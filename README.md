@@ -1,2 +1,2 @@
-# Deep learning prediction of tropical cyclone intensity
-This is a workflow for bias correction of tropical cyclone(TC) intensity, using deep learning models.
+# Deep-learning retrieval/downscaling of tropical cyclone intensity
+These deep-learning workflows are designed for retrieving, bias correcting, and downscaling tropical cyclone(TC) intensity from satellite imageries or climate reanalysis datasets. These models are developed at Chanh Kieu's TC research laboratory at Indiana University, Bloomington, as a part of an NSF-funded project (AGS 2309929).  
