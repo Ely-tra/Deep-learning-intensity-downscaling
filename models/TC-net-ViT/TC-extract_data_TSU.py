@@ -29,7 +29,7 @@
 # HIST: - May 14, 2024: created by Khanh Luong
 #       - May 16, 2024: clean up and added more note by CK
 #       - Oct 19, 2024: added a list of vars to be processed by CK
-#
+#       - Oct 26, 2024: added argument parsers by TN  
 # AUTH: Minh Khanh Luong @ Indiana University Bloomington (email: kmluong@iu.edu)
 #==========================================================================================
 print('Initiating.', flush=True)
@@ -41,20 +41,21 @@ import glob
 from npy_append_array import NpyAppendArray
 import math
 from datetime import datetime
+import argparse
 #
 # Edit the input data path and parameters before running this script.
 # Note that all output will be stored under the same exp name.
 #
-inputpath='/N/project/Typhoon-deep-learning/output/TC_domain/'
-workdir='/N/project/Typhoon-deep-learning/output/'
-windowsize=[19,19]
-force_rewrite = True    # overwrite previous dataset option
-print('Initiation completed.', flush=True)
+#inputpath='/N/project/Typhoon-deep-learning/output/TC_domain/'
+#workdir='/N/project/Typhoon-deep-learning/output/'
+#windowsize=[19,19]
+#force_rewrite = True    # overwrite previous dataset option
+#print('Initiation completed.', flush=True)
 list_vars = [('U', 850), ('V', 850), ('T', 850), ('RH', 850), 
              ('U', 950), ('V', 950), ('T', 950), ('RH', 950),
 	     ('U', 750), ('V', 750), ('T', 750), ('RH', 750),
              ('SLP', 750)]
-var_num = len(list_vars)
+#var_num = len(list_vars)
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
@@ -194,29 +195,51 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
     print('Total ' + str(i) + ' dataset processed.', flush=True)
     print('With ' + str(omit) + ' dataset omitted due to NaNs.', flush=True)
 
-# MAIN CALL:
-outputpath = workdir+'/exp_'+str(var_num)+'features_'+str(windowsize[0])+'x'+str(windowsize[1])+'/data/' 
-if not os.path.exists(inputpath):
-    print("Must have the input data from Step 1 by now....exit", inputpath)
-    exit
+def get_args():
+    parser = argparse.ArgumentParser(description='Process MERRA2 data for TC domain.')
+   # parser.add_argument('--inputpath', type=str, help='Path to the input data directory')
+    parser.add_argument('--workdir', type=str, help='Working directory path')
+    parser.add_argument('--besttrack', type=str, help='Path to the best track data file')
+    parser.add_argument('--windowsize', type=int, nargs=2, help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('--var_num', type=int, help='Number of Variables')
+    return parser.parse_args()
 
-second_check = False
-try:
-    for entry in os.scandir(outputpath):
-        if entry.is_file():
-            print(f"Output directory '{outputpath}' is not empty. Data is processed before.", flush=True)
-            second_check = True
-            break
-except:
+# MAIN CALL:
+if __name__ == "__main__":
+    args = get_args()
+
+    print('Initiating.', flush=True)
+    
+   # inputpath = args.inputpath  # Take input path from command-line argument
+    workdir = args.workdir  # Take working directory from command-line argument
+    windowsize = list(args.windowsize)  # Take window size from command-line argument
+    var_num = args.var_num
+    inputpath = workdir + '/TC_domain/'
+    force_rewrite = True  # Overwrite previous dataset option
+    print('Initiation completed.', flush=True)
+
+    outputpath = workdir+'/exp_'+str(var_num)+'features_'+str(windowsize[0])+'x'+str(windowsize[1])+'/data/' 
+    if not os.path.exists(inputpath):
+       print("Must have the input data from Step 1 by now....exit", inputpath)
+       exit
+
     second_check = False
-if second_check:
-    if force_rewrite:
-        print('Force rewrite is True, rewriting the whole dataset.', flush=True)
-    else:
-        print('Will use the processed dataset, terminating this step.', flush=True)
-        exit()
-outname=['CNNfeatures'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
+    try:
+       for entry in os.scandir(outputpath):
+          if entry.is_file():
+             print(f"Output directory '{outputpath}' is not empty. Data is processed before.", flush=True)
+             second_check = True
+             break
+    except:
+       second_check = False
+       if second_check:
+          if force_rewrite:
+             print('Force rewrite is True, rewriting the whole dataset.', flush=True)
+          else:
+             print('Will use the processed dataset, terminating this step.', flush=True)
+             exit()
+       outname=['CNNfeatures'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
          'CNNlabels'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
          'CNNspace_time_info'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1])]
-dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, 
-             outname=outname, cold_start = force_rewrite)
+       dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, 
+                    outname=outname, cold_start = force_rewrite)

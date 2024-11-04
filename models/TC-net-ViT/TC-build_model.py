@@ -54,9 +54,12 @@ import sys
 import libtcg_utils as tcg_utils
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint, EarlyStopping
+import argparse
+
 #
 # Edit data path and model parameters below
 #
+'''
 root = '/N/project/Typhoon-deep-learning/output/'
 var_num = 13
 windowsize = [19,19]
@@ -69,6 +72,7 @@ model_name = 'ViT_model1'
 xfold = 7 
 st_embed = True
 model_name = model_name + '_fold' + str(xfold) + '_' + mode  + ('_st' if st_embed else '')
+'''
 #
 # Configurable VIT parameters
 #
@@ -91,6 +95,8 @@ num_patches = (image_size // patch_size) ** 2
 #==============================================================================================
 # All functions are below
 #==============================================================================================
+
+# Define function to parse command line arguments
 def mode_switch(mode):
     switcher = {
         'VMAX': 0,
@@ -100,7 +106,7 @@ def mode_switch(mode):
     # Return the corresponding value if mode is found, otherwise return None or a default value
     return switcher.get(mode, None)
 
-def load_data_excluding_fold(data_directory, xfold = xfold, mode = mode):
+def load_data_excluding_fold(data_directory, xfold, mode):
     months = range(1, 13)  # Months labeled 1 to 12
     k = 10  # Total number of folds
     b = mode_switch(mode)
@@ -117,12 +123,13 @@ def load_data_excluding_fold(data_directory, xfold = xfold, mode = mode):
             feature_filename = f'test_features_fold{fold}_{windows}{month:02d}fixed.npy'
             label_filename = f'test_labels_fold{fold}_{windows}{month:02d}fixed.npy'
             space_time_filename = f'test_spacetime_fold{fold}_{windows}{month:02d}fixed.npy'
-            #print(f'Loading {feature_filename}')
+            print(f'Loading {feature_filename}')
             # Construct full paths
             feature_path = os.path.join(data_directory, feature_filename)
             label_path = os.path.join(data_directory, label_filename)
             space_time_path = os.path.join(data_directory, space_time_filename)
             # Check if files exist before loading
+            print(f'Loading {feature_path}')
             if os.path.exists(feature_path) and os.path.exists(label_path):
                 # Load the data
                 features = np.load(feature_path)
@@ -280,6 +287,8 @@ def create_vit_classifier(input_shape = (30,30,12), st_embed = st_embed):
     model = keras.Model(inputs=[inputs, additional_input], outputs=logits)
     return model
 
+
+
 def main(X=[],y=[],Z=[], size=[18,18], st_embed = st_embed):
     histories = []
 
@@ -294,8 +303,10 @@ def main(X=[],y=[],Z=[], size=[18,18], st_embed = st_embed):
 	keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1)
 ]
     early_stopping = EarlyStopping(monitor='val_RMSE', patience=5, restore_best_weights=True)    
-    hist = model.fit([X,Z], Y, epochs = 1000, batch_size = 128, callbacks=callbacks, validation_split=0.2, verbose=2)
-
+    if st_embed:
+        hist = model.fit([X,Z], Y, epochs = num_epochs , batch_size = 128, callbacks=callbacks, validation_split=0.2, verbose=2)
+    else:
+        hist = model.fit(X, Y, epochs = num_epochs, batch_size = 128, callbacks=callbacks, validation_split=0.2, verbose=2)
 def normalize_channels(X,y):
     """
     Normalizes each channel in each sample individually.
@@ -321,22 +332,56 @@ def normalize_Z(Z):
     Z[:,3] = (Z[:,3]+180) / 360
     return Z
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
+    parser.add_argument('--mode', type=str, help='Mode of operation (e.g., VMAX, PMIN, RMW)')
+    parser.add_argument('--root', type=str, help='Working directory path')
+    parser.add_argument('--windowsize', type=int, nargs=2, help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('--var_num', type=int, help='Number of variables')
+    parser.add_argument('--kernel_size', type=int, help='Kernel size for convolutions')
+    parser.add_argument('--x_size', type=int, help='X dimension size for the input')
+    parser.add_argument('--y_size', type=int, help='Y dimension size for the input')
+    parser.add_argument('--xfold', type=int, help='Number of fold for test data')
+    parser.add_argument('--st_embed', type=str, help='Including space time embedded')
+    return parser.parse_args()
+
 #==============================================================================================
 # Main call
 #==============================================================================================
+if __name__ == "__main__":
+    args = parse_args()
 
-X, Y, Z = load_data_excluding_fold(data_dir, xfold) 
-X=np.transpose(X, (0, 2, 3, 1))
+    # Read arguments
+    mode = args.mode
+    root = args.root
+    windowsize = list(args.windowsize)
+    var_num = args.var_num
+    kernel_size = args.kernel_size
+    x_size = args.x_size
+    y_size = args.y_size
+    xfold = args.xfold
+    st_embed = args.st_embed
+    
+    windows = f'{windowsize[0]}x{windowsize[1]}'
+    work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
+    data_dir = work_dir + 'data/'
+    model_dir = work_dir + 'model/'
+    model_name = 'ViT_model1'
+    st_embed = True if st_embed == "YES" else False
+    model_name = model_name + '_fold' + str(xfold) + '_' + mode  + ('_st' if st_embed else '')
+
+    X, Y, Z = load_data_excluding_fold(data_dir, xfold, mode) 
+    X=np.transpose(X, (0, 2, 3, 1))
     
 # Normalize the data before encoding
-X,Y = normalize_channels(X, Y)
-Z = normalize_Z(Z)
-number_channels=X.shape[3]
-print('Input shape of the X features data: ',X.shape)
-print('Input shape of the y label data: ',Y.shape)
-print('Number of input channel extracted from X is: ',number_channels)
+    X,Y = normalize_channels(X, Y)
+    Z = normalize_Z(Z)
+    number_channels=X.shape[3]
+    print('Input shape of the X features data: ',X.shape)
+    print('Input shape of the y label data: ',Y.shape)
+    print('Number of input channel extracted from X is: ',number_channels)
 
-print ("number of input examples = " + str(X.shape[0]))
-print ("X shape: " + str(X.shape))
-print ("Y shape: " + str(Y.shape))
-main(X=X,y=Y,Z = Z, size=windowsize)
+    print ("number of input examples = " + str(X.shape[0]))
+    print ("X shape: " + str(X.shape))
+    print ("Y shape: " + str(Y.shape))
+    main(X=X,y=Y,Z = Z, size=windowsize, st_embed=st_embed)

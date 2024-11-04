@@ -27,15 +27,16 @@ import numpy as np
 import xarray as xr               # use xarray as it is better than netCDF4 
 from datetime import datetime     # Use datetime to name the output files
 from timeit import default_timer as timer
+import argparse
 #
 # Users need to edit input data paths for both reanlysis
 # and best track data, and an output data path here.
 #
-datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'
-workdir='/N/project/Typhoon-deep-learning/output/'
-csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-windowsize=[19,19]
-regions=['EP', 'NA', 'WP']
+#datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'
+#workdir='/N/project/Typhoon-deep-learning/output/'
+#csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
+#windowsize=[19,19]
+#regions=['EP', 'NA', 'WP']
 
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
@@ -431,7 +432,24 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
 #
 # MAIN CALL: 
 #
-merge_data(csvdataset,regions=regions,windowsize=windowsize,datapath=datapath,outputpath=workdir)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Process MERRA2 Data for Tropical Cyclone Analysis")
+    parser.add_argument("--datapath", type=str, help="Path to the MERRA2 data directory")
+    parser.add_argument("--workdir", type=str, help="Directory to save output data")
+    parser.add_argument("--besttrack", type=str, help="Path to the best track CSV file")
+    parser.add_argument("--windowsize", type=int, nargs=2, help="Window size for data extraction, e.g., '[19,19]'")
+    parser.add_argument("--var_num", type=int, help="Number of variables to process")
+    
+    # Arguments Input
+    args = parser.parse_args()
+    datapath = args.datapath
+    workdir = args.workdir
+    besttrack = args.besttrack
+    windowsize = list(args.windowsize)
+    var_num = args.var_num
+    regions=['EP', 'NA', 'WP'] 
+    print("Window size", windowsize)
+    merge_data(besttrack,regions=regions,windowsize=windowsize,datapath=datapath,outputpath=workdir)
 #For processing faulty window size, use minlon=171-0.625*3 and maxlon=-171+0.625*3 >>>max-windowsize+3gridsize<<<
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple) default [18,18], datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
