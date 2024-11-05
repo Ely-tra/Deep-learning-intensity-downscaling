@@ -23,16 +23,39 @@ import argparse
 # is (64x64) after resized for windowsize < 26x26. For a larger windown size, set it
 # to 128.
 #
-workdir = "/N/project/Typhoon-deep-learning/output/"
-windowsize = [19,19]
-mode = "VMAX"
-st_embed = True
-xfold = 7 
-model_name = 'ViT_model1_fold' + str(xfold) + '_' + mode + ('_st' if st_embed else '')
-exp_name = "exp_13features_" + str(windowsize[0])+'x'+str(windowsize[1])
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Test and Plot Model Predictions for TC Intensity")
+    parser.add_argument("--mode", default="VMAX", type=str, help="Mode of operation (e.g., VMAX, PMIN, RMW)")
+    parser.add_argument("--workdir", default="/N/project/Typhoon-deep-learning/output/", type=str, help="Directory to save output data")
+    parser.add_argument("--windowsize", default=[19, 19], type=int, nargs=2, help="Window size as two integers (e.g., 19 19)")
+    parser.add_argument("--var_num", type=int, help="Number of variables (not used directly here but might be needed for file paths)")
+    parser.add_argument("--kernel_size", type=int, help="Kernel size for convolutions")
+    parser.add_argument("--x_size", type=int, help="X dimension size for the input")
+    parser.add_argument("--y_size", type=int, help="Y dimension size for the input")
+    parser.add_argument("--xfold", default=7, type=int, help="Fold number for cross-validation")
+    parser.add_argument("--st_embed", default="YES", type=str, help="Whether to include space-time embedding (True or False)")
+    parser.add_argument("--model_name", default="ViT_model", type=str, help="Base of the model name")
+
+    return parser.parse_args()
+args = parse_args()
+# Set parameters based on parsed arguments
+mode = args.mode
+workdir = args.workdir
+windowsize = list(args.windowsize)
+var_num = args.var_num
+kernel_size = args.kernel_size
+x_size = args.x_size
+y_size = args.y_size
+xfold = args.xfold
+st_embed = True if args.st_embed == "YES" else False
+model_name = args.model_name
+model_name = f"{model_name}_fold{xfold}_{mode}{'_st' if st_embed else ''}"
+exp_name = f"exp_{var_num}features_{windowsize[0]}x{windowsize[1]}/"
 directory = workdir + exp_name
 data_dir = directory + '/data/'
 model_dir = directory + '/model/' + model_name
+
 ######################################################################################
 # All fucntions below
 ######################################################################################
@@ -175,40 +198,12 @@ def normalize_Z(Z):
     Z[:,3] = (Z[:,3]+180) / 360
     return Z
 
-# Argument parsing setup
-def parse_args():
-    parser = argparse.ArgumentParser(description="Test and Plot Model Predictions for TC Intensity")
-    parser.add_argument("--mode", type=str, help="Mode of operation (e.g., VMAX, PMIN, RMW)")
-    parser.add_argument("--workdir", type=str, help="Directory to save output data")
-    parser.add_argument("--windowsize", type=int, nargs=2, help="Window size as two integers (e.g., 19 19)")
-    parser.add_argument("--var_num", type=int, help="Number of variables (not used directly here but might be needed for file paths)")
-    parser.add_argument("--kernel_size", type=int, help="Kernel size for convolutions")
-    parser.add_argument("--x_size", type=int, help="X dimension size for the input")
-    parser.add_argument("--y_size", type=int, help="Y dimension size for the input")
-    parser.add_argument("--xfold", type=int, help="Fold number for cross-validation")
-    parser.add_argument("--st_embed", type=str, help="Whether to include space-time embedding (True or False)")
 
-    return parser.parse_args()
 
 #==============================================================================================
 # Main call
 #==============================================================================================
-args = parse_args()
-# Set parameters based on parsed arguments
-mode = args.mode
-workdir = args.workdir
-windowsize = list(args.windowsize)
-var_num = args.var_num
-kernel_size = args.kernel_size
-x_size = args.x_size
-y_size = args.y_size
-xfold = args.xfold
-st_embed = True if args.st_embed == "YES" else False
-model_name = 'ViT_model1_fold' + str(xfold) + '_' + mode + ('_st' if st_embed else '')
-exp_name = "exp_13features_" + str(windowsize[0])+'x'+str(windowsize[1])
-directory = workdir + exp_name
-data_dir = directory + '/data/'
-model_dir = directory + '/model/' + model_name
+
 
 X, Y, Z = load_data_fold(data_dir, xfold)
 X=np.transpose(X, (0, 2, 3, 1))
