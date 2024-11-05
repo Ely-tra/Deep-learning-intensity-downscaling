@@ -70,6 +70,7 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=256, help='Batch size for training')
     parser.add_argument('--num_epochs', type=int, default=100, help='Number of epochs for training')
     parser.add_argument('--patch_size', type=int, default=12, help='Size of patches to be extracted from input images')
+    parser.add_argument('--image_size', type=int, default=72, help='Size to resize the image to')
     parser.add_argument('--projection_dim', type=int, default=64, help='Dimension of the projection space')
     parser.add_argument('--num_heads', type=int, default=4, help='Number of heads in multi-head attention')
     parser.add_argument('--transformer_layers', type=int, default=8, help='Number of transformer layers')
@@ -78,11 +79,12 @@ def parse_args():
 #
 # Configurable VIT parameters
 #
+args = parse_args()
 learning_rate = args.learning_rate
 weight_decay = args.weight_decay
 batch_size = args.batch_size
 num_epochs = args.num_epochs        	# For real training, use num_epochs=100. 10 is a test value
-image_size = 72  		# We'll resize input images to this size
+image_size = args.image_size  		# We'll resize input images to this size
 patch_size = args.patch_size		# Size of the patches to be extract from the input images
 projection_dim = args.projection_dim             # embedding dim
 num_heads = args.num_heads			# number of heads
@@ -333,24 +335,12 @@ def normalize_Z(Z):
     Z[:,3] = (Z[:,3]+180) / 360
     return Z
 
-def parse_args():
-    parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
-    parser.add_argument('--mode', type=str, help='Mode of operation (e.g., VMAX, PMIN, RMW)')
-    parser.add_argument('--root', type=str, help='Working directory path')
-    parser.add_argument('--windowsize', type=int, nargs=2, help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('--var_num', type=int, help='Number of variables')
-    parser.add_argument('--kernel_size', type=int, help='Kernel size for convolutions')
-    parser.add_argument('--x_size', type=int, help='X dimension size for the input')
-    parser.add_argument('--y_size', type=int, help='Y dimension size for the input')
-    parser.add_argument('--xfold', type=int, help='Number of fold for test data')
-    parser.add_argument('--st_embed', type=str, help='Including space time embedded')
-    return parser.parse_args()
 
 #==============================================================================================
 # Main call
 #==============================================================================================
 if __name__ == "__main__":
-    args = parse_args()
+    
 
     # Read arguments
     mode = args.mode
