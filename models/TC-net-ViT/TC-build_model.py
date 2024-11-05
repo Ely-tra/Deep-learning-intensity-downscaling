@@ -52,28 +52,50 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 import argparse
 
 
+#==============================================================================================
+# Argument Parsing
+#==============================================================================================
+def parse_args():
+    parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
+    parser.add_argument('--mode', type=str, required=True, help='Mode of operation (e.g., VMAX, PMIN, RMW)')
+    parser.add_argument('--root', type=str, required=True, help='Working directory path')
+    parser.add_argument('--windowsize', type=int, nargs=2, required=True, help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('--var_num', type=int, required=True, help='Number of variables')
+    parser.add_argument('--x_size', type=int, required=True, help='X dimension size for the input')
+    parser.add_argument('--y_size', type=int, required=True, help='Y dimension size for the input')
+    parser.add_argument('--xfold', type=int, required=True, help='Number of fold for test data')
+    parser.add_argument('--st_embed', type=str, choices=['YES', 'NO'], required=True, help='Including space-time embedded')
+    parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate')
+    parser.add_argument('--weight_decay', type=float, default=0.0001, help='Weight decay rate')
+    parser.add_argument('--batch_size', type=int, default=256, help='Batch size for training')
+    parser.add_argument('--num_epochs', type=int, default=100, help='Number of epochs for training')
+    parser.add_argument('--patch_size', type=int, default=12, help='Size of patches to be extracted from input images')
+    parser.add_argument('--projection_dim', type=int, default=64, help='Dimension of the projection space')
+    parser.add_argument('--num_heads', type=int, default=4, help='Number of heads in multi-head attention')
+    parser.add_argument('--transformer_layers', type=int, default=8, help='Number of transformer layers')
+    parser.add_argument('--mlp_head_units', nargs='+', type=int, default=[2048, 1024], help='Number of units in MLP head layers')
+    return parser.parse_args()
 #
 # Configurable VIT parameters
 #
-learning_rate = 0.001
-weight_decay = 0.0001
-batch_size = 256
-num_epochs = 100        	# For real training, use num_epochs=100. 10 is a test value
+learning_rate = args.learning_rate
+weight_decay = args.weight_decay
+batch_size = args.batch_size
+num_epochs = args.num_epochs        	# For real training, use num_epochs=100. 10 is a test value
 image_size = 72  		# We'll resize input images to this size
-patch_size = 12  		# Size of the patches to be extract from the input images
-projection_dim = 64             # embedding dim
-num_heads = 4			# number of heads
+patch_size = args.patch_size		# Size of the patches to be extract from the input images
+projection_dim = args.projection_dim             # embedding dim
+num_heads = args.num_heads			# number of heads
 num_classes = 1			# number of class
 transformer_units = [		# Size of the transformer layers
     projection_dim*2,
     projection_dim]  		
-transformer_layers = 8
-mlp_head_units = [2048,1024]
+transformer_layers = args.transformer_layers
+mlp_head_units = args.mlp_head_units
+
 num_patches = (image_size // patch_size) ** 2
 
-#==============================================================================================
-# All functions are below
-#==============================================================================================
+
 
 # Define function to parse command line arguments
 def mode_switch(mode):
