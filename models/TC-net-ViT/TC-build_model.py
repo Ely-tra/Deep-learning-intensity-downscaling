@@ -24,6 +24,7 @@
 #                        Transformer.
 #       - Oct, 18, 2024: cleaned up and noted by CK for better flows
 #       - Oct, 30, 2024: workflow re-designed by Tri Nguyen
+#       - Nov, 04, 2024: can now parse model's parameter directly. By Minh Khanh
 #
 # AUTH: Tri Huu Minh Nguyen
 #      
@@ -83,23 +84,24 @@ args = parse_args()
 learning_rate = args.learning_rate
 weight_decay = args.weight_decay
 batch_size = args.batch_size
-num_epochs = args.num_epochs        	# For real training, use num_epochs=100. 10 is a test value
-image_size = args.image_size  		# We'll resize input images to this size
-patch_size = args.patch_size		# Size of the patches to be extract from the input images
-projection_dim = args.projection_dim             # embedding dim
-num_heads = args.num_heads			# number of heads
-num_classes = 1			# number of class
-transformer_units = [		# Size of the transformer layers
+num_epochs = args.num_epochs        	
+image_size = args.image_size  		
+patch_size = args.patch_size		
+projection_dim = args.projection_dim             
+num_heads = args.num_heads			
+num_classes = 1			
+transformer_units = [		
     projection_dim*2,
     projection_dim]  		
 transformer_layers = args.transformer_layers
 mlp_head_units = args.mlp_head_units
-
 num_patches = (image_size // patch_size) ** 2
 
-
-
+#==============================================================================================
 # Define function to parse command line arguments
+#==============================================================================================
+
+
 def mode_switch(mode):
     switcher = {
         'VMAX': 0,
@@ -340,8 +342,6 @@ def normalize_Z(Z):
 # Main call
 #==============================================================================================
 if __name__ == "__main__":
-    
-
     # Read arguments
     mode = args.mode
     root = args.root
