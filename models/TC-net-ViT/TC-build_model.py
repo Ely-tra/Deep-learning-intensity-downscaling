@@ -6,11 +6,6 @@
 #       to preprocessing steps like normalization and resizing, and the model is tuned to adapt 
 #       its learning rate over epochs.
 #
-#       Note that one can re-design the model by looking at the model's layer configurations 
-#       and loss functions (see line ???), set the dataset paths (see line ???), and run the 
-#       script. The model architecture (see line ???) can be adjusted by modifying the parameters 
-#       for convolutional and dense layers.   
-#
 # MODEL CONFIGURATION:
 #
 # FUNCTIONS:
@@ -20,7 +15,6 @@
 #         Interchangable with TF RMSE metric.
 #       - main: Orchestrates model construction, compilation, and training using specified 
 #         parameters and datasets.
-#       - resize_preprocess: Resizes images to a specified height and width.
 #       - normalize_channels: Normalizes data channels within the input array.
 #
 # USAGE: Users need to modify the main call with proper paths and parameters before running 
@@ -29,6 +23,7 @@
 #                        available VIT model from Keras Image classification with Vision 
 #                        Transformer.
 #       - Oct, 18, 2024: cleaned up and noted by CK for better flows
+#       - Oct, 30, 2024: workflow re-designed by Tri Nguyen
 #
 # AUTH: Tri Huu Minh Nguyen
 #      
@@ -56,23 +51,7 @@ import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 import argparse
 
-#
-# Edit data path and model parameters below
-#
-'''
-root = '/N/project/Typhoon-deep-learning/output/'
-var_num = 13
-windowsize = [19,19]
-mode = 'VMAX'
-windows = f'{windowsize[0]}x{windowsize[1]}'
-work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
-data_dir = work_dir + 'data/'
-model_dir = work_dir + 'model/'
-model_name = 'ViT_model1'
-xfold = 7 
-st_embed = True
-model_name = model_name + '_fold' + str(xfold) + '_' + mode  + ('_st' if st_embed else '')
-'''
+
 #
 # Configurable VIT parameters
 #
