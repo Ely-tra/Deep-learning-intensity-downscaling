@@ -58,13 +58,13 @@ import argparse
 #==============================================================================================
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
-    parser.add_argument('--mode', type=str, required=True, help='Mode of operation (e.g., VMAX, PMIN, RMW)')
-    parser.add_argument('--root', type=str, required=True, help='Working directory path')
-    parser.add_argument('--windowsize', type=int, nargs=2, required=True, help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('--var_num', type=int, required=True, help='Number of variables')
-    parser.add_argument('--x_size', type=int, required=True, help='X dimension size for the input')
-    parser.add_argument('--y_size', type=int, required=True, help='Y dimension size for the input')
-    parser.add_argument('--xfold', type=int, required=True, help='Number of fold for test data')
+    parser.add_argument('--mode', type=str, default = 'VMAX', help='Mode of operation (e.g., VMAX, PMIN, RMW)')
+    parser.add_argument('--model_name', type=str, default = 'ViTmodel1', help='Core name of the model')
+    parser.add_argument('--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Working directory path')
+    parser.add_argument('--windowsize', type=int, nargs=2, default = [19,19], help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('--var_num', type=int, default = 13, help='Number of variables')
+    parser.add_argument('--x_size', type=int, default = 72, help='X dimension size for the input')
+    parser.add_argument('--y_size', type=int, default = 72, help='Y dimension size for the input')
     parser.add_argument('--st_embed', type=str, choices=['YES', 'NO'], required=True, help='Including space-time embedded')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate')
     parser.add_argument('--weight_decay', type=float, default=0.0001, help='Weight decay rate')
@@ -100,6 +100,23 @@ transformer_units = [
 transformer_layers = args.transformer_layers
 mlp_head_units = args.mlp_head_units
 num_patches = (image_size // patch_size) ** 2
+mode = args.mode
+root = args.root
+windowsize = list(args.windowsize)
+var_num = args.var_num
+kernel_size = args.kernel_size
+x_size = args.x_size
+y_size = args.y_size
+st_embed = args.st_embed
+    
+windows = f'{windowsize[0]}x{windowsize[1]}'
+work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
+data_dir = work_dir + 'data/'
+model_dir = work_dir + 'model/'
+model_name = args.model_name
+st_embed = True if st_embed == "YES" else False
+model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{('_st' if st_embed else '')}'
+
 
 #==============================================================================================
 # Define function to parse command line arguments
@@ -393,25 +410,8 @@ def normalize_Z(Z):
 #==============================================================================================
 if __name__ == "__main__":
     # Read arguments
-    mode = args.mode
-    root = args.root
-    windowsize = list(args.windowsize)
-    var_num = args.var_num
-    kernel_size = args.kernel_size
-    x_size = args.x_size
-    y_size = args.y_size
-    xfold = args.xfold
-    st_embed = args.st_embed
-    
-    windows = f'{windowsize[0]}x{windowsize[1]}'
-    work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
-    data_dir = work_dir + 'data/'
-    model_dir = work_dir + 'model/'
-    model_name = 'ViT_model1'
-    st_embed = True if st_embed == "YES" else False
-    model_name = model_name + '_fold' + str(xfold) + '_' + mode  + ('_st' if st_embed else '')
 
-    X, Y, Z = load_data_excluding_fold(data_dir, xfold, mode) 
+    X, Y, Z, X_val, Y_val, Z_val = load_data_excluding_year(data_dir, mode) 
     X=np.transpose(X, (0, 2, 3, 1))
     
 # Normalize the data before encoding
