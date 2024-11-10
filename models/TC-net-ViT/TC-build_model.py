@@ -76,6 +76,8 @@ def parse_args():
     parser.add_argument('--num_heads', type=int, default=4, help='Number of heads in multi-head attention')
     parser.add_argument('--transformer_layers', type=int, default=8, help='Number of transformer layers')
     parser.add_argument('--mlp_head_units', nargs='+', type=int, default=[2048, 1024], help='Number of units in MLP head layers')
+    parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation)
+    parser.add_argument('--test_year', nargs='+', type=int, default=[2017], help='Year(s) taken for test')
     return parser.parse_args()
 #
 # Configurable VIT parameters
@@ -90,6 +92,8 @@ patch_size = args.patch_size
 projection_dim = args.projection_dim             
 num_heads = args.num_heads			
 num_classes = 1			
+validation_year = args.validation_year
+test_year = args.test_year
 transformer_units = [		
     projection_dim*2,
     projection_dim]  		
@@ -111,48 +115,94 @@ def mode_switch(mode):
     # Return the corresponding value if mode is found, otherwise return None or a default value
     return switcher.get(mode, None)
 
-def load_data_excluding_fold(data_directory, xfold, mode):
+def get_year_directories(data_directory):
+    """
+    List all directory names within a given directory that are formatted as four-digit years.
+
+    Parameters:
+    - data_directory (str): Path to the directory containing potential year-named subdirectories.
+
+    Returns:
+    - list: A list of directory names that match the four-digit year format.
+    """
+    all_entries = os.listdir(data_directory)
+    year_directories = [
+        entry for entry in all_entries
+        if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
+    ]
+    return year_directories
+
+def load_data_excluding_year(data_directory, mode, validation_year = validation_year, test_year = test_year):
+    """
+    Loads data from specified directory excluding specified years and organizes it into training and validation sets.
+
+    Args:
+        data_directory (str): The root directory where data files are stored.
+        mode (str): Mode of operation which defines how labels should be manipulated or filtered.
+        validation_year (list): List of years to be used for validation.
+        test_year (list): List of years to be excluded from the loading process.
+        var_num (int): Variable number identifier used in file naming.
+        windows (str): Window size identifier used in file naming.
+
+    Returns:
+        tuple: Tuple containing six elements:
+               - all_features (np.ndarray): Array of all features excluding validation and test years.
+               - all_labels (np.ndarray): Array of all labels corresponding to all_features.
+               - all_space_times (np.ndarray): Array of all spatial and temporal data corresponding to all_features.
+               - val_features (np.ndarray): Array of validation features from the validation years.
+               - val_labels (np.ndarray): Array of validation labels corresponding to val_features.
+               - val_space_times (np.ndarray): Array of validation spatial and temporal data corresponding to val_features.
+    """
+    years = get_year_directories(data_directory)
     months = range(1, 13)  # Months labeled 1 to 12
-    k = 10  # Total number of folds
-    b = mode_switch(mode)
-    all_features = []
-    all_labels = []
-    all_space_times = []
-    # Loop over each fold
-    for fold in range(1, k+1):
-        if fold == xfold:
-            continue  # Skip the excluded fold
+    b = mode_switch(mode)  # Make sure this function is defined elsewhere
+    all_features, all_labels, all_space_times = [], [], []
+    val_features, val_labels, val_space_times = [], [], []
+
+    # Loop over each year
+    for year in years:
+        if year in test_year:
+            continue  # Skip the excluded year
 
         # Loop over each month
         for month in months:
-            feature_filename = f'test_features_fold{fold}_{windows}{month:02d}fixed.npy'
-            label_filename = f'test_labels_fold{fold}_{windows}{month:02d}fixed.npy'
-            space_time_filename = f'test_spacetime_fold{fold}_{windows}{month:02d}fixed.npy'
-            print(f'Loading {feature_filename}')
+            feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
+            label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
+            space_time_filename = f'spacetime{var_num}_{windows}{month:02d}.npy'
+
             # Construct full paths
-            feature_path = os.path.join(data_directory, feature_filename)
-            label_path = os.path.join(data_directory, label_filename)
-            space_time_path = os.path.join(data_directory, space_time_filename)
+            feature_path = os.path.join(data_directory, year, feature_filename)
+            label_path = os.path.join(data_directory, year, label_filename)
+            space_time_path = os.path.join(data_directory, year, space_time_filename)
+
             # Check if files exist before loading
-            print(f'Loading {feature_path}')
-            if os.path.exists(feature_path) and os.path.exists(label_path):
-                # Load the data
+            if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
                 features = np.load(feature_path)
-                labels = np.load(label_path)[:,b]
+                labels = np.load(label_path)[:, b]
                 space_time = np.load(space_time_path)
+
                 # Append to lists
-                all_features.append(features)
-                all_labels.append(labels)
-                all_space_times.append(space_time)
+                if year in validation_year:
+                    val_features.append(features)
+                    val_labels.append(labels)
+                    val_space_times.append(space_time)
+                else:
+                    all_features.append(features)
+                    all_labels.append(labels)
+                    all_space_times.append(space_time)
             else:
-                print(f"Warning: Files not found for fold {fold} and month {month}")
-                print(label_path,feature_path)
+                print(f"Warning: Files not found for year {year} and month {month}")
+                print(label_path, feature_path)
 
     # Concatenate all loaded data into single arrays
     all_features = np.concatenate(all_features, axis=0)
     all_labels = np.concatenate(all_labels, axis=0)
     all_space_times = np.concatenate(all_space_times, axis=0)
-    return all_features, all_labels, all_space_times
+    val_features = np.concatenate(val_features, axis=0)
+    val_labels = np.concatenate(val_labels, axis=0)
+    val_space_times = np.concatenate(val_space_times, axis=0)
+
+    return all_features, all_labels, all_space_times, val_features, val_labels, val_space_times
 
 def mlp(x, hidden_units, dropout_rate):
     for units in hidden_units:
