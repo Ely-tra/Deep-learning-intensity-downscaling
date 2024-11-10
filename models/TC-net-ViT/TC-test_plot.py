@@ -68,35 +68,64 @@ def mode_switch(mode):
     # Return the corresponding value if mode is found, otherwise return None as default
     return switcher.get(mode, None)
 
-def load_data_fold(data_directory, xfold = xfold, mode = mode):
+def load_data_for_test_year(data_directory, mode, test_year, var_num, windows):
+    """
+    Loads data from specified directory for specified test years and organizes it into test sets.
+
+    Args:
+        data_directory (str): The root directory where data files are stored.
+        mode (str): Mode of operation which defines how labels should be manipulated or filtered.
+        test_year (list): List of years to be used for testing.
+        var_num (int): Variable number identifier used in file naming.
+        windows (str): Window size identifier used in file naming.
+
+    Returns:
+        tuple: Tuple containing three elements:
+               - test_features (np.ndarray): Array of test features from the test years.
+               - test_labels (np.ndarray): Array of test labels corresponding to test_features.
+               - test_space_times (np.ndarray): Array of test spatial and temporal data corresponding to test_features.
+    """
+    years = get_year_directories(data_directory)
     months = range(1, 13)  # Months labeled 1 to 12
-    b = mode_switch(mode)
-    all_features = []
-    all_labels = []
-    all_space_times = []
+    b = mode_switch(mode)  # Adjust this function to handle different modes appropriately
+    test_features, test_labels, test_space_times = [], [], []
 
-    # Process only the specified fold
-    for month in months:
-        feature_filename = f'test_features_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
-        label_filename = f'test_labels_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
-        space_time_filename = f'test_spacetime_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
+    # Loop over each year
+    for year in years:
+        if year not in test_year:
+            continue  # Focus only on the test year
 
-        # Construct full paths
-        feature_path = os.path.join(data_directory, feature_filename)
-        label_path = os.path.join(data_directory, label_filename)
-        space_time_path = os.path.join(data_directory, space_time_filename)
+        # Loop over each month
+        for month in months:
+            feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
+            label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
+            space_time_filename = f'spacetime{var_num}_{windows}{month:02d}.npy'
 
-        # Check if files exist before loading
-        if os.path.exists(feature_path) and os.path.exists(label_path):
-            # Load the data
-            features = np.load(feature_path)
-            labels = np.load(label_path)[:, b]
-            space_times = np.load(space_time_path)
+            # Construct full paths
+            feature_path = os.path.join(data_directory, year, feature_filename)
+            label_path = os.path.join(data_directory, year, label_filename)
+            space_time_path = os.path.join(data_directory, year, space_time_filename)
 
-        else:
-            print(f"Warning: Files not found for fold {xfold} and month {month}")
+            # Check if files exist before loading
+            if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
+                features = np.load(feature_path)
+                labels = np.load(label_path)[:, b]
+                space_time = np.load(space_time_path)
 
-    return features, labels, space_times
+                # Append to test lists
+                test_features.append(features)
+                test_labels.append(labels)
+                test_space_times.append(space_time)
+            else:
+                print(f"Warning: Files not found for year {year} and month {month}")
+                print(label_path, feature_path)
+
+    # Concatenate all loaded data into single arrays
+    test_features = np.concatenate(test_features, axis=0) if test_features else np.array([])
+    test_labels = np.concatenate(test_labels, axis=0) if test_labels else np.array([])
+    test_space_times = np.concatenate(test_space_times, axis=0) if test_space_times else np.array([])
+
+    return test_features, test_labels, test_space_times
 
 def root_mean_squared_error(y_true, y_pred):
     """Calculate root mean squared error."""
