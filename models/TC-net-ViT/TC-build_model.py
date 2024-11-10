@@ -51,7 +51,7 @@ import libtcg_utils as tcg_utils
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 import argparse
-
+import re
 
 #==============================================================================================
 # Argument Parsing
@@ -65,7 +65,7 @@ def parse_args():
     parser.add_argument('--var_num', type=int, default = 13, help='Number of variables')
     parser.add_argument('--x_size', type=int, default = 72, help='X dimension size for the input')
     parser.add_argument('--y_size', type=int, default = 72, help='Y dimension size for the input')
-    parser.add_argument('--st_embed', type=str, choices=['YES', 'NO'], required=True, help='Including space-time embedded')
+    parser.add_argument('--st_embed', action='store_true', help='Including space-time embedded')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate')
     parser.add_argument('--weight_decay', type=float, default=0.0001, help='Weight decay rate')
     parser.add_argument('--batch_size', type=int, default=256, help='Batch size for training')
@@ -76,7 +76,7 @@ def parse_args():
     parser.add_argument('--num_heads', type=int, default=4, help='Number of heads in multi-head attention')
     parser.add_argument('--transformer_layers', type=int, default=8, help='Number of transformer layers')
     parser.add_argument('--mlp_head_units', nargs='+', type=int, default=[2048, 1024], help='Number of units in MLP head layers')
-    parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation)
+    parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation')
     parser.add_argument('--test_year', nargs='+', type=int, default=[2017], help='Year(s) taken for test')
     return parser.parse_args()
 #
@@ -104,7 +104,6 @@ mode = args.mode
 root = args.root
 windowsize = list(args.windowsize)
 var_num = args.var_num
-kernel_size = args.kernel_size
 x_size = args.x_size
 y_size = args.y_size
 st_embed = args.st_embed
@@ -114,7 +113,6 @@ work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
 data_dir = work_dir + 'data/'
 model_dir = work_dir + 'model/'
 model_name = args.model_name
-st_embed = True if st_embed == "YES" else False
 model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{('_st' if st_embed else '')}'
 
 
@@ -361,7 +359,7 @@ def create_vit_classifier(input_shape = (30,30,12), st_embed = st_embed):
 
 
 
-def main(X=[],y=[],Z=[], size=[18,18], st_embed = st_embed):
+def main(X=[],Y=[],Z=[], X_val=[], Y_val = [], Z_val = [], size=[18,18], st_embed = st_embed):
     histories = []
 
     model = create_vit_classifier(input_shape= (X.shape[1], X.shape[2], X.shape[3]), st_embed = st_embed)
@@ -375,10 +373,10 @@ def main(X=[],y=[],Z=[], size=[18,18], st_embed = st_embed):
 	keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1)
 ]
     early_stopping = EarlyStopping(monitor='val_RMSE', patience=5, restore_best_weights=True)    
-    if st_embed:
-        hist = model.fit([X,Z], Y, epochs = num_epochs , batch_size = 128, callbacks=callbacks, validation_split=0.2, verbose=2)
-    else:
-        hist = model.fit(X, Y, epochs = num_epochs, batch_size = 128, callbacks=callbacks, validation_split=0.2, verbose=2)
+if st_embed:
+    hist = model.fit([X, Z], Y, epochs=num_epochs, batch_size=128, callbacks=callbacks, validation_data=([X_val, Z_val], Y_val), verbose=2)
+else:
+    hist = model.fit(X, Y, epochs=num_epochs, batch_size=128, callbacks=callbacks, validation_data=(X_val, Y_val), verbose=2)
 def normalize_channels(X,y):
     """
     Normalizes each channel in each sample individually.
@@ -417,6 +415,8 @@ if __name__ == "__main__":
 # Normalize the data before encoding
     X,Y = normalize_channels(X, Y)
     Z = normalize_Z(Z)
+    X_val,Y_val = normalize_channels(X_val, Y_val)
+    Z_val = normalize_Z(Z_val)
     number_channels=X.shape[3]
     print('Input shape of the X features data: ',X.shape)
     print('Input shape of the y label data: ',Y.shape)
@@ -425,4 +425,4 @@ if __name__ == "__main__":
     print ("number of input examples = " + str(X.shape[0]))
     print ("X shape: " + str(X.shape))
     print ("Y shape: " + str(Y.shape))
-    main(X=X,y=Y,Z = Z, size=windowsize, st_embed=st_embed)
+    main(X=X,Y=Y,Z = Z, X_val = X_val, Y_val = Y_val, Z_val = Z_val, size=windowsize, st_embed=st_embed)
