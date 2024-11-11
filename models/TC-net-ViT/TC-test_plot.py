@@ -29,32 +29,34 @@ def parse_args():
     parser.add_argument("--mode", default="VMAX", type=str, help="Mode of operation (e.g., VMAX, PMIN, RMW)")
     parser.add_argument("--workdir", default="/N/project/Typhoon-deep-learning/output/", type=str, help="Directory to save output data")
     parser.add_argument("--windowsize", default=[19, 19], type=int, nargs=2, help="Window size as two integers (e.g., 19 19)")
-    parser.add_argument("--var_num", type=int, help="Number of variables (not used directly here but might be needed for file paths)")
-    parser.add_argument("--kernel_size", type=int, help="Kernel size for convolutions")
-    parser.add_argument("--x_size", type=int, help="X dimension size for the input")
-    parser.add_argument("--y_size", type=int, help="Y dimension size for the input")
-    parser.add_argument("--xfold", default=7, type=int, help="Fold number for cross-validation")
-    parser.add_argument("--st_embed", default="YES", type=str, help="Whether to include space-time embedding (True or False)")
-    parser.add_argument("--model_name", default="ViT_model", type=str, help="Base of the model name")
+    parser.add_argument("--var_num", type=int, default = 13, help="Number of variables (not used directly here but might be needed for file paths)")
+    parser.add_argument("--x_size", type=int, default = 72, help="X dimension size for the input")
+    parser.add_argument("--y_size", type=int, default = 72, help="Y dimension size for the input")
+    parser.add_argument('--st_embed', action='store_true', help='Including space-time embedded')
+    parser.add_argument("--model_name", default='ViTmodel1', type=str, help="Base of the model name")
+    parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation')
+    parser.add_argument('--test_year', nargs='+', type=int, default=[2017], help='Year(s) taken for test')
 
     return parser.parse_args()
 args = parse_args()
 # Set parameters based on parsed arguments
+validation_year = args.validation_year
+test_year = args.test_year
 mode = args.mode
 workdir = args.workdir
 windowsize = list(args.windowsize)
 var_num = args.var_num
-kernel_size = args.kernel_size
 x_size = args.x_size
 y_size = args.y_size
 xfold = args.xfold
-st_embed = True if args.st_embed == "YES" else False
+st_embed = args.st_embed
 model_name = args.model_name
-model_name = f"{model_name}_fold{xfold}_{mode}{'_st' if st_embed else ''}"
+model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{('_st' if st_embed else '')}'
 exp_name = f"exp_{var_num}features_{windowsize[0]}x{windowsize[1]}/"
 directory = workdir + exp_name
 data_dir = directory + '/data/'
 model_dir = directory + '/model/' + model_name
+windows = f'{windowsize[0]}x{windowsize[1]}'
 
 ######################################################################################
 # All fucntions below
@@ -234,7 +236,7 @@ def normalize_Z(Z):
 #==============================================================================================
 
 
-X, Y, Z = load_data_fold(data_dir, xfold)
+X, Y, Z = load_data_for_test_year(data_dir, mode, test_year, var_num, windows)
 X=np.transpose(X, (0, 2, 3, 1))
 
 # Normalize the data before encoding
