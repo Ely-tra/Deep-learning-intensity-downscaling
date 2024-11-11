@@ -66,6 +66,7 @@ def parse_args():
     parser.add_argument('--y_size', type=int, required=True, help='Y dimension size for the input')
     parser.add_argument('--xfold', type=int, required=True, help='Number of fold for test data')
     parser.add_argument('--st_embed', type=str, choices=['YES', 'NO'], required=True, help='Including space-time embedded')
+    parser.add_argument('--model_name', type=str, required=True, help='model name')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate')
     parser.add_argument('--weight_decay', type=float, default=0.0001, help='Weight decay rate')
     parser.add_argument('--batch_size', type=int, default=256, help='Batch size for training')
@@ -76,6 +77,7 @@ def parse_args():
     parser.add_argument('--num_heads', type=int, default=4, help='Number of heads in multi-head attention')
     parser.add_argument('--transformer_layers', type=int, default=8, help='Number of transformer layers')
     parser.add_argument('--mlp_head_units', nargs='+', type=int, default=[2048, 1024], help='Number of units in MLP head layers')
+    
     return parser.parse_args()
 #
 # Configurable VIT parameters
@@ -251,7 +253,7 @@ class PatchEncoder(layers.Layer):
         config.update({"num_patches": self.num_patches, "projection_dim": self.projection_dim})
         return config
 
-def create_vit_classifier(input_shape = (30,30,12), st_embed = st_embed):
+def create_vit_classifier(st_embed, input_shape = (30,30,12)):
     inputs = keras.Input(shape=input_shape)
     # Augment data.
     additional_input = Input(shape=(4,), name='additional_input')
@@ -289,15 +291,18 @@ def create_vit_classifier(input_shape = (30,30,12), st_embed = st_embed):
     # Classify outputs.
     logits = layers.Dense(num_classes)(features)
     # Create the Keras model.
-    model = keras.Model(inputs=[inputs, additional_input], outputs=logits)
+    if st_embed:
+        model = keras.Model(inputs=[inputs, additional_input], outputs=logits)
+    else:
+        model = keras.Model(inputs=inputs, outputs=logits)
     return model
 
 
 
-def main(X=[],y=[],Z=[], size=[18,18], st_embed = st_embed):
+def main(st_embed, X=[],y=[],Z=[], size=[18,18]):
     histories = []
-
-    model = create_vit_classifier(input_shape= (X.shape[1], X.shape[2], X.shape[3]), st_embed = st_embed)
+    print("St_embed", st_embed)
+    model = create_vit_classifier(st_embed, input_shape= (X.shape[1], X.shape[2], X.shape[3]))
     print(model.summary())
     model.compile(optimizer='adam',
                       loss=tf.keras.losses.LogCosh(name="log_cosh"),
@@ -347,17 +352,17 @@ if __name__ == "__main__":
     root = args.root
     windowsize = list(args.windowsize)
     var_num = args.var_num
-    kernel_size = args.kernel_size
     x_size = args.x_size
     y_size = args.y_size
     xfold = args.xfold
     st_embed = args.st_embed
-    
+    model_name = args.model_name
+
     windows = f'{windowsize[0]}x{windowsize[1]}'
     work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
     data_dir = work_dir + 'data/'
     model_dir = work_dir + 'model/'
-    model_name = 'ViT_model1'
+    #model_name = 'ViT_model1'
     st_embed = True if st_embed == "YES" else False
     model_name = model_name + '_fold' + str(xfold) + '_' + mode  + ('_st' if st_embed else '')
 
@@ -375,4 +380,4 @@ if __name__ == "__main__":
     print ("number of input examples = " + str(X.shape[0]))
     print ("X shape: " + str(X.shape))
     print ("Y shape: " + str(Y.shape))
-    main(X=X,y=Y,Z = Z, size=windowsize, st_embed=st_embed)
+    main(st_embed, X=X,y=Y,Z = Z, size=windowsize)
