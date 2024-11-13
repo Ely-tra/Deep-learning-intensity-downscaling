@@ -51,22 +51,21 @@ import libtcg_utils as tcg_utils
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 import argparse
-
+import re
 
 #==============================================================================================
 # Argument Parsing
 #==============================================================================================
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
-    parser.add_argument('--mode', type=str, required=True, help='Mode of operation (e.g., VMAX, PMIN, RMW)')
-    parser.add_argument('--root', type=str, required=True, help='Working directory path')
-    parser.add_argument('--windowsize', type=int, nargs=2, required=True, help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('--var_num', type=int, required=True, help='Number of variables')
-    parser.add_argument('--x_size', type=int, required=True, help='X dimension size for the input')
-    parser.add_argument('--y_size', type=int, required=True, help='Y dimension size for the input')
-    parser.add_argument('--xfold', type=int, required=True, help='Number of fold for test data')
-    parser.add_argument('--st_embed', type=str, choices=['YES', 'NO'], required=True, help='Including space-time embedded')
-    parser.add_argument('--model_name', type=str, required=True, help='model name')
+    parser.add_argument('--mode', type=str, default = 'VMAX', help='Mode of operation (e.g., VMAX, PMIN, RMW)')
+    parser.add_argument('--model_name', type=str, default = 'ViTmodel1', help='Core name of the model')
+    parser.add_argument('--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Working directory path')
+    parser.add_argument('--windowsize', type=int, nargs=2, default = [19,19], help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('--var_num', type=int, default = 13, help='Number of variables')
+    parser.add_argument('--x_size', type=int, default = 72, help='X dimension size for the input')
+    parser.add_argument('--y_size', type=int, default = 72, help='Y dimension size for the input')
+    parser.add_argument('--st_embed', action='store_true', help='Including space-time embedded')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate')
     parser.add_argument('--weight_decay', type=float, default=0.0001, help='Weight decay rate')
     parser.add_argument('--batch_size', type=int, default=256, help='Batch size for training')
@@ -77,7 +76,8 @@ def parse_args():
     parser.add_argument('--num_heads', type=int, default=4, help='Number of heads in multi-head attention')
     parser.add_argument('--transformer_layers', type=int, default=8, help='Number of transformer layers')
     parser.add_argument('--mlp_head_units', nargs='+', type=int, default=[2048, 1024], help='Number of units in MLP head layers')
-    
+    parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation')
+    parser.add_argument('--test_year', nargs='+', type=int, default=[2017], help='Year(s) taken for test')
     return parser.parse_args()
 #
 # Configurable VIT parameters
@@ -92,12 +92,30 @@ patch_size = args.patch_size
 projection_dim = args.projection_dim             
 num_heads = args.num_heads			
 num_classes = 1			
+validation_year = args.validation_year
+test_year = args.test_year
 transformer_units = [		
     projection_dim*2,
     projection_dim]  		
 transformer_layers = args.transformer_layers
 mlp_head_units = args.mlp_head_units
 num_patches = (image_size // patch_size) ** 2
+mode = args.mode
+root = args.root
+windowsize = list(args.windowsize)
+var_num = args.var_num
+x_size = args.x_size
+y_size = args.y_size
+st_embed = args.st_embed
+    
+windows = f'{windowsize[0]}x{windowsize[1]}'
+work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
+data_dir = work_dir + 'data/'
+model_dir = work_dir + 'model/'
+model_name = args.model_name
+#model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{('_st' if st_embed else '')}'
+model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{"_st" if st_embed else ""}'
+
 
 #==============================================================================================
 # Define function to parse command line arguments
@@ -113,48 +131,94 @@ def mode_switch(mode):
     # Return the corresponding value if mode is found, otherwise return None or a default value
     return switcher.get(mode, None)
 
-def load_data_excluding_fold(data_directory, xfold, mode):
+def get_year_directories(data_directory):
+    """
+    List all directory names within a given directory that are formatted as four-digit years.
+
+    Parameters:
+    - data_directory (str): Path to the directory containing potential year-named subdirectories.
+
+    Returns:
+    - list: A list of directory names that match the four-digit year format.
+    """
+    all_entries = os.listdir(data_directory)
+    year_directories = [
+        entry for entry in all_entries
+        if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
+    ]
+    return year_directories
+
+def load_data_excluding_year(data_directory, mode, validation_year = validation_year, test_year = test_year):
+    """
+    Loads data from specified directory excluding specified years and organizes it into training and validation sets.
+
+    Args:
+        data_directory (str): The root directory where data files are stored.
+        mode (str): Mode of operation which defines how labels should be manipulated or filtered.
+        validation_year (list): List of years to be used for validation.
+        test_year (list): List of years to be excluded from the loading process.
+        var_num (int): Variable number identifier used in file naming.
+        windows (str): Window size identifier used in file naming.
+
+    Returns:
+        tuple: Tuple containing six elements:
+               - all_features (np.ndarray): Array of all features excluding validation and test years.
+               - all_labels (np.ndarray): Array of all labels corresponding to all_features.
+               - all_space_times (np.ndarray): Array of all spatial and temporal data corresponding to all_features.
+               - val_features (np.ndarray): Array of validation features from the validation years.
+               - val_labels (np.ndarray): Array of validation labels corresponding to val_features.
+               - val_space_times (np.ndarray): Array of validation spatial and temporal data corresponding to val_features.
+    """
+    years = get_year_directories(data_directory)
     months = range(1, 13)  # Months labeled 1 to 12
-    k = 10  # Total number of folds
-    b = mode_switch(mode)
-    all_features = []
-    all_labels = []
-    all_space_times = []
-    # Loop over each fold
-    for fold in range(1, k+1):
-        if fold == xfold:
-            continue  # Skip the excluded fold
+    b = mode_switch(mode)  # Make sure this function is defined elsewhere
+    all_features, all_labels, all_space_times = [], [], []
+    val_features, val_labels, val_space_times = [], [], []
+
+    # Loop over each year
+    for year in years:
+        if year in test_year:
+            continue  # Skip the excluded year
 
         # Loop over each month
         for month in months:
-            feature_filename = f'test_features_fold{fold}_{windows}{month:02d}fixed.npy'
-            label_filename = f'test_labels_fold{fold}_{windows}{month:02d}fixed.npy'
-            space_time_filename = f'test_spacetime_fold{fold}_{windows}{month:02d}fixed.npy'
-            print(f'Loading {feature_filename}')
+            feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
+            label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
+            space_time_filename = f'spacetime{var_num}_{windows}{month:02d}.npy'
+
             # Construct full paths
-            feature_path = os.path.join(data_directory, feature_filename)
-            label_path = os.path.join(data_directory, label_filename)
-            space_time_path = os.path.join(data_directory, space_time_filename)
+            feature_path = os.path.join(data_directory, year, feature_filename)
+            label_path = os.path.join(data_directory, year, label_filename)
+            space_time_path = os.path.join(data_directory, year, space_time_filename)
+
             # Check if files exist before loading
-            print(f'Loading {feature_path}')
-            if os.path.exists(feature_path) and os.path.exists(label_path):
-                # Load the data
+            if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
                 features = np.load(feature_path)
-                labels = np.load(label_path)[:,b]
+                labels = np.load(label_path)[:, b]
                 space_time = np.load(space_time_path)
+
                 # Append to lists
-                all_features.append(features)
-                all_labels.append(labels)
-                all_space_times.append(space_time)
+                if year in validation_year:
+                    val_features.append(features)
+                    val_labels.append(labels)
+                    val_space_times.append(space_time)
+                else:
+                    all_features.append(features)
+                    all_labels.append(labels)
+                    all_space_times.append(space_time)
             else:
-                print(f"Warning: Files not found for fold {fold} and month {month}")
-                print(label_path,feature_path)
+                print(f"Warning: Files not found for year {year} and month {month}")
+                print(label_path, feature_path)
 
     # Concatenate all loaded data into single arrays
     all_features = np.concatenate(all_features, axis=0)
     all_labels = np.concatenate(all_labels, axis=0)
     all_space_times = np.concatenate(all_space_times, axis=0)
-    return all_features, all_labels, all_space_times
+    val_features = np.concatenate(val_features, axis=0)
+    val_labels = np.concatenate(val_labels, axis=0)
+    val_space_times = np.concatenate(val_space_times, axis=0)
+
+    return all_features, all_labels, all_space_times, val_features, val_labels, val_space_times
 
 def mlp(x, hidden_units, dropout_rate):
     for units in hidden_units:
@@ -299,7 +363,7 @@ def create_vit_classifier(st_embed, input_shape = (30,30,12)):
 
 
 
-def main(st_embed, X=[],y=[],Z=[], size=[18,18]):
+def main(X=[],Y=[],Z=[], X_val=[], Y_val = [], Z_val = [], size=[18,18], st_embed = st_embed):
     histories = []
     print("St_embed", st_embed)
     model = create_vit_classifier(st_embed, input_shape= (X.shape[1], X.shape[2], X.shape[3]))
@@ -314,9 +378,9 @@ def main(st_embed, X=[],y=[],Z=[], size=[18,18]):
 ]
     early_stopping = EarlyStopping(monitor='val_RMSE', patience=5, restore_best_weights=True)    
     if st_embed:
-        hist = model.fit([X,Z], Y, epochs = num_epochs , batch_size = 128, callbacks=callbacks, validation_split=0.2, verbose=2)
+        hist = model.fit([X, Z], Y, epochs=num_epochs, batch_size=128, callbacks=callbacks, validation_data=([X_val, Z_val], Y_val), verbose=2)
     else:
-        hist = model.fit(X, Y, epochs = num_epochs, batch_size = 128, callbacks=callbacks, validation_split=0.2, verbose=2)
+        hist = model.fit(X, Y, epochs=num_epochs, batch_size=128, callbacks=callbacks, validation_data=(X_val, Y_val), verbose=2)
 def normalize_channels(X,y):
     """
     Normalizes each channel in each sample individually.
@@ -348,30 +412,14 @@ def normalize_Z(Z):
 #==============================================================================================
 if __name__ == "__main__":
     # Read arguments
-    mode = args.mode
-    root = args.root
-    windowsize = list(args.windowsize)
-    var_num = args.var_num
-    x_size = args.x_size
-    y_size = args.y_size
-    xfold = args.xfold
-    st_embed = args.st_embed
-    model_name = args.model_name
-
-    windows = f'{windowsize[0]}x{windowsize[1]}'
-    work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
-    data_dir = work_dir + 'data/'
-    model_dir = work_dir + 'model/'
-    #model_name = 'ViT_model1'
-    st_embed = True if st_embed == "YES" else False
-    model_name = model_name + '_fold' + str(xfold) + '_' + mode  + ('_st' if st_embed else '')
-
-    X, Y, Z = load_data_excluding_fold(data_dir, xfold, mode) 
+    X, Y, Z, X_val, Y_val, Z_val = load_data_excluding_year(data_dir, mode) 
     X=np.transpose(X, (0, 2, 3, 1))
     
 # Normalize the data before encoding
     X,Y = normalize_channels(X, Y)
     Z = normalize_Z(Z)
+    X_val,Y_val = normalize_channels(X_val, Y_val)
+    Z_val = normalize_Z(Z_val)
     number_channels=X.shape[3]
     print('Input shape of the X features data: ',X.shape)
     print('Input shape of the y label data: ',Y.shape)
@@ -380,4 +428,5 @@ if __name__ == "__main__":
     print ("number of input examples = " + str(X.shape[0]))
     print ("X shape: " + str(X.shape))
     print ("Y shape: " + str(Y.shape))
-    main(st_embed, X=X,y=Y,Z = Z, size=windowsize)
+
+    main(X=X,Y=Y,Z = Z, X_val = X_val, Y_val = Y_val, Z_val = Z_val, size=windowsize, st_embed=st_embed)

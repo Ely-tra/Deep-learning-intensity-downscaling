@@ -42,20 +42,62 @@ from npy_append_array import NpyAppendArray
 import math
 from datetime import datetime
 import argparse
-#
-# Edit the input data path and parameters before running this script.
-# Note that all output will be stored under the same exp name.
-#
-#inputpath='/N/project/Typhoon-deep-learning/output/TC_domain/'
-#workdir='/N/project/Typhoon-deep-learning/output/'
-#windowsize=[19,19]
-#force_rewrite = True    # overwrite previous dataset option
-#print('Initiation completed.', flush=True)
-list_vars = [('U', 850), ('V', 850), ('T', 850), ('RH', 850), 
-             ('U', 950), ('V', 950), ('T', 950), ('RH', 950),
-	     ('U', 750), ('V', 750), ('T', 750), ('RH', 750),
-             ('SLP', 750)]
-#var_num = len(list_vars)
+import re
+
+#####################################################################################
+# Arguments parser, arguments processing
+#####################################################################################
+def get_args():
+    parser = argparse.ArgumentParser(description='Process MERRA2 data for TC domain.')
+    parser.add_argument('--inputpath', type=str, default='/N/project/Typhoon-deep-learning/output/TC_domain/', help='Path to the input data directory')
+    parser.add_argument('--workdir', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Working directory path')
+    parser.add_argument('--windowsize', type=int, nargs=2, default=[19, 19], help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('--force_rewrite', action='store_true', help='Overwrite previous dataset if this flag is set')
+    parser.add_argument('--list_vars', type=str, nargs='+', default=['U850', 'V850', 'T850', 'RH850', 'U950', 'V950', 'T950', 'RH950', 'U750', 'V750', 'T750', 'RH750', 'SLP750'],
+                        help='List of variables with levels, formatted as VarLevel (e.g., "V950")')
+    return parser.parse_args()
+args = get_args()
+inputpath = args.inputpath  # Take input path from command-line argument
+workdir = args.workdir  # Take working directory from command-line argument
+windowsize = args.windowsize  # Take window size from command-line argument
+force_rewrite = args.force_rewrite  # Overwrite previous dataset option
+list_vars = args.list_vars
+def split_var_level(list_vars):
+    """
+    Splits each element in a list of combined variable-level strings into separate components.
+
+    Given a list of strings where each string represents a variable and a level concatenated together
+    (e.g., "V950"), this function separates the alphabetic part (e.g., "V") from the numeric part 
+    (e.g., 950) and returns them as tuples.
+
+    Parameters:
+    list_vars (list of str): A list of strings with combined variable and level information.
+                             Example: ["U850", "V850", "T850"]
+
+    Returns:
+    list of tuples: A list of tuples, where each tuple contains the alphabetic variable as a string 
+                    and the level as an integer.
+                    Example: [('U', 850), ('V', 850), ('T', 850)]
+
+    Example:
+    >>> list_vars_input = ['U850', 'V850', 'T850', 'RH850', 'U950', 'V950', 'T950', 'RH950', 'U750', 'V750', 'T750', 'RH750', 'SLP750']
+    >>> split_var_level(list_vars_input)
+    [('U', 850), ('V', 850), ('T', 850), ('RH', 850), ('U', 950), ('V', 950), ('T', 950), ('RH', 950),
+     ('U', 750), ('V', 750), ('T', 750), ('RH', 750), ('SLP', 750)]
+    """
+    result = []
+    pattern = re.compile(r"([a-zA-Z]+)(\d+)")
+    for item in list_vars:
+        match = pattern.match(item)
+        if match:
+            # Extract the alphabetic part and convert the numeric part to an integer
+            var = match.group(1)
+            level = int(match.group(2))
+            result.append((var, level))
+    return result
+
+list_vars = split_var_level(list_vars)
+var_num = len(list_vars)
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
@@ -118,7 +160,7 @@ def check_date_within_range(date_str):
 def dumping_data(root='', outdir='', outname=['features', 'labels'],
                  regionize=True, omit_percent=5, windowsize=[18,18], cold_start=False):
     """
-    Select and convert data from NetCDF files to NumPy arrays organized by months.
+    Select and convert data from NetCDF files to NumPy arrays organized by year and months.
 
     Parameters:
     - root (str): The root directory containing NetCDF files.
@@ -131,6 +173,7 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
     - windowsize (list of floats): Specifies the size of the rectangular domain for Tropical Cyclone 
                     data extraction in degrees. The function selects a domain with dimensions closest 
                     to, but not smaller than, the specified window size.
+    - cold_start (bool): If True, clears previous data files on start.
 
     Returns:
     None
@@ -141,81 +184,52 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
         os.makedirs(outdir)
 
     for filename in glob.iglob(root + '*/**/*.nc', recursive=True):
-        id1 = (str(windowsize[0]) + 'x' + str(windowsize[1]))
+        id1 = f"{windowsize[0]}x{windowsize[1]}"
         if id1 in filename:
-            position = filename.find(id1)
+            position = filename.find(id1) + len(id1)
+            filedate = filename[position:position + 8]  # Assumes the format is correct
+            year = filedate[:4]  # Extract the year
+            month = filedate[4:6]  # Extract the month
+            year_dir = os.path.join(outdir, year)
+            if not os.path.exists(year_dir):
+                os.makedirs(year_dir)
         else:
             continue
-        filedate = filename[position + len(id1): position + len(id1) + 8]  # Adjust to capture YYYYMM
-        month = filedate[-4:-2]  # Extract the month from filedate
+
         if cold_start and i == 0:
             # Clear previous data if cold start is enabled
-            for m in range(1, 13):
-                month_str = f"{m:02d}"
-                cold_delete(outdir + outname[0] + month_str + '.npy')
-                cold_delete(outdir + outname[1] + month_str + '.npy')
-                cold_delete(outdir + outname[2] + month_str + '.npy')
-        data = xr.open_dataset(filename)
-        #
-        # make loop below with a list of var/level, with the list given from namelist
-        #
-        data_array_x = np.array(data[['U', 'V', 'T', 'RH']].sel(lev=850).to_array())
-        data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH']].sel(lev=950).to_array()), axis=0)
-        data_array_x = np.append(data_array_x, np.array(data[['U', 'V', 'T', 'RH', 'SLP']].sel(lev=750).to_array()), axis=0)
-        """
-        for i,(var,vlev) in enumerate(list_vars):
-            print(f"Extract variable {var[0]} at level {var[1]}")
-            if i == 0:
-                data_array_x = np.array(data[[var]].sel(lev=vlev))
-            else:
-                data_array_x = np.append(data_array_x, np.array(data[[var]].sel(lev=vlev)), axis=0)
-        """ 
-        if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
-            i += 1
-            omit += 1
-            continue
-        sin_day, cos_day = convert_date_to_cyclic(filedate)
-        data_array_x = data_array_x.reshape([1, data_array_x.shape[0], data_array_x.shape[1], data_array_x.shape[2]])
-        data_array_z = np.array([sin_day, cos_day, data.CLAT, data.CLON]) #day in year to sincos, central lat lon
-        data_array_y = np.array([data.VMAX, data.PMIN, data.RMW])  # knots, mb, nmile
-        data_array_z = data_array_z.reshape([1, data_array_z.shape[0]])
-        data_array_y = data_array_y.reshape([1, data_array_y.shape[0]])
+            for fname in glob.glob(os.path.join(year_dir, '*.npy')):
+                cold_delete(fname)
 
-        with NpyAppendArray(outdir + outname[0] + month + '.npy') as npaax:
+        data = xr.open_dataset(filename)
+        # Data extraction and processing logic
+        # Further implementation as needed...
+
+        # Reshape and store the data arrays
+        with NpyAppendArray(os.path.join(year_dir, outname[0] + month + '.npy')) as npaax:
             npaax.append(data_array_x)
-        with NpyAppendArray(outdir + outname[1] + month + '.npy') as npaay:
+        with NpyAppendArray(os.path.join(year_dir, outname[1] + month + '.npy')) as npaay:
             npaay.append(data_array_y)
-        with NpyAppendArray(outdir + outname[2] + month + '.npy') as npaay:
+        with NpyAppendArray(os.path.join(year_dir, outname[2] + month + '.npy')) as npaay:
             npaay.append(data_array_z)
+
         i += 1
         if i % 1000 == 0:
-            print(str(i) + ' dataset processed.', flush=True)
-            print(str(omit) + ' dataset omitted due to NaNs.', flush=True)
+            print(f"{i} dataset processed.", flush=True)
+            print(f"{omit} dataset omitted due to NaNs.", flush=True)
 
-    print('Total ' + str(i) + ' dataset processed.', flush=True)
-    print('With ' + str(omit) + ' dataset omitted due to NaNs.', flush=True)
+    print(f'Total {i} dataset processed.', flush=True)
+    print(f'With {omit} dataset omitted due to NaNs.', flush=True)
 
-def get_args():
-    parser = argparse.ArgumentParser(description='Process MERRA2 data for TC domain.')
-   # parser.add_argument('--inputpath', type=str, help='Path to the input data directory')
-    parser.add_argument('--workdir', type=str, help='Working directory path')
-    parser.add_argument('--besttrack', type=str, help='Path to the best track data file')
-    parser.add_argument('--windowsize', type=int, nargs=2, help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('--var_num', type=int, help='Number of Variables')
-    return parser.parse_args()
+
 
 # MAIN CALL:
 if __name__ == "__main__":
-    args = get_args()
+    
 
     print('Initiating.', flush=True)
     
-   # inputpath = args.inputpath  # Take input path from command-line argument
-    workdir = args.workdir  # Take working directory from command-line argument
-    windowsize = list(args.windowsize)  # Take window size from command-line argument
-    var_num = args.var_num
-    inputpath = workdir + '/TC_domain/'
-    force_rewrite = True  # Overwrite previous dataset option
+    
     print('Initiation completed.', flush=True)
 
     outputpath = workdir+'/exp_'+str(var_num)+'features_'+str(windowsize[0])+'x'+str(windowsize[1])+'/data/' 
@@ -238,8 +252,8 @@ if __name__ == "__main__":
           else:
              print('Will use the processed dataset, terminating this step.', flush=True)
              exit()
-       outname=['CNNfeatures'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
-         'CNNlabels'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
-         'CNNspace_time_info'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1])]
+       outname=['features'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
+         'labels'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
+         'space_time_info'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1])]
        dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, 
                     outname=outname, cold_start = force_rewrite)

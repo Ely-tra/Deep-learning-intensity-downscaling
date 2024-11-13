@@ -37,7 +37,28 @@ import argparse
 #csvdataset='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
 #windowsize=[19,19]
 #regions=['EP', 'NA', 'WP']
+def parse_args():
+    parser = argparse.ArgumentParser(description="Merge datasets of tropical cyclones, apply filters, and process data.")
+    parser.add_argument("--csvdataset", type=str, default='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv', help="The path to the dataset in CSV format.")
+    parser.add_argument("--tc_name", type=str, default='', help="Names of the tropical cyclones to search for. Empty by default.")
+    parser.add_argument("--years", type=str, default='', help="Years to search for. Empty by default.")
+    parser.add_argument("--minlat", type=float, default=-90.0, help="Minimum latitude.")
+    parser.add_argument("--maxlat", type=float, default=90.0, help="Maximum latitude.")
+    parser.add_argument("--minlon", type=float, default=-180.0, help="Minimum longitude.")
+    parser.add_argument("--maxlon", type=float, default=180.0, help="Maximum longitude.")
+    parser.add_argument("--regions", nargs='+', default=['EP', 'NA', 'WP'], help="Regions to search for. Specify multiple regions separated by spaces.")
+    parser.add_argument("--maxwind", type=int, default=10000, help="Maximum wind speed in knots.")
+    parser.add_argument("--minwind", type=int, default=0, help="Minimum wind speed in knots.")
+    parser.add_argument("--maxpres", type=int, default=10000, help="Maximum pressure.")
+    parser.add_argument("--minpres", type=int, default=0, help="Minimum pressure.")
+    parser.add_argument("--maxrmw", type=int, default=10000, help="Maximum radius of maximum wind.")
+    parser.add_argument("--minrmw", type=int, default=0, help="Minimum radius of maximum wind.")
+    parser.add_argument("--windowsize", type=int, nargs=2, default=[19, 19], help="The window size around the TC center, specified as two integers for latitude and longitude.")
+    parser.add_argument("--datapath", type=str, default='/N/project/Typhoon-deep-learning/data/nasa-merra2/', help="Path to the data files.")
+    parser.add_argument("--outputpath", type=str, default='/N/project/Typhoon-deep-learning/output/', help="Path to save the output files.")
 
+    return parser.parse_args()
+args = parse_args()
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
@@ -433,23 +454,11 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
 # MAIN CALL: 
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process MERRA2 Data for Tropical Cyclone Analysis")
-    parser.add_argument("--datapath", type=str, help="Path to the MERRA2 data directory")
-    parser.add_argument("--workdir", type=str, help="Directory to save output data")
-    parser.add_argument("--besttrack", type=str, help="Path to the best track CSV file")
-    parser.add_argument("--windowsize", type=int, nargs=2, help="Window size for data extraction, e.g., '[19,19]'")
-    parser.add_argument("--var_num", type=int, help="Number of variables to process")
     
     # Arguments Input
-    args = parser.parse_args()
-    datapath = args.datapath
-    workdir = args.workdir
-    besttrack = args.besttrack
-    windowsize = list(args.windowsize)
-    var_num = args.var_num
-    regions=['EP', 'NA', 'WP'] 
-    print("Window size", windowsize)
-    merge_data(besttrack,regions=regions,windowsize=windowsize,datapath=datapath,outputpath=workdir)
+    args = parse_args()
+    print("Window size", args.windowsize)
+    merge_data(**vars(args))
 #For processing faulty window size, use minlon=171-0.625*3 and maxlon=-171+0.625*3 >>>max-windowsize+3gridsize<<<
 #tc_name (str or None), years (str or None), minlat (float), maxlat (float), minlon (float), maxlon (float), regions (str or None), maxwind (int), minwind (int), maxpres (int), minpres (int), maxrmw (int), minrmw (int), windowsize (tuple) default [18,18], datapath (str)  
 #Define parameters, only csvdataset is required, if no keyword argument is given, the function search for the whole domain            
