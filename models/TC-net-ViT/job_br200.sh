@@ -40,7 +40,7 @@ test_years=(2017)        # Specify test years here
 datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'
 workdir='/N/project/Typhoon-deep-learning/output-Tri/'
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-input_path='/N/project/Typhoon-deep-learning/output/TC_domain/'
+inputpath='/N/project/Typhoon-deep-learning/output-Tri/TC_domain/'
 list_vars=("U850" "V850" "T850" "RH850" "U950" "V950" "T950" "RH950" "U750" "V750" "T750" "RH750" "SLP750")
 list_vars="${list_vars[@]}"
 # This is a proposed workflow
