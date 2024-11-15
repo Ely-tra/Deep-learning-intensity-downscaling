@@ -69,6 +69,22 @@ def mode_switch(mode):
     }
     # Return the corresponding value if mode is found, otherwise return None as default
     return switcher.get(mode, None)
+def get_year_directories(data_directory):
+    """
+    List all directory names within a given directory that are formatted as four-digit years.
+
+    Parameters:
+    - data_directory (str): Path to the directory containing potential year-named subdirectories.
+
+    Returns:
+    - list: A list of directory names that match the four-digit year format.
+    """
+    all_entries = os.listdir(data_directory)
+    year_directories = [
+        entry for entry in all_entries
+        if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
+    ]
+    return year_directories
 
 def load_data_for_test_year(data_directory, mode, test_year, var_num, windows):
     """
