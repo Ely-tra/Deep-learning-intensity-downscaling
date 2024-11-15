@@ -101,6 +101,24 @@ var_num = len(list_vars)
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
+def build_data_array(data, var_levels):
+    # Initialize an empty list to store the arrays
+    arrays = []
+
+    for var, lev in var_levels:
+        # Select the specific variable at the specified level
+        selected_data = data[var].sel(lev=lev)
+
+        # Convert to numpy array and add a new axis if needed (depends on your data shape)
+        numpy_data = np.array(selected_data)
+
+        # Append the numpy array to the list
+        arrays.append(numpy_data)
+
+    # Concatenate all arrays along the first axis (adjust axis if necessary based on data shape)
+    data_array_x = np.concatenate(arrays, axis=0)
+
+    return data_array_x
 def convert_date_to_cyclic(date_str):
     """
     Convert a date in 'YYYYMMDD' format to a cyclic representation using sine and cosine.
@@ -203,6 +221,17 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
 
         data = xr.open_dataset(filename)
         # Data extraction and processing logic
+        data_array_x = build_data_array(data, list_var)
+        if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
+            i += 1
+            omit += 1
+            continue
+        sin_day, cos_day = convert_date_to_cyclic(filedate)
+        data_array_x = data_array_x.reshape([1, data_array_x.shape[0], data_array_x.shape[1], data_array_x.shape[2]])
+        data_array_z = np.array([sin_day, cos_day, data.CLAT, data.CLON]) #day in year to sincos, central lat lon
+        data_array_y = np.array([data.VMAX, data.PMIN, data.RMW])  # knots, mb, nmile
+        data_array_z = data_array_z.reshape([1, data_array_z.shape[0]])
+        data_array_y = data_array_y.reshape([1, data_array_y.shape[0]])
         # Further implementation as needed...
 
         # Reshape and store the data arrays
