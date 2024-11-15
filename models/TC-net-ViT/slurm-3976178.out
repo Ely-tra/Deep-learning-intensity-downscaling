@@ -1,0 +1,668 @@
+Window size [19, 19]
+Total: 29383
+Faulty entry 2001-08-06 05:00:00 unexpected hour.
+Faulty entry 2001-08-21 10:00:00 unexpected hour.
+Faulty entry 2001-08-21 19:00:00 unexpected hour.
+Faulty entry 2001-08-22 05:00:00 unexpected hour.
+300 entries processed over 29383, 1.02% done.
+Time used for the last 300 entries: 264.66
+Time left: 25656.85
+Faulty entry 2001-09-06 22:00:00 unexpected hour.
+600 entries processed over 29383, 2.04% done.
+Time used for the last 300 entries: 154.74
+Time left: 14846.44
+900 entries processed over 29383, 3.06% done.
+Time used for the last 300 entries: 341.73
+Time left: 32445.42
+Faulty entry 2002-06-09 17:00:00 unexpected hour.
+1200 entries processed over 29383, 4.08% done.
+Time used for the last 300 entries: 235.23
+Time left: 22097.84
+Faulty entry 2002-07-25 11:00:00 unexpected hour.
+Faulty entry 2002-08-05 01:00:00 unexpected hour.
+Faulty entry 2002-08-05 02:00:00 unexpected hour.
+Faulty entry 2002-08-09 08:00:00 unexpected hour.
+Faulty entry 2002-08-19 07:00:00 unexpected hour.
+1500 entries processed over 29383, 5.10% done.
+Time used for the last 300 entries: 365.07
+Time left: 33930.76
+Faulty entry 2002-09-04 23:00:00 unexpected hour.
+Faulty entry 2002-09-05 00:45:00 unexpected minute.
+1800 entries processed over 29383, 6.13% done.
+Time used for the last 300 entries: 915.02
+Time left: 84129.62
+Faulty entry 2002-09-12 04:00:00 unexpected hour.
+Faulty entry 2002-09-12 04:30:00 unexpected minute.
+Faulty entry 2002-09-14 08:00:00 unexpected hour.
+Faulty entry 2002-09-30 14:00:00 unexpected hour.
+Faulty entry 2002-10-01 11:00:00 unexpected hour.
+Faulty entry 2002-10-01 11:00:00 unexpected hour.
+Faulty entry 2002-10-01 14:00:00 unexpected hour.
+Faulty entry 2002-10-02 20:13:00 unexpected minute.
+Faulty entry 2002-10-03 13:00:00 unexpected hour.
+2100 entries processed over 29383, 7.15% done.
+Time used for the last 300 entries: 1053.88
+Time left: 95843.57
+Faulty entry 2002-10-11 17:00:00 unexpected hour.
+Faulty entry 2002-10-11 22:00:00 unexpected hour.
+Faulty entry 2002-10-16 16:00:00 unexpected hour.
+Faulty entry 2002-10-25 16:30:00 unexpected minute.
+2400 entries processed over 29383, 8.17% done.
+Time used for the last 300 entries: 305.64
+Time left: 27490.22
+Faulty entry 2003-06-17 20:00:00 unexpected hour.
+Faulty entry 2003-06-19 04:00:00 unexpected hour.
+Faulty entry 2003-06-30 19:00:00 unexpected hour.
+Faulty entry 2003-07-11 10:00:00 unexpected hour.
+Faulty entry 2003-07-15 15:30:00 unexpected minute.
+Faulty entry 2003-08-07 10:00:00 unexpected hour.
+2700 entries processed over 29383, 9.19% done.
+Time used for the last 300 entries: 257.82
+Time left: 22931.27
+Faulty entry 2003-08-16 10:30:00 unexpected minute.
+Faulty entry 2003-08-31 11:00:00 unexpected hour.
+3000 entries processed over 29383, 10.21% done.
+Time used for the last 300 entries: 181.10
+Time left: 15926.79
+Faulty entry 2003-09-10 19:00:00 unexpected hour.
+Faulty entry 2003-09-18 17:00:00 unexpected hour.
+Faulty entry 2003-09-19 08:00:00 unexpected hour.
+Faulty entry 2003-09-19 22:00:00 unexpected hour.
+Faulty entry 2003-09-22 09:30:00 unexpected minute.
+Faulty entry 2003-10-05 10:00:00 unexpected hour.
+Faulty entry 2003-10-07 08:00:00 unexpected hour.
+3300 entries processed over 29383, 11.23% done.
+Time used for the last 300 entries: 168.19
+Time left: 14622.61
+Faulty entry 2003-12-06 23:00:00 unexpected hour.
+3600 entries processed over 29383, 12.25% done.
+Time used for the last 300 entries: 268.03
+Time left: 23035.79
+Faulty entry 2005-05-19 17:00:00 unexpected hour.
+Faulty entry 2005-06-10 08:00:00 unexpected hour.
+Faulty entry 2005-06-11 01:00:00 unexpected hour.
+Faulty entry 2005-06-11 19:00:00 unexpected hour.
+Faulty entry 2005-06-28 22:35:00 unexpected minute.
+Faulty entry 2005-07-04 03:30:00 unexpected minute.
+Faulty entry 2005-07-08 02:45:00 unexpected minute.
+Faulty entry 2005-07-08 18:45:00 unexpected minute.
+Faulty entry 2005-07-10 19:30:00 unexpected minute.
+Faulty entry 2005-07-14 07:00:00 unexpected hour.
+3900 entries processed over 29383, 13.27% done.
+Time used for the last 300 entries: 372.03
+Time left: 31601.85
+Faulty entry 2005-07-18 06:30:00 unexpected minute.
+Faulty entry 2005-07-26 11:00:00 unexpected hour.
+Faulty entry 2005-08-04 10:00:00 unexpected hour.
+4200 entries processed over 29383, 14.29% done.
+Time used for the last 300 entries: 247.72
+Time left: 20794.04
+Faulty entry 2005-08-23 03:30:00 unexpected minute.
+Faulty entry 2005-08-25 17:00:00 unexpected hour.
+Faulty entry 2005-08-25 19:00:00 unexpected hour.
+Faulty entry 2005-08-25 22:30:00 unexpected minute.
+Faulty entry 2005-08-29 11:10:00 unexpected minute.
+Faulty entry 2005-08-29 14:45:00 unexpected minute.
+Faulty entry 2005-09-06 04:00:00 unexpected hour.
+Faulty entry 2005-09-06 05:00:00 unexpected hour.
+Faulty entry 2005-09-06 16:00:00 unexpected hour.
+4500 entries processed over 29383, 15.31% done.
+Time used for the last 300 entries: 199.24
+Time left: 16525.54
+Faulty entry 2005-09-24 07:40:00 unexpected minute.
+4800 entries processed over 29383, 16.34% done.
+Time used for the last 300 entries: 125.96
+Time left: 10321.61
+Faulty entry 2005-10-02 10:00:00 unexpected hour.
+Faulty entry 2005-10-05 23:00:00 unexpected hour.
+Faulty entry 2005-10-21 21:45:00 unexpected minute.
+Faulty entry 2005-10-22 03:30:00 unexpected minute.
+Faulty entry 2005-10-23 10:00:00 unexpected hour.
+Faulty entry 2005-10-24 10:30:00 unexpected minute.
+5100 entries processed over 29383, 17.36% done.
+Time used for the last 300 entries: 186.77
+Time left: 15117.63
+Faulty entry 2006-06-13 16:30:00 unexpected minute.
+5400 entries processed over 29383, 18.38% done.
+Time used for the last 300 entries: 337.37
+Time left: 26970.37
+Faulty entry 2006-07-21 06:45:00 unexpected minute.
+Faulty entry 2006-08-08 22:00:00 unexpected hour.
+5700 entries processed over 29383, 19.40% done.
+Time used for the last 300 entries: 190.10
+Time left: 15006.74
+Faulty entry 2006-08-17 16:00:00 unexpected hour.
+Faulty entry 2006-08-28 11:15:00 unexpected minute.
+Faulty entry 2006-08-30 05:00:00 unexpected hour.
+Faulty entry 2006-09-01 03:40:00 unexpected minute.
+Faulty entry 2006-09-02 02:00:00 unexpected hour.
+6000 entries processed over 29383, 20.42% done.
+Time used for the last 300 entries: 165.53
+Time left: 12901.60
+Faulty entry 2006-09-15 20:00:00 unexpected hour.
+Faulty entry 2006-09-16 19:15:00 unexpected minute.
+6300 entries processed over 29383, 21.44% done.
+Time used for the last 300 entries: 225.28
+Time left: 17333.49
+Faulty entry 2006-10-26 04:00:00 unexpected hour.
+6600 entries processed over 29383, 22.46% done.
+Time used for the last 300 entries: 302.95
+Time left: 23007.33
+Faulty entry 2007-06-02 13:00:00 unexpected hour.
+Faulty entry 2007-06-02 14:00:00 unexpected hour.
+Faulty entry 2007-07-14 04:00:00 unexpected hour.
+Faulty entry 2007-07-14 05:00:00 unexpected hour.
+Faulty entry 2007-07-14 20:00:00 unexpected hour.
+Faulty entry 2007-08-02 08:00:00 unexpected hour.
+Faulty entry 2007-08-02 16:00:00 unexpected hour.
+6900 entries processed over 29383, 23.48% done.
+Time used for the last 300 entries: 262.77
+Time left: 19693.11
+Faulty entry 2007-08-16 10:30:00 unexpected minute.
+Faulty entry 2007-08-21 08:30:00 unexpected minute.
+Faulty entry 2007-08-22 16:30:00 unexpected minute.
+Faulty entry 2007-09-01 08:45:00 unexpected minute.
+Faulty entry 2007-09-03 07:00:00 unexpected hour.
+Faulty entry 2007-09-06 14:00:00 unexpected hour.
+Faulty entry 2007-09-09 15:30:00 unexpected minute.
+Faulty entry 2007-09-13 07:00:00 unexpected hour.
+7200 entries processed over 29383, 24.50% done.
+Time used for the last 300 entries: 234.68
+Time left: 17353.08
+Faulty entry 2007-09-17 23:00:00 unexpected hour.
+Faulty entry 2007-09-28 05:00:00 unexpected hour.
+Faulty entry 2007-10-29 07:00:00 unexpected hour.
+Faulty entry 2007-11-01 13:15:00 unexpected minute.
+Faulty entry 2007-11-01 17:45:00 unexpected minute.
+7500 entries processed over 29383, 25.52% done.
+Time used for the last 300 entries: 251.93
+Time left: 18376.55
+Faulty entry 2007-12-11 07:00:00 unexpected hour.
+Faulty entry 2008-05-29 20:00:00 unexpected hour.
+7800 entries processed over 29383, 26.55% done.
+Time used for the last 300 entries: 277.55
+Time left: 19967.52
+Faulty entry 2008-07-21 05:30:00 unexpected minute.
+Faulty entry 2008-07-23 14:00:00 unexpected hour.
+Faulty entry 2008-07-23 18:20:00 unexpected minute.
+Faulty entry 2008-07-23 20:00:00 unexpected hour.
+Faulty entry 2008-08-15 14:30:00 unexpected minute.
+Faulty entry 2008-08-16 11:45:00 unexpected minute.
+Faulty entry 2008-08-18 07:00:00 unexpected hour.
+8100 entries processed over 29383, 27.57% done.
+Time used for the last 300 entries: 178.87
+Time left: 12689.66
+Faulty entry 2008-08-18 20:30:00 unexpected minute.
+Faulty entry 2008-08-19 08:45:00 unexpected minute.
+Faulty entry 2008-08-21 19:00:00 unexpected hour.
+Faulty entry 2008-08-23 06:15:00 unexpected minute.
+Faulty entry 2008-08-29 02:00:00 unexpected hour.
+Faulty entry 2008-08-30 22:00:00 unexpected hour.
+Faulty entry 2008-09-03 19:00:00 unexpected hour.
+Faulty entry 2008-09-06 07:00:00 unexpected hour.
+Faulty entry 2008-09-07 13:00:00 unexpected hour.
+Faulty entry 2008-09-08 02:00:00 unexpected hour.
+Faulty entry 2008-09-09 14:00:00 unexpected hour.
+Faulty entry 2008-09-13 07:00:00 unexpected hour.
+8400 entries processed over 29383, 28.59% done.
+Time used for the last 300 entries: 189.44
+Time left: 13249.95
+Faulty entry 2008-10-11 17:00:00 unexpected hour.
+Faulty entry 2008-10-12 04:00:00 unexpected hour.
+Faulty entry 2008-10-12 07:00:00 unexpected hour.
+Faulty entry 2008-10-15 12:30:00 unexpected minute.
+Faulty entry 2008-11-09 01:00:00 unexpected hour.
+8700 entries processed over 29383, 29.61% done.
+Time used for the last 300 entries: 275.65
+Time left: 19004.10
+9000 entries processed over 29383, 30.63% done.
+Time used for the last 300 entries: 252.33
+Time left: 17144.11
+Faulty entry 2009-08-17 05:30:00 unexpected minute.
+Faulty entry 2009-08-24 02:00:00 unexpected hour.
+Faulty entry 2009-08-31 19:00:00 unexpected hour.
+Faulty entry 2009-09-02 13:00:00 unexpected hour.
+Faulty entry 2009-09-02 18:30:00 unexpected minute.
+9300 entries processed over 29383, 31.65% done.
+Time used for the last 300 entries: 144.94
+Time left: 9702.77
+Faulty entry 2009-10-07 19:00:00 unexpected hour.
+Faulty entry 2009-10-07 20:00:00 unexpected hour.
+9600 entries processed over 29383, 32.67% done.
+Time used for the last 300 entries: 203.49
+Time left: 13419.00
+Faulty entry 2009-10-21 14:00:00 unexpected hour.
+Faulty entry 2010-05-29 22:30:00 unexpected minute.
+9900 entries processed over 29383, 33.69% done.
+Time used for the last 300 entries: 258.26
+Time left: 16772.13
+Faulty entry 2010-07-01 02:00:00 unexpected hour.
+Faulty entry 2010-07-08 14:00:00 unexpected hour.
+Faulty entry 2010-07-22 23:15:00 unexpected minute.
+Faulty entry 2010-07-23 05:15:00 unexpected minute.
+Faulty entry 2010-07-23 14:30:00 unexpected minute.
+10200 entries processed over 29383, 34.71% done.
+Time used for the last 300 entries: 235.56
+Time left: 15062.38
+Faulty entry 2010-08-31 08:00:00 unexpected hour.
+Faulty entry 2010-09-04 07:00:00 unexpected hour.
+Faulty entry 2010-09-04 19:00:00 unexpected hour.
+Faulty entry 2010-09-07 02:00:00 unexpected hour.
+Faulty entry 2010-09-07 02:00:00 unexpected hour.
+Faulty entry 2010-09-15 12:45:00 unexpected minute.
+10500 entries processed over 29383, 35.73% done.
+Time used for the last 300 entries: 137.98
+Time left: 8684.78
+Faulty entry 2010-09-17 16:45:00 unexpected minute.
+Faulty entry 2010-09-22 22:00:00 unexpected hour.
+Faulty entry 2010-09-24 19:00:00 unexpected hour.
+Faulty entry 2010-10-25 00:30:00 unexpected minute.
+Faulty entry 2010-10-30 20:00:00 unexpected hour.
+10800 entries processed over 29383, 36.76% done.
+Time used for the last 300 entries: 201.96
+Time left: 12509.87
+Faulty entry 2010-11-06 07:30:00 unexpected minute.
+Faulty entry 2011-06-30 13:00:00 unexpected hour.
+Faulty entry 2011-07-19 14:00:00 unexpected hour.
+11100 entries processed over 29383, 37.78% done.
+Time used for the last 300 entries: 291.94
+Time left: 17791.72
+Faulty entry 2011-07-30 02:30:00 unexpected minute.
+Faulty entry 2011-08-05 13:00:00 unexpected hour.
+Faulty entry 2011-08-20 17:30:00 unexpected minute.
+11400 entries processed over 29383, 38.80% done.
+Time used for the last 300 entries: 204.01
+Time left: 12229.19
+Faulty entry 2011-08-21 23:00:00 unexpected hour.
+Faulty entry 2011-08-22 02:00:00 unexpected hour.
+Faulty entry 2011-08-22 05:25:00 unexpected minute.
+Faulty entry 2011-08-24 16:00:00 unexpected hour.
+Faulty entry 2011-08-28 09:35:00 unexpected minute.
+Faulty entry 2011-08-28 13:00:00 unexpected hour.
+Faulty entry 2011-08-31 17:00:00 unexpected hour.
+Faulty entry 2011-09-03 01:00:00 unexpected hour.
+Faulty entry 2011-09-04 10:30:00 unexpected minute.
+11700 entries processed over 29383, 39.82% done.
+Time used for the last 300 entries: 149.76
+Time left: 8827.26
+Faulty entry 2011-09-11 16:00:00 unexpected hour.
+Faulty entry 2011-09-21 05:00:00 unexpected hour.
+Faulty entry 2011-10-03 10:00:00 unexpected hour.
+12000 entries processed over 29383, 40.84% done.
+Time used for the last 300 entries: 154.72
+Time left: 8964.74
+Faulty entry 2011-10-12 16:00:00 unexpected hour.
+Faulty entry 2011-10-28 02:00:00 unexpected hour.
+12300 entries processed over 29383, 41.86% done.
+Time used for the last 300 entries: 245.92
+Time left: 14003.24
+Faulty entry 2012-05-27 23:00:00 unexpected hour.
+Faulty entry 2012-05-28 04:10:00 unexpected minute.
+Faulty entry 2012-06-16 01:00:00 unexpected hour.
+Faulty entry 2012-06-19 08:00:00 unexpected hour.
+Faulty entry 2012-06-19 11:00:00 unexpected hour.
+12600 entries processed over 29383, 42.88% done.
+Time used for the last 300 entries: 345.44
+Time left: 19325.17
+Faulty entry 2012-08-08 01:00:00 unexpected hour.
+Faulty entry 2012-08-08 03:15:00 unexpected minute.
+Faulty entry 2012-08-09 16:15:00 unexpected minute.
+Faulty entry 2012-08-20 05:30:00 unexpected minute.
+12900 entries processed over 29383, 43.90% done.
+Time used for the last 300 entries: 151.93
+Time left: 8347.44
+Faulty entry 2012-08-29 08:00:00 unexpected hour.
+13200 entries processed over 29383, 44.92% done.
+Time used for the last 300 entries: 138.13
+Time left: 7451.10
+Faulty entry 2012-09-15 22:00:00 unexpected hour.
+Faulty entry 2012-09-29 05:00:00 unexpected hour.
+Faulty entry 2012-09-30 08:00:00 unexpected hour.
+Faulty entry 2012-09-30 10:00:00 unexpected hour.
+13500 entries processed over 29383, 45.94% done.
+Time used for the last 300 entries: 208.32
+Time left: 11028.95
+Faulty entry 2012-10-24 19:00:00 unexpected hour.
+Faulty entry 2012-10-25 05:25:00 unexpected minute.
+Faulty entry 2012-10-29 23:30:00 unexpected minute.
+13800 entries processed over 29383, 46.97% done.
+Time used for the last 300 entries: 220.62
+Time left: 11459.52
+Faulty entry 2013-05-29 19:50:00 unexpected minute.
+Faulty entry 2013-06-06 22:00:00 unexpected hour.
+Faulty entry 2013-06-17 22:00:00 unexpected hour.
+Faulty entry 2013-06-20 11:15:00 unexpected minute.
+14100 entries processed over 29383, 47.99% done.
+Time used for the last 300 entries: 292.77
+Time left: 14914.85
+14400 entries processed over 29383, 49.01% done.
+Time used for the last 300 entries: 165.85
+Time left: 8283.23
+Faulty entry 2013-08-26 04:45:00 unexpected minute.
+Faulty entry 2013-09-15 22:00:00 unexpected hour.
+Faulty entry 2013-09-16 11:15:00 unexpected minute.
+14700 entries processed over 29383, 50.03% done.
+Time used for the last 300 entries: 193.48
+Time left: 9469.59
+Faulty entry 2013-10-15 05:00:00 unexpected hour.
+15000 entries processed over 29383, 51.05% done.
+Time used for the last 300 entries: 160.39
+Time left: 7689.80
+Faulty entry 2013-11-04 05:00:00 unexpected hour.
+15300 entries processed over 29383, 52.07% done.
+Time used for the last 300 entries: 374.26
+Time left: 17569.07
+Faulty entry 2014-07-04 03:15:00 unexpected minute.
+Faulty entry 2014-07-04 08:00:00 unexpected hour.
+Faulty entry 2014-07-10 17:00:00 unexpected hour.
+Faulty entry 2014-07-10 19:00:00 unexpected hour.
+15600 entries processed over 29383, 53.09% done.
+Time used for the last 300 entries: 190.14
+Time left: 8735.76
+Faulty entry 2014-08-03 14:00:00 unexpected hour.
+Faulty entry 2014-08-08 12:30:00 unexpected minute.
+Faulty entry 2014-08-10 01:00:00 unexpected hour.
+15900 entries processed over 29383, 54.11% done.
+Time used for the last 300 entries: 121.81
+Time left: 5474.69
+Faulty entry 2014-09-03 01:00:00 unexpected hour.
+Faulty entry 2014-09-03 04:00:00 unexpected hour.
+16200 entries processed over 29383, 55.13% done.
+Time used for the last 300 entries: 170.30
+Time left: 7483.64
+Faulty entry 2014-09-15 04:45:00 unexpected minute.
+Faulty entry 2014-09-17 16:30:00 unexpected minute.
+Faulty entry 2014-10-05 23:00:00 unexpected hour.
+16500 entries processed over 29383, 56.15% done.
+Time used for the last 300 entries: 169.79
+Time left: 7291.25
+Faulty entry 2014-10-12 08:10:00 unexpected minute.
+Faulty entry 2014-10-12 23:00:00 unexpected hour.
+Faulty entry 2014-10-13 05:00:00 unexpected hour.
+Faulty entry 2014-10-13 10:00:00 unexpected hour.
+Faulty entry 2014-10-13 11:00:00 unexpected hour.
+Faulty entry 2014-10-13 14:30:00 unexpected minute.
+Faulty entry 2014-10-13 22:45:00 unexpected minute.
+Faulty entry 2014-10-13 23:15:00 unexpected minute.
+Faulty entry 2014-10-18 00:30:00 unexpected minute.
+Faulty entry 2014-10-18 09:15:00 unexpected minute.
+Faulty entry 2014-10-27 16:00:00 unexpected hour.
+16800 entries processed over 29383, 57.18% done.
+Time used for the last 300 entries: 212.63
+Time left: 8918.58
+Faulty entry 2015-05-10 10:00:00 unexpected hour.
+Faulty entry 2015-06-08 10:30:00 unexpected minute.
+Faulty entry 2015-06-08 11:15:00 unexpected minute.
+Faulty entry 2015-06-08 20:30:00 unexpected minute.
+17100 entries processed over 29383, 58.20% done.
+Time used for the last 300 entries: 278.85
+Time left: 11417.02
+Faulty entry 2015-06-16 16:45:00 unexpected minute.
+17400 entries processed over 29383, 59.22% done.
+Time used for the last 300 entries: 164.87
+Time left: 6585.45
+Faulty entry 2015-07-16 14:00:00 unexpected hour.
+Faulty entry 2015-07-26 10:00:00 unexpected hour.
+17700 entries processed over 29383, 60.24% done.
+Time used for the last 300 entries: 151.53
+Time left: 5901.15
+Faulty entry 2015-08-23 10:00:00 unexpected hour.
+Faulty entry 2015-08-24 19:00:00 unexpected hour.
+Faulty entry 2015-08-24 20:00:00 unexpected hour.
+18000 entries processed over 29383, 61.26% done.
+Time used for the last 300 entries: 134.72
+Time left: 5111.69
+18300 entries processed over 29383, 62.28% done.
+Time used for the last 300 entries: 132.08
+Time left: 4879.33
+Faulty entry 2015-09-21 04:45:00 unexpected minute.
+Faulty entry 2015-09-21 13:45:00 unexpected minute.
+Faulty entry 2015-10-02 16:00:00 unexpected hour.
+18600 entries processed over 29383, 63.30% done.
+Time used for the last 300 entries: 135.95
+Time left: 4886.56
+Faulty entry 2015-10-23 23:00:00 unexpected hour.
+18900 entries processed over 29383, 64.32% done.
+Time used for the last 300 entries: 333.24
+Time left: 11644.55
+Faulty entry 2016-01-15 13:15:00 unexpected minute.
+Faulty entry 2016-05-29 12:30:00 unexpected minute.
+Faulty entry 2016-06-07 02:00:00 unexpected hour.
+Faulty entry 2016-06-20 22:00:00 unexpected hour.
+19200 entries processed over 29383, 65.34% done.
+Time used for the last 300 entries: 278.96
+Time left: 9468.99
+19500 entries processed over 29383, 66.36% done.
+Time used for the last 300 entries: 129.33
+Time left: 4260.45
+Faulty entry 2016-08-04 04:00:00 unexpected hour.
+Faulty entry 2016-08-06 02:30:00 unexpected minute.
+Faulty entry 2016-08-09 03:30:00 unexpected minute.
+Faulty entry 2016-08-17 08:00:00 unexpected hour.
+Faulty entry 2016-08-22 20:00:00 unexpected hour.
+19800 entries processed over 29383, 67.39% done.
+Time used for the last 300 entries: 185.03
+Time left: 5910.49
+Faulty entry 2016-08-30 08:00:00 unexpected hour.
+Faulty entry 2016-09-02 05:30:00 unexpected minute.
+Faulty entry 2016-09-02 08:00:00 unexpected hour.
+Faulty entry 2016-09-04 16:00:00 unexpected hour.
+Faulty entry 2016-09-06 14:00:00 unexpected hour.
+Faulty entry 2016-09-07 08:30:00 unexpected minute.
+20100 entries processed over 29383, 68.41% done.
+Time used for the last 300 entries: 134.62
+Time left: 4165.60
+Faulty entry 2016-09-20 02:00:00 unexpected hour.
+Faulty entry 2016-09-20 04:00:00 unexpected hour.
+Faulty entry 2016-09-20 08:00:00 unexpected hour.
+20400 entries processed over 29383, 69.43% done.
+Time used for the last 300 entries: 130.76
+Time left: 3915.50
+Faulty entry 2016-10-04 11:00:00 unexpected hour.
+20700 entries processed over 29383, 70.45% done.
+Time used for the last 300 entries: 225.50
+Time left: 6526.85
+Faulty entry 2016-11-24 17:30:00 unexpected minute.
+Faulty entry 2016-11-25 03:30:00 unexpected minute.
+Faulty entry 2017-06-20 02:00:00 unexpected hour.
+Faulty entry 2017-06-22 07:00:00 unexpected hour.
+Faulty entry 2017-07-03 23:00:00 unexpected hour.
+Faulty entry 2017-07-04 07:00:00 unexpected hour.
+21000 entries processed over 29383, 71.47% done.
+Time used for the last 300 entries: 340.81
+Time left: 9523.35
+Faulty entry 2017-07-31 14:45:00 unexpected minute.
+21300 entries processed over 29383, 72.49% done.
+Time used for the last 300 entries: 98.71
+Time left: 2659.56
+Faulty entry 2017-08-05 17:00:00 unexpected hour.
+Faulty entry 2017-08-08 03:45:00 unexpected minute.
+Faulty entry 2017-08-10 05:00:00 unexpected hour.
+Faulty entry 2017-08-18 10:00:00 unexpected hour.
+21600 entries processed over 29383, 73.51% done.
+Time used for the last 300 entries: 152.24
+Time left: 3949.74
+Faulty entry 2017-08-30 08:00:00 unexpected hour.
+Faulty entry 2017-09-06 05:45:00 unexpected minute.
+Faulty entry 2017-09-06 11:15:00 unexpected minute.
+Faulty entry 2017-09-06 16:30:00 unexpected minute.
+Faulty entry 2017-09-08 05:00:00 unexpected hour.
+Faulty entry 2017-09-10 13:00:00 unexpected hour.
+Faulty entry 2017-09-10 19:30:00 unexpected minute.
+21900 entries processed over 29383, 74.53% done.
+Time used for the last 300 entries: 127.53
+Time left: 3180.96
+Faulty entry 2017-09-17 02:00:00 unexpected hour.
+Faulty entry 2017-09-17 07:00:00 unexpected hour.
+Faulty entry 2017-09-17 13:00:00 unexpected hour.
+Faulty entry 2017-09-19 01:15:00 unexpected minute.
+Faulty entry 2017-09-20 10:15:00 unexpected minute.
+Faulty entry 2017-10-08 05:20:00 unexpected minute.
+22200 entries processed over 29383, 75.55% done.
+Time used for the last 300 entries: 287.83
+Time left: 6891.60
+Faulty entry 2017-10-16 11:00:00 unexpected hour.
+Faulty entry 2017-10-28 04:00:00 unexpected hour.
+Faulty entry 2017-10-28 11:00:00 unexpected hour.
+Faulty entry 2017-10-28 22:00:00 unexpected hour.
+22500 entries processed over 29383, 76.57% done.
+Time used for the last 300 entries: 330.52
+Time left: 7583.34
+Faulty entry 2018-06-15 02:00:00 unexpected hour.
+22800 entries processed over 29383, 77.60% done.
+Time used for the last 300 entries: 184.17
+Time left: 4041.28
+Faulty entry 2018-07-20 23:00:00 unexpected hour.
+Faulty entry 2018-07-28 16:00:00 unexpected hour.
+Faulty entry 2018-07-29 08:00:00 unexpected hour.
+Faulty entry 2018-07-29 14:00:00 unexpected hour.
+23100 entries processed over 29383, 78.62% done.
+Time used for the last 300 entries: 280.68
+Time left: 5878.31
+Faulty entry 2018-08-14 17:00:00 unexpected hour.
+Faulty entry 2018-08-23 14:00:00 unexpected hour.
+23400 entries processed over 29383, 79.64% done.
+Time used for the last 300 entries: 127.68
+Time left: 2546.31
+Faulty entry 2018-09-03 11:15:00 unexpected minute.
+Faulty entry 2018-09-03 13:15:00 unexpected minute.
+Faulty entry 2018-09-04 02:00:00 unexpected hour.
+Faulty entry 2018-09-04 04:00:00 unexpected hour.
+Faulty entry 2018-09-05 03:15:00 unexpected minute.
+23700 entries processed over 29383, 80.66% done.
+Time used for the last 300 entries: 121.05
+Time left: 2293.06
+Faulty entry 2018-09-14 11:15:00 unexpected minute.
+24000 entries processed over 29383, 81.68% done.
+Time used for the last 300 entries: 117.51
+Time left: 2108.45
+Faulty entry 2018-09-28 00:30:00 unexpected minute.
+Faulty entry 2018-09-30 11:00:00 unexpected hour.
+Faulty entry 2018-10-02 11:00:00 unexpected hour.
+Faulty entry 2018-10-04 06:20:00 unexpected minute.
+Faulty entry 2018-10-10 17:30:00 unexpected minute.
+24300 entries processed over 29383, 82.70% done.
+Time used for the last 300 entries: 130.20
+Time left: 2205.99
+Faulty entry 2018-10-23 13:30:00 unexpected minute.
+Faulty entry 2018-10-24 01:30:00 unexpected minute.
+24600 entries processed over 29383, 83.72% done.
+Time used for the last 300 entries: 364.43
+Time left: 5810.23
+Faulty entry 2019-07-26 22:00:00 unexpected hour.
+Faulty entry 2019-08-05 20:00:00 unexpected hour.
+24900 entries processed over 29383, 84.74% done.
+Time used for the last 300 entries: 191.95
+Time left: 2868.37
+Faulty entry 2019-08-15 02:00:00 unexpected hour.
+Faulty entry 2019-08-27 01:30:00 unexpected minute.
+Faulty entry 2019-08-27 11:00:00 unexpected hour.
+Faulty entry 2019-08-28 15:30:00 unexpected minute.
+Faulty entry 2019-09-01 16:40:00 unexpected minute.
+Faulty entry 2019-09-02 02:15:00 unexpected minute.
+Faulty entry 2019-09-04 15:30:00 unexpected minute.
+Faulty entry 2019-09-06 12:30:00 unexpected minute.
+25200 entries processed over 29383, 85.76% done.
+Time used for the last 300 entries: 193.92
+Time left: 2703.88
+Faulty entry 2019-09-08 17:00:00 unexpected hour.
+Faulty entry 2019-09-08 19:00:00 unexpected hour.
+Faulty entry 2019-09-17 17:45:00 unexpected minute.
+Faulty entry 2019-09-24 22:00:00 unexpected hour.
+Faulty entry 2019-09-24 23:00:00 unexpected hour.
+25500 entries processed over 29383, 86.78% done.
+Time used for the last 300 entries: 247.18
+Time left: 3199.35
+Faulty entry 2019-09-29 14:00:00 unexpected hour.
+Faulty entry 2019-10-20 19:30:00 unexpected minute.
+25800 entries processed over 29383, 87.81% done.
+Time used for the last 300 entries: 408.31
+Time left: 4876.55
+Faulty entry 2020-05-27 13:30:00 unexpected minute.
+Faulty entry 2020-05-31 10:00:00 unexpected hour.
+26100 entries processed over 29383, 88.83% done.
+Time used for the last 300 entries: 389.61
+Time left: 4263.64
+Faulty entry 2020-06-03 13:00:00 unexpected hour.
+Faulty entry 2020-06-07 22:00:00 unexpected hour.
+Faulty entry 2020-07-10 20:00:00 unexpected hour.
+Faulty entry 2020-07-25 15:30:00 unexpected minute.
+Faulty entry 2020-07-25 22:00:00 unexpected hour.
+Faulty entry 2020-07-25 23:15:00 unexpected minute.
+Faulty entry 2020-07-30 16:15:00 unexpected minute.
+26400 entries processed over 29383, 89.85% done.
+Time used for the last 300 entries: 364.51
+Time left: 3624.42
+Faulty entry 2020-08-01 13:00:00 unexpected hour.
+Faulty entry 2020-08-04 03:10:00 unexpected minute.
+Faulty entry 2020-08-21 20:30:00 unexpected minute.
+Faulty entry 2020-08-21 23:30:00 unexpected minute.
+Faulty entry 2020-08-23 04:30:00 unexpected minute.
+Faulty entry 2020-08-24 02:00:00 unexpected hour.
+26700 entries processed over 29383, 90.87% done.
+Time used for the last 300 entries: 155.95
+Time left: 1394.69
+Faulty entry 2020-09-14 08:50:00 unexpected minute.
+Faulty entry 2020-09-16 09:45:00 unexpected minute.
+27000 entries processed over 29383, 91.89% done.
+Time used for the last 300 entries: 139.07
+Time left: 1104.71
+Faulty entry 2020-09-18 18:40:00 unexpected minute.
+Faulty entry 2020-09-22 02:45:00 unexpected minute.
+Faulty entry 2020-10-03 16:45:00 unexpected minute.
+27300 entries processed over 29383, 92.91% done.
+Time used for the last 300 entries: 120.98
+Time left: 840.03
+Faulty entry 2020-10-07 10:30:00 unexpected minute.
+Faulty entry 2020-10-09 23:00:00 unexpected hour.
+Faulty entry 2020-10-27 03:55:00 unexpected minute.
+27600 entries processed over 29383, 93.93% done.
+Time used for the last 300 entries: 192.03
+Time left: 1141.31
+Faulty entry 2020-11-08 08:55:00 unexpected minute.
+Faulty entry 2020-11-09 04:00:00 unexpected hour.
+Faulty entry 2020-11-12 09:20:00 unexpected minute.
+Faulty entry 2020-11-17 03:40:00 unexpected minute.
+27900 entries processed over 29383, 94.95% done.
+Time used for the last 300 entries: 241.75
+Time left: 1195.03
+Faulty entry 2021-06-19 04:30:00 unexpected minute.
+Faulty entry 2021-06-28 23:20:00 unexpected minute.
+Faulty entry 2021-07-05 18:30:00 unexpected minute.
+Faulty entry 2021-07-07 14:30:00 unexpected minute.
+Faulty entry 2021-07-09 16:30:00 unexpected minute.
+28200 entries processed over 29383, 95.97% done.
+Time used for the last 300 entries: 295.31
+Time left: 1164.52
+Faulty entry 2021-07-27 20:00:00 unexpected hour.
+Faulty entry 2021-08-08 11:00:00 unexpected hour.
+Faulty entry 2021-08-08 20:00:00 unexpected hour.
+Faulty entry 2021-08-11 17:00:00 unexpected hour.
+Faulty entry 2021-08-16 16:30:00 unexpected minute.
+Faulty entry 2021-08-16 19:00:00 unexpected hour.
+28500 entries processed over 29383, 96.99% done.
+Time used for the last 300 entries: 151.93
+Time left: 447.19
+Faulty entry 2021-08-17 14:00:00 unexpected hour.
+Faulty entry 2021-08-19 09:45:00 unexpected minute.
+Faulty entry 2021-08-21 05:30:00 unexpected minute.
+Faulty entry 2021-08-22 15:20:00 unexpected minute.
+Faulty entry 2021-08-22 16:15:00 unexpected minute.
+Faulty entry 2021-08-27 23:25:00 unexpected minute.
+Faulty entry 2021-08-29 16:00:00 unexpected hour.
+Faulty entry 2021-08-29 16:55:00 unexpected minute.
+28800 entries processed over 29383, 98.02% done.
+Time used for the last 300 entries: 215.15
+Time left: 418.10
+Faulty entry 2021-09-09 01:15:00 unexpected minute.
+Faulty entry 2021-09-10 02:50:00 unexpected minute.
+Faulty entry 2021-09-11 03:30:00 unexpected minute.
+Faulty entry 2021-09-14 05:30:00 unexpected minute.
+29100 entries processed over 29383, 99.04% done.
+Time used for the last 300 entries: 225.20
+Time left: 212.44
+Faulty entry 2021-10-13 12:30:00 unexpected minute.
+Faulty entry 2021-10-25 11:00:00 unexpected hour.
+Total: 29383 entries processed.
+With 372 faulty entries.
+Generated 29011 windows.

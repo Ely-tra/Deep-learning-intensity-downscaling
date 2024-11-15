@@ -102,22 +102,24 @@ var_num = len(list_vars)
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
 def build_data_array(data, var_levels):
-    # Initialize an empty list to store the arrays
     arrays = []
 
     for var, lev in var_levels:
-        # Select the specific variable at the specified level
-        selected_data = data[var].sel(lev=lev)
+        try:
+            # Attempt to select the variable at the specified level
+            selected_data = data[var].sel(lev=lev)
+        except KeyError as e:
+            selected_data = data[var]  # Select without using 'lev'
 
-        # Convert to numpy array and add a new axis if needed (depends on your data shape)
+        # Convert to numpy array (add a new axis if needed based on your data shape)
         numpy_data = np.array(selected_data)
-
+        
         # Append the numpy array to the list
         arrays.append(numpy_data)
 
     # Concatenate all arrays along the first axis (adjust axis if necessary based on data shape)
-    data_array_x = np.concatenate(arrays, axis=0)
-
+    data_array_x = np.stack(arrays, axis = 0)
+    
     return data_array_x
 def convert_date_to_cyclic(date_str):
     """
@@ -148,6 +150,7 @@ def cold_delete(filepath):
     try:
         os.remove(filepath)
         print(f"File {filepath} has been successfully removed.")
+
     except FileNotFoundError:
         print("The file does not exist.")
     except PermissionError:
@@ -221,7 +224,7 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
 
         data = xr.open_dataset(filename)
         # Data extraction and processing logic
-        data_array_x = build_data_array(data, list_var)
+        data_array_x = build_data_array(data, list_vars)
         if np.sum(np.isnan(data_array_x[0:4])) / 4 > omit_percent / 100 * math.prod(data_array_x[0].shape):
             i += 1
             omit += 1
@@ -254,35 +257,39 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
 
 # MAIN CALL:
 if __name__ == "__main__":
-    
-
     print('Initiating.', flush=True)
-    
-    
     print('Initiation completed.', flush=True)
 
-    outputpath = workdir+'/exp_'+str(var_num)+'features_'+str(windowsize[0])+'x'+str(windowsize[1])+'/data/' 
-    if not os.path.exists(inputpath):
-       print("Must have the input data from Step 1 by now....exit", inputpath)
-       exit
+    outputpath = os.path.join(workdir, f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')
 
-    second_check = False
+    if not os.path.exists(inputpath):
+        print(f"Must have the input data from Step 1 by now....exit {inputpath}")
+        exit()
+
+    # Check if output directory is empty
+    directory_empty = True  # Assume directory is empty until proven otherwise
     try:
-       for entry in os.scandir(outputpath):
-          if entry.is_file():
-             print(f"Output directory '{outputpath}' is not empty. Data is processed before.", flush=True)
-             second_check = True
-             break
-    except:
-       second_check = False
-       if second_check:
-          if force_rewrite:
-             print('Force rewrite is True, rewriting the whole dataset.', flush=True)
-          else:
-             print('Will use the processed dataset, terminating this step.', flush=True)
-             exit()
-       outname=['features'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
-         'labels'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1]),
-         'space_time_info'+str(var_num)+'_'+str(windowsize[0])+'x'+str(windowsize[1])]
-       dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, 
-                    outname=outname, cold_start = force_rewrite)
+        for entry in os.scandir(outputpath):
+            if entry.is_file():
+                print(f"Output directory '{outputpath}' is not empty. Data has been processed before.", flush=True)
+                directory_empty = False
+                break
+    except Exception as e:
+        print(f"Error checking directory contents: {str(e)}")
+        exit()
+
+    if not directory_empty:
+        if force_rewrite:
+            print('Force rewrite is True, rewriting the whole dataset.', flush=True)
+        else:
+            print('Will use the processed dataset, terminating this step.', flush=True)
+            exit()
+
+    outname = [
+        f'features{var_num}_{windowsize[0]}x{windowsize[1]}',
+        f'labels{var_num}_{windowsize[0]}x{windowsize[1]}',
+        f'space_time_info{var_num}_{windowsize[0]}x{windowsize[1]}'
+    ]
+
+    # Function to dump data - Placeholder for your actual function call
+    dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, outname=outname, cold_start=force_rewrite)

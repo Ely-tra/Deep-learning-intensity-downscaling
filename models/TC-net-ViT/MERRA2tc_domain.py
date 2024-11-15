@@ -58,7 +58,6 @@ def parse_args():
     parser.add_argument("--outputpath", type=str, default='/N/project/Typhoon-deep-learning/output/', help="Path to save the output files.")
 
     return parser.parse_args()
-args = parse_args()
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
