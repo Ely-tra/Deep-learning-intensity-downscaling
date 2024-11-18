@@ -115,8 +115,8 @@ model_dir = work_dir + 'model/'
 model_name = args.model_name
 #model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{('_st' if st_embed else '')}'
 model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{"_st" if st_embed else ""}'
-
-
+print("Data dir", data_dir)
+print("test year", test_year)
 #==============================================================================================
 # Define function to parse command line arguments
 #==============================================================================================
@@ -141,10 +141,10 @@ def get_year_directories(data_directory):
     Returns:
     - list: A list of directory names that match the four-digit year format.
     """
-    all_entries = os.listdir(data_directory)
+    all_entries = os.listdir("/N/project/Typhoon-deep-learning/output-Tri/exp_13features_19x19/data/")
     year_directories = [
-        entry for entry in all_entries
-        if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
+        int(entry) for entry in all_entries
+        if os.path.isdir(os.path.join("/N/project/Typhoon-deep-learning/output-Tri/exp_13features_19x19/data/", entry)) and re.match(r'^\d{4}$', entry)
     ]
     return year_directories
 
@@ -177,20 +177,29 @@ def load_data_excluding_year(data_directory, mode, validation_year = validation_
 
     # Loop over each year
     for year in years:
+        if year in validation_year:
+            print("validation year", year)
         if year in test_year:
+            print("test", year)
             continue  # Skip the excluded year
-
+        break
         # Loop over each month
         for month in months:
             feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
             label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
-            space_time_filename = f'spacetime{var_num}_{windows}{month:02d}.npy'
-
+            space_time_filename = f'space_time_info{var_num}_{windows}{month:02d}.npy'
+            print("feature name", feature_filename)
+            print(label_filename)
+            print(space_time_filename)
+            
             # Construct full paths
             feature_path = os.path.join(data_directory, year, feature_filename)
             label_path = os.path.join(data_directory, year, label_filename)
             space_time_path = os.path.join(data_directory, year, space_time_filename)
 
+            print("feature path", feature_path)
+            print(label_path)
+            print(space_time_path)
             # Check if files exist before loading
             if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
                 features = np.load(feature_path)
@@ -199,9 +208,13 @@ def load_data_excluding_year(data_directory, mode, validation_year = validation_
 
                 # Append to lists
                 if year in validation_year:
+                    #
                     val_features.append(features)
                     val_labels.append(labels)
                     val_space_times.append(space_time)
+                    print("Val feature", val_features)
+                    print("Val labels", val_labels)
+                    print("Val space times", val_space_times)
                 else:
                     all_features.append(features)
                     all_labels.append(labels)
