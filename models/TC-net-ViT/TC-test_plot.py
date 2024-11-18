@@ -18,9 +18,10 @@ from keras import backend as K
 from matplotlib.lines import Line2D
 from tensorflow.keras import layers
 import argparse
+import re
 #
 # Define parameters and data path. Note that x_size is the input data size. By default
-# is (64x64) after resized for windowsize < 26x26. For a larger windown size, set it
+# is (64x64) after resized for windowsize < 26x26. For a larger wind:wown size, set it
 # to 128.
 #
 
@@ -50,14 +51,12 @@ x_size = args.x_size
 y_size = args.y_size
 st_embed = args.st_embed
 model_name = args.model_name
-#model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{('_st' if st_embed else '')}'
-model_name = f'{model_name}_val{validation_year}_test{test_year}{mode}{"_st" if st_embed else ""}'
+model_name = f'{model_name}_{mode}{"_st" if st_embed else ""}'
 exp_name = f"exp_{var_num}features_{windowsize[0]}x{windowsize[1]}/"
 directory = workdir + exp_name
 data_dir = directory + '/data/'
 model_dir = directory + '/model/' + model_name
 windows = f'{windowsize[0]}x{windowsize[1]}'
-
 ######################################################################################
 # All fucntions below
 ######################################################################################
@@ -81,7 +80,7 @@ def get_year_directories(data_directory):
     """
     all_entries = os.listdir(data_directory)
     year_directories = [
-        entry for entry in all_entries
+        int(entry) for entry in all_entries
         if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
     ]
     return year_directories
@@ -117,12 +116,12 @@ def load_data_for_test_year(data_directory, mode, test_year, var_num, windows):
         for month in months:
             feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
             label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
-            space_time_filename = f'spacetime{var_num}_{windows}{month:02d}.npy'
+            space_time_filename = f'space_time_info{var_num}_{windows}{month:02d}.npy'
 
             # Construct full paths
-            feature_path = os.path.join(data_directory, year, feature_filename)
-            label_path = os.path.join(data_directory, year, label_filename)
-            space_time_path = os.path.join(data_directory, year, space_time_filename)
+            feature_path = os.path.join(data_directory, str(year), feature_filename)
+            label_path = os.path.join(data_directory, str(year), label_filename)
+            space_time_path = os.path.join(data_directory, str(year), space_time_filename)
 
             # Check if files exist before loading
             if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
