@@ -1,3 +1,0 @@
-Initiating.
-/var/spool/slurm/job3844017/slurm_script: line 11:  6637 Killed                  python TC-extract_data_TSU.py
-slurmstepd: error: Detected 1 oom_kill event in StepId=3844017.batch. Some of the step tasks have been OOM Killed.
