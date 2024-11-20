@@ -88,7 +88,7 @@ _Notes_:
    + Width and Height of Input
    + Space-Time embedding
    + Validation and Test year
-VMAX/PMIN/RMW to evaluate model performance on a test set for Vmax.  Note that all test sets are named according to the convention test{number_of_channel}x/y.{domain_size}.npy.
+- VMAX/PMIN/RMW to evaluate model performance on a test set for Vmax.  Note that all test sets are named according to the convention test{number_of_channel}x/y.{domain_size}.npy.
 
 ## DISCLAIMER:
 This project is funded by the US National Science Foundation (NSF, PI: Chanh Kieu). Any 
