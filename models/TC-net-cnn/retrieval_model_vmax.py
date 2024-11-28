@@ -46,17 +46,149 @@ import sys
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import TensorBoard
+import argparse
 #
 # Edit the parameters properly before running this script
 #
-workdir = '/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
-var_num = 13
-windowsize = [25,25]
-mode = 'VMAX'
+def parse_args():
+    parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
+    parser.add_argument('--mode', type=str, default = 'VMAX', help='Mode of operation (e.g., VMAX, PMIN, RMW)')
+    parser.add_argument('--model_name', type=str, default = 'ViTmodel1', help='Core name of the model')
+    parser.add_argument('--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Working directory path')
+    parser.add_argument('--windowsize', type=int, nargs=2, default = [19,19], help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('--var_num', type=int, default = 13, help='Number of variables')
+    parser.add_argument('--x_size', type=int, default = 72, help='X dimension size for the input')
+    parser.add_argument('--y_size', type=int, default = 72, help='Y dimension size for the input')
+    parser.add_argument('--st_embed', action='store_true', help='Including space-time embedded')
+    parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate')
+    parser.add_argument('--weight_decay', type=float, default=0.0001, help='Weight decay rate')
+    parser.add_argument('--batch_size', type=int, default=256, help='Batch size for training')
+    parser.add_argument('--num_epochs', type=int, default=100, help='Number of epochs for training')
+    parser.add_argument('--image_size', type=int, default=64, help='Size to resize the image to')
+    parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation')
+    parser.add_argument('--test_year', nargs='+', type=int, default=[2017], help='Year(s) taken for test')
+    return parser.parse_args()
+args = parse_args()
+learning_rate = args.learning_rate
+weight_decay = args.weight_decay
+batch_size = args.batch_size
+num_epochs = args.num_epochs        	
+image_size = args.image_size  				
+validation_year = args.validation_year
+test_year = args.test_year
+mode = args.mode
+root = args.root
+windowsize = list(args.windowsize)
+var_num = args.var_num
+x_size = args.x_size
+y_size = args.y_size
+st_embed = args.st_embed
+    
+windows = f'{windowsize[0]}x{windowsize[1]}'
+work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
+data_dir = work_dir + 'data/'
+model_dir = work_dir + 'model/'
+model_name = args.model_name
+model_name = f'{model_name}_{mode}{"_st" if st_embed else ""}'
 
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
+def get_year_directories(data_directory):
+    """
+    List all directory names within a given directory that are formatted as four-digit years.
+
+    Parameters:
+    - data_directory (str): Path to the directory containing potential year-named subdirectories.
+
+    Returns:
+    - list: A list of directory names that match the four-digit year format.
+    """
+    all_entries = os.listdir(data_directory)
+    year_directories = [
+        int(entry) for entry in all_entries
+        if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
+    ]
+    return year_directories
+
+def load_data_excluding_year(data_directory, mode, validation_year = validation_year, test_year = test_year):
+    """
+    Loads data from specified directory excluding specified years and organizes it into training and validation sets.
+
+    Args:
+        data_directory (str): The root directory where data files are stored.
+        mode (str): Mode of operation which defines how labels should be manipulated or filtered.
+        validation_year (list): List of years to be used for validation.
+        test_year (list): List of years to be excluded from the loading process.
+        var_num (int): Variable number identifier used in file naming.
+        windows (str): Window size identifier used in file naming.
+
+    Returns:
+        tuple: Tuple containing six elements:
+               - all_features (np.ndarray): Array of all features excluding validation and test years.
+               - all_labels (np.ndarray): Array of all labels corresponding to all_features.
+               - all_space_times (np.ndarray): Array of all spatial and temporal data corresponding to all_features.
+               - val_features (np.ndarray): Array of validation features from the validation years.
+               - val_labels (np.ndarray): Array of validation labels corresponding to val_features.
+               - val_space_times (np.ndarray): Array of validation spatial and temporal data corresponding to val_features.
+    """
+    years = get_year_directories(data_directory)
+    months = range(1, 13)  # Months labeled 1 to 12
+    b = mode_switch(mode)  # Make sure this function is defined elsewhere
+    all_features, all_labels, all_space_times = [], [], []
+    val_features, val_labels, val_space_times = [], [], []
+
+    # Loop over each year
+    for year in years:
+        print(year)
+        if year in validation_year:
+            print("validation year", year)
+        if year in test_year:
+            print("test", year)
+            continue  # Skip the excluded year
+        
+        # Loop over each month
+        for month in months:
+            feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
+            label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
+            space_time_filename = f'space_time_info{var_num}_{windows}{month:02d}.npy'
+            
+            # Construct full paths
+            feature_path = os.path.join(data_directory, str(year), feature_filename)
+            label_path = os.path.join(data_directory, str(year), label_filename)
+            space_time_path = os.path.join(data_directory, str(year), space_time_filename)
+
+            # Check if files exist before loading
+            if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
+                features = np.load(feature_path)
+                labels = np.load(label_path)[:, b]
+                space_time = np.load(space_time_path)
+                # Append to lists
+                if year in validation_year:
+                    #
+                    val_features.append(features)
+                    val_labels.append(labels)
+                    val_space_times.append(space_time)
+                else:
+                    all_features.append(features)
+                    all_labels.append(labels)
+                    all_space_times.append(space_time)
+            else:
+                print(f"Warning: Files not found for year {year} and month {month}")
+                print(label_path, feature_path)
+
+    # Concatenate all loaded data into single arrays
+    all_features = np.concatenate(all_features, axis=0)
+    all_labels = np.concatenate(all_labels, axis=0)
+    all_space_times = np.concatenate(all_space_times, axis=0)
+    val_features = np.concatenate(val_features, axis=0)
+    val_labels = np.concatenate(val_labels, axis=0)
+    val_space_times = np.concatenate(val_space_times, axis=0)
+
+    return all_features, all_labels, all_space_times, val_features, val_labels, val_space_times
+
+
+
 # Defining metrics
 def mae_for_output(index):
     # Mean absolute error, Interchangable with Tensorflow's MAE metrics but can work with multiple outputs.
@@ -187,20 +319,16 @@ def main(X, y, loss='huber', activ='relu', NAME='best_model'):
 #==============================================================================================
 # MAIN CALL:
 #==============================================================================================
-windows = str(windowsize[0])+'x'+str(windowsize[1])
-root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/'
-best_model_name = root + '/model_VMAX'+str(var_num)+'_'+windows
-X = np.load(root+'/train'+str(var_num)+'x_'+windows+'.npy')
+X, Y, Z, X_val, Y_val, Z_val = load_data_excluding_year(data_dir, mode) 
 X=np.transpose(X, (0, 2, 3, 1))
-
-if mode=='VMAX':
-  b=0
-if mode=='PMIN':
-  b=1
-if mode=='RMW':
-  b=2
-y = np.load(root+'/train'+str(var_num)+'y_'+windows+'.npy')[:,b]
-x_train,y_train = normalize_channels(X,y)
+    
+# Normalize the data before encoding
+X,Y = normalize_channels(X, Y)
+Z = normalize_Z(Z)
+X_val,Y_val = normalize_channels(X_val, Y_val)
+X_val = np.transpose(X_val, (0, 2, 3, 1))
+Z_val = normalize_Z(Z_val)
+x_train=resize_preprocess(x_train, 64,64, 'lanczos5')
 x_train=resize_preprocess(x_train, 64,64, 'lanczos5')
 number_channels=X.shape[3]
 
