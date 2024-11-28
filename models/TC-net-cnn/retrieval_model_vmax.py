@@ -47,21 +47,20 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import TensorBoard
 import argparse
+import os
+import re
 #
 # Edit the parameters properly before running this script
 #
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
     parser.add_argument('--mode', type=str, default = 'VMAX', help='Mode of operation (e.g., VMAX, PMIN, RMW)')
-    parser.add_argument('--model_name', type=str, default = 'ViTmodel1', help='Core name of the model')
+    parser.add_argument('--model_name', type=str, default = 'CNNmodel', help='Core name of the model')
     parser.add_argument('--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Working directory path')
     parser.add_argument('--windowsize', type=int, nargs=2, default = [19,19], help='Window size as two integers (e.g., 19 19)')
     parser.add_argument('--var_num', type=int, default = 13, help='Number of variables')
-    parser.add_argument('--x_size', type=int, default = 72, help='X dimension size for the input')
-    parser.add_argument('--y_size', type=int, default = 72, help='Y dimension size for the input')
     parser.add_argument('--st_embed', action='store_true', help='Including space-time embedded')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate')
-    parser.add_argument('--weight_decay', type=float, default=0.0001, help='Weight decay rate')
     parser.add_argument('--batch_size', type=int, default=256, help='Batch size for training')
     parser.add_argument('--num_epochs', type=int, default=100, help='Number of epochs for training')
     parser.add_argument('--image_size', type=int, default=64, help='Size to resize the image to')
@@ -70,7 +69,6 @@ def parse_args():
     return parser.parse_args()
 args = parse_args()
 learning_rate = args.learning_rate
-weight_decay = args.weight_decay
 batch_size = args.batch_size
 num_epochs = args.num_epochs        	
 image_size = args.image_size  				
@@ -80,8 +78,6 @@ mode = args.mode
 root = args.root
 windowsize = list(args.windowsize)
 var_num = args.var_num
-x_size = args.x_size
-y_size = args.y_size
 st_embed = args.st_embed
     
 windows = f'{windowsize[0]}x{windowsize[1]}'
@@ -94,6 +90,14 @@ model_name = f'{model_name}_{mode}{"_st" if st_embed else ""}'
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
+def mode_switch(mode):
+    switcher = {
+        'VMAX': 0,
+        'PMIN': 1,
+        'RMW': 2
+    }
+    # Return the corresponding value if mode is found, otherwise return None or a default value
+    return switcher.get(mode, None)
 def get_year_directories(data_directory):
     """
     List all directory names within a given directory that are formatted as four-digit years.
@@ -269,10 +273,14 @@ def lr_scheduler(epoch, lr):
     # Multiply the new learning rate by the base learning rate
     return lr * lr0
 
+def normalize_Z(Z):
+    Z[:,2] = (Z[:,2]+90) / 180
+    Z[:,3] = (Z[:,3]+180) / 360
+    return Z
 #==============================================================================================
 # Model
 #==============================================================================================
-def main(X, y, loss='huber', activ='relu', NAME='best_model'):
+def main(X, Y, X_val, Y_val, loss='huber', activ='relu', NAME='best_model', st_embed=False, Z=None, Z_val=None, batch_size = batch_size, epoch = num_epochs):
     data_augmentation = keras.Sequential([
         layers.RandomRotation(0.1),
         layers.RandomZoom(0.2)
@@ -295,25 +303,34 @@ def main(X, y, loss='huber', activ='relu', NAME='best_model'):
     x = layers.Flatten(name="my_flatten")(x)
     x = layers.Dropout(0.4)(x)
 
+    if st_embed:
+        if Z is not None:
+            # Assuming Z has shape (batch_size, 4), concatenate with flattened output
+            z_input = keras.Input(shape=(4,), name="Z_input")
+            x = layers.Concatenate()([x, z_input])  # Concatenate flattened output with Z
+        else:
+            raise ValueError("Z must be provided if st_embed is True.")
+    
     for _ in range(2):
         x = layers.Dense(512 - _ * 200, activation=activ)(x)
 
     outputs = layers.Dense(1, activation=activ, name="my_dense")(x)
     model = keras.Model(inputs=inputs, outputs=outputs, name="my_functional_model")
-    model.summary()
+    
+    if st_embed:
+        model = keras.Model(inputs=[inputs, z_input], outputs=outputs)
 
+    model.summary()
     callbacks = [
         keras.callbacks.ModelCheckpoint(NAME, save_best_only=True),
         keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1)
     ]
 
-    model.compile(
-        loss=loss,
-        optimizer="adam",
-        metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
-    )
+    if st_embed:
+        history = model.fit([X, Z], Y, batch_size=batch_size, epochs=epoch, validation_data=([X_val, Z_val], Y_val), verbose=2, callbacks=callbacks)
+    else:
+        history = model.fit(X, Y, batch_size=batch_size, epochs=epoch, validation_data=(X_val, Y_val), verbose=2, callbacks=callbacks)
 
-    history = model.fit(X, y, batch_size=128, epochs=1000, validation_split=2/9, verbose=2, callbacks=callbacks)
     return history
 
 #==============================================================================================
@@ -328,12 +345,12 @@ Z = normalize_Z(Z)
 X_val,Y_val = normalize_channels(X_val, Y_val)
 X_val = np.transpose(X_val, (0, 2, 3, 1))
 Z_val = normalize_Z(Z_val)
-x_train=resize_preprocess(x_train, 64,64, 'lanczos5')
-x_train=resize_preprocess(x_train, 64,64, 'lanczos5')
+X=resize_preprocess(X, image_size,image_size, 'lanczos5')
+X_val=resize_preprocess(X_val, image_size,image_size, 'lanczos5')
 number_channels=X.shape[3]
 
 print('Input shape of the X features data: ',X.shape)
 print('Input shape of the y label data: ',y.shape)
 print('Number of input channel extracted from X is: ',number_channels)
 
-history = main(X=x_train, y=y_train, NAME=best_model_name)
+history = main(X=X, Y=Y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, Z=Z, Z_val=Z_val)
