@@ -315,10 +315,12 @@ def main(X, Y, X_val, Y_val, loss='huber', activ='relu', NAME='best_model', st_e
         x = layers.Dense(512 - _ * 200, activation=activ)(x)
 
     outputs = layers.Dense(1, activation=activ, name="my_dense")(x)
-    model = keras.Model(inputs=inputs, outputs=outputs, name="my_functional_model")
+    model = keras.Model(inputs=inputs, outputs=outputs,
+                       metrics = [mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)])
     
     if st_embed:
-        model = keras.Model(inputs=[inputs, z_input], outputs=outputs)
+        model = keras.Model(inputs=[inputs, z_input], outputs=outputs,
+                           metrics = [mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)])
 
     model.summary()
     callbacks = [
