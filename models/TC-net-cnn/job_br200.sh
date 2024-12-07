@@ -12,8 +12,8 @@ cd /N/slate/trihnguy/Deep-learning-intensity-downscaling/models/TC-net-ViT/
 # Set up experiment parameters, which will be used to generate Python scripts.
 # These parameters are currently hardwired in each script.
 #
-windowsize_x=18
-windowsize_y=18
+windowsize_x=19
+windowsize_y=19
 var_num=13
 mode='VMAX' #VMAX PMIN RMW
 st_embed='--st_embed'  # Include if you want space-time embedding, otherwise leave empty
@@ -34,11 +34,11 @@ list_vars="${list_vars[@]}"
 #
 
 python MERRA2tc_domain.py \
-    --csvdataset "$besttrack" \ #
-    --datapath "$datapath" \ #
-    --outputpath "$workdir" \ #
-    --windowsize "$windowsize_x" "$windowsize_y" \ #
-    --regions EP NA WP \ #
+    --csvdataset "$besttrack" \ 
+    --datapath "$datapath" \ 
+    --outputpath "$workdir" \ 
+    --windowsize "$windowsize_x" "$windowsize_y" \ 
+    --regions EP NA WP \ 
     --minlat -90.0 --maxlat 90.0 \
     --minlon -180.0 --maxlon 180.0 \
     --maxwind 10000 --minwind 0 \
@@ -52,7 +52,7 @@ python TC-extract_data_TSU.py \
     --list_vars $list_vars \
     --force_rewrite
 
-python TC-CA_NaN_filling_kfold.py \
+python TC-CA_NaN_filling.py \
     --workdir "$workdir" \
     --windowsize "$windowsize_x" "$windowsize_y" \
     --var_num "$var_num"
@@ -64,15 +64,13 @@ python TC-build_model.py \
     --root $workdir \
     --windowsize $windowsize_x $windowsize_y \
     --var_num $var_num \
-    --x_size $x_size \
-    --y_size $y_size \
     --st_embed $st_embed\
     --model_name $model_name \
     --learning_rate $learning_rate \
     --batch_size $batch_size \
     --num_epochs $num_epochs \
     --image_size $image_size \
-    --validation_year "${validation_years[@]}" \
+   --validation_year "${validation_years[@]}" \
     --test_year "${test_years[@]}"
 
 python TC-test_plot.py \

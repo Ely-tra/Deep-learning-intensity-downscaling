@@ -40,23 +40,29 @@
 # HIST: - May 14, 2024: Created by Khanh Luong
 #       - May 16, 2024: cleaned up and added more note by CK
 #       - May 18, 2024: added var_num and window size to the input for better control the input by CK
-#
+#       - Oct 19, 2024: added parser arguments by TN
 # AUTH: Minh Khanh Luong
 #==============================================================================================
 print('Initializing')
+import argparse
 import os
 import numpy as np
 import copy
 import glob
 np.seterr(invalid='ignore')
-#
-# Set input parameters and data path properly before running. All input and output
-# are stored under the same experiment name exp_{$channel}features_$windowsize
-#
-workdir='/N/slate/kmluong/TC-net-cnn_workdir/Domain_data/'
-var_num = 13
-windowsize = [18,18]
 
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description="Context-aware NaN filling for multidimensional arrays.")
+    parser.add_argument("--workdir", type=str, default='/N/project/Typhoon-deep-learning/output/', help="Working directory where data files are stored.")
+    parser.add_argument("--windowsize", type=int, nargs=2, default=[19, 19], help="Window size for filling method [width, height].")
+    parser.add_argument("--var_num", type=int, default=13, help="Number of variables.")
+    args = parser.parse_args()
+    return args
+
+# Example usage:
+args = get_args()
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
@@ -289,14 +295,25 @@ def fix_data(file):
 #
 # MAIN CALL: 
 #
-windows = str(windowsize[0])+'x'+str(windowsize[1])
-root = workdir+'/exp_'+str(var_num)+'features_'+windows+'/monthly/'
-pattern = f'{root}**/CNNfeatures{var_num}_{windows}*.npy'
+def main():
 
-# Find and process the files
-for file in glob.iglob(pattern, recursive=True):
-    print("Filling ", file)
-    if 'fixed' in file:
-        continue
-    fix_data(file)
-print('Completed')
+    # Initialize parameters
+    workdir = args.workdir
+    windowsize = list(args.windowsize)
+    var_num = args.var_num
+
+    windows = f"{windowsize[0]}x{windowsize[1]}"
+    root = f"{workdir}/exp_{var_num}features_{windows}/"
+    pattern = f"{root}**/features*.npy"
+
+    # Find and process the files
+    for file in glob.glob(pattern, recursive=True):
+        print("Checking: ", file)
+        if 'fixed' in file:
+            continue
+        fix_data(file)
+
+    print('Processing completed.')
+
+if __name__ == "__main__":
+    main()
