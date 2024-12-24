@@ -98,20 +98,48 @@ def load_json_config(path):
         return json.load(file)
 
 def apply_operation(x, op, inputs):
+    # Handle 'slice' operation
     if op['type'] == 'slice':
-        # Assuming x might be a list if coming from a previous concatenate
-        x = x[op['input']] if isinstance(x, list) else x
+        if 'slice_range' not in op or not isinstance(op['slice_range'], list) or len(op['slice_range']) != 2:
+            raise ValueError("Invalid 'slice' operation configuration. 'slice_range' must be a list of two integers.")
         return layers.Lambda(lambda x: x[:, :, :, op['slice_range'][0]:op['slice_range'][1]])(x)
+    
+    # Handle Conv2D
     elif op['type'] == 'Conv2D':
         return layers.Conv2D(**{k: v for k, v in op.items() if k != 'type'})(x)
+    
+    # Handle Concatenate
     elif op['type'] == 'concatenate':
-        # Ensures that all inputs to concatenate are correctly referenced
-        return layers.concatenate([inputs[item] if item in inputs else item for item in op['inputs']], axis=op.get('axis', -1))
+        if 'inputs' not in op or not isinstance(op['inputs'], list):
+            raise ValueError("Invalid 'concatenate' operation configuration. 'inputs' must be a list of input names.")
+        concat_inputs = [inputs[item] if item in inputs else item for item in op['inputs']]
+        return layers.concatenate(concat_inputs, axis=op.get('axis', -1))
+    
+    # Handle Flatten
     elif op['type'] == 'Flatten':
         return layers.Flatten()(x)
+    
+    # Handle Dense
     elif op['type'] == 'Dense':
         return layers.Dense(**{k: v for k, v in op.items() if k != 'type'})(x)
-    return x
+    
+    # Handle Data Augmentation
+    elif op['type'] == 'RandomRotation':
+        if 'factor' not in op:
+            raise ValueError("RandomRotation requires a 'factor' parameter.")
+        return layers.RandomRotation(factor=op['factor'])(x)
+    elif op['type'] == 'RandomZoom':
+        if 'factor' not in op:
+            raise ValueError("RandomZoom requires a 'factor' parameter.")
+        return layers.RandomZoom(height_factor=op['factor'], width_factor=op['factor'])(x)
+    elif op['type'] == 'RandomFlip':
+        if 'mode' not in op:
+            raise ValueError("RandomFlip requires a 'mode' parameter ('horizontal', 'vertical', or 'horizontal_and_vertical').")
+        return layers.RandomFlip(mode=op['mode'])(x)
+    
+    # Handle Unsupported Operation
+    else:
+        raise ValueError(f"Unsupported operation type: {op['type']}")
 
 def build_model_from_json(config, st_embed=False):
     inputs = {inp['name']: keras.Input(shape=inp['shape'], name=inp['name'])
