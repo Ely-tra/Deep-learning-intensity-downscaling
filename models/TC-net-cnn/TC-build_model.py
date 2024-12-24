@@ -81,7 +81,7 @@ root = args.root
 windowsize = list(args.windowsize)
 var_num = args.var_num
 st_embed = args.st_embed
-config_path = parser.config
+config_path = args.config
     
 windows = f'{windowsize[0]}x{windowsize[1]}'
 work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
