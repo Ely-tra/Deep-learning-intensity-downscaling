@@ -49,6 +49,7 @@ from tensorflow.keras.callbacks import TensorBoard
 import argparse
 import os
 import re
+import json
 #
 # Edit the parameters properly before running this script
 #
@@ -66,6 +67,7 @@ def parse_args():
     parser.add_argument('--image_size', type=int, default=64, help='Size to resize the image to')
     parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation')
     parser.add_argument('--test_year', nargs='+', type=int, default=[2017], help='Year(s) taken for test')
+    parser.add_argument('--config', type=str, default = 'model_core/test.json')
     return parser.parse_args()
 args = parse_args()
 learning_rate = args.learning_rate
@@ -79,6 +81,7 @@ root = args.root
 windowsize = list(args.windowsize)
 var_num = args.var_num
 st_embed = args.st_embed
+config_path = parser.config
     
 windows = f'{windowsize[0]}x{windowsize[1]}'
 work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
@@ -90,6 +93,43 @@ model_name = f'{model_name}_{mode}{"_st" if st_embed else ""}'
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
+def load_json_config(path):
+    with open(path, 'r') as file:
+        return json.load(file)
+
+def apply_operation(x, op, inputs):
+    if op['type'] == 'slice':
+        # Assuming x might be a list if coming from a previous concatenate
+        x = x[op['input']] if isinstance(x, list) else x
+        return layers.Lambda(lambda x: x[:, :, :, op['slice_range'][0]:op['slice_range'][1]])(x)
+    elif op['type'] == 'Conv2D':
+        return layers.Conv2D(**{k: v for k, v in op.items() if k != 'type'})(x)
+    elif op['type'] == 'concatenate':
+        # Ensures that all inputs to concatenate are correctly referenced
+        return layers.concatenate([inputs[item] if item in inputs else item for item in op['inputs']], axis=op.get('axis', -1))
+    elif op['type'] == 'Flatten':
+        return layers.Flatten()(x)
+    elif op['type'] == 'Dense':
+        return layers.Dense(**{k: v for k, v in op.items() if k != 'type'})(x)
+    return x
+
+def build_model_from_json(config, st_embed=False):
+    inputs = {inp['name']: keras.Input(shape=inp['shape'], name=inp['name'])
+              for inp in config['inputs'] if not inp.get('optional', False) or (inp.get('optional') and inp.get('use_if') == 'st_embed' and st_embed)}
+
+    flows = {}
+    for flow in config['process_flows']:
+        if 'condition' in flow and flow['condition'] == 'st_embed' and not st_embed:
+            continue
+        x = inputs[flow['input']] if 'input' in flow else [flows[inp] for inp in flow['inputs']]
+        for op in flow['operations']:
+            x = apply_operation(x, op, inputs)
+        flows[flow['name']] = x
+
+    model = keras.Model(inputs=list(inputs.values()), outputs=flows[config['process_flows'][-1]['name']])
+    return model
+
+
 def mode_switch(mode):
     switcher = {
         'VMAX': 0,
@@ -281,57 +321,17 @@ def normalize_Z(Z):
 # Model
 #==============================================================================================
 def main(X, Y, X_val, Y_val, loss='huber', activ='relu', NAME='best_model', st_embed=False, Z=None, Z_val=None, batch_size = batch_size, epoch = num_epochs):
-    data_augmentation = keras.Sequential([
-        layers.RandomRotation(0.1),
-        layers.RandomZoom(0.2)
-    ])
-    print('--> Running configuration: ', NAME)
-
-    inputs = keras.Input(shape=X.shape[1:])
-    x = data_augmentation(inputs)
-    x = layers.Conv2D(filters=128, kernel_size=15, padding='same', activation=activ, name="my_conv2d_11")(x)
-    x = layers.MaxPooling2D(pool_size=2, name="my_pooling_1")(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Conv2D(filters=64, kernel_size=15, padding='same', activation=activ, name="my_conv2d_2")(x)
-    x = layers.MaxPooling2D(pool_size=2, name="my_pooling_2")(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Conv2D(filters=256, kernel_size=9, padding='same', activation=activ, name="my_conv2d_3")(x)
-    x = layers.MaxPooling2D(pool_size=2, name="my_pooling_3")(x)
-    x = layers.Conv2D(filters=512, kernel_size=5, padding='same', activation=activ, name="my_conv2d_4")(x)
-    x = layers.Conv2D(filters=512, kernel_size=5, padding='valid', activation=activ, name="my_conv2d_5")(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Flatten(name="my_flatten")(x)
-    x = layers.Dropout(0.4)(x)
-
-    if st_embed:
-        if Z is not None:
-            # Assuming Z has shape (batch_size, 4), concatenate with flattened output
-            z_input = keras.Input(shape=(4,), name="Z_input")
-            x = layers.Concatenate()([x, z_input])  # Concatenate flattened output with Z
-        else:
-            raise ValueError("Z must be provided if st_embed is True.")
+    config = load_json_config(config)
+    model = build_model_from_json(config, st_embed=st_embed)
     
-    for _ in range(2):
-        x = layers.Dense(512 - _ * 200, activation=activ)(x)
-
-    outputs = layers.Dense(1, activation=activ, name="my_dense")(x)
-    #model = keras.Model(inputs=inputs, outputs=outputs,
-     #                  metrics = [mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)])
-    model = keras.Model(inputs=inputs, outputs=outputs)
+    # Include `z_input` in the inputs
     model.compile(
-    optimizer='adam',
-    loss='huber',
-    metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
-)
-    if st_embed:
-       # model = keras.Model(inputs=[inputs, z_input], outputs=outputs,
-        #                   metrics = [mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)])
-       model = keras.Model(inputs=[inputs, z_input], outputs=outputs)
-       model.compile(
-    optimizer='adam',
-    loss='huber',
-    metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
-)
+        optimizer='adam',
+        loss='huber',
+        metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
+    )
+    
+    # Redefine the model with updated inputs and outputs
     model.summary()
     callbacks = [
         keras.callbacks.ModelCheckpoint(NAME, save_best_only=True),
