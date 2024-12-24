@@ -1,0 +1,113 @@
+{
+    "inputs": [
+        {
+            "name": "main_input",
+            "shape": "(None, 64, 64, 13)"
+        }
+    ],
+    "layers": [
+        {
+            "type": "RandomRotation",
+            "factor": 0.1
+        },
+        {
+            "type": "RandomZoom",
+            "factor": 0.2
+        },
+        {
+            "type": "Conv2D",
+            "filters": 128,
+            "kernel_size": 15,
+            "padding": "same",
+            "activation": "relu",
+            "name": "my_conv2d_11"
+        },
+        {
+            "type": "MaxPooling2D",
+            "pool_size": 2,
+            "name": "my_pooling_1"
+        },
+        {
+            "type": "BatchNormalization"
+        },
+        {
+            "type": "Conv2D",
+            "filters": 64,
+            "kernel_size": 15,
+            "padding": "same",
+            "activation": "relu",
+            "name": "my_conv2d_2"
+        },
+        {
+            "type": "MaxPooling2D",
+            "pool_size": 2,
+            "name": "my_pooling_2"
+        },
+        {
+            "type": "BatchNormalization"
+        },
+        {
+            "type": "Conv2D",
+            "filters": 256,
+            "kernel_size": 9,
+            "padding": "same",
+            "activation": "relu",
+            "name": "my_conv2d_3"
+        },
+        {
+            "type": "MaxPooling2D",
+            "pool_size": 2,
+            "name": "my_pooling_3"
+        },
+        {
+            "type": "BatchNormalization"
+        },
+        {
+            "type": "Conv2D",
+            "filters": 512,
+            "kernel_size": 5,
+            "padding": "same",
+            "activation": "relu",
+            "name": "my_conv2d_4"
+        },
+        {
+            "type": "Conv2D",
+            "filters": 512,
+            "kernel_size": 5,
+            "padding": "valid",
+            "activation": "relu",
+            "name": "my_conv2d_5"
+        },
+        {
+            "type": "BatchNormalization"
+        },
+        {
+            "type": "Flatten",
+            "name": "my_flatten"
+        },
+        {
+            "type": "Dropout",
+            "rate": 0.4
+        },
+        {
+            "type": "Dense",
+            "units": 512,
+            "activation": "relu"
+        },
+        {
+            "type": "Dense",
+            "units": 312,
+            "activation": "relu"
+        },
+        {
+            "type": "Dense",
+            "units": 1,
+            "activation": "relu",
+            "name": "my_dense"
+        }
+    ],
+    "optional_input": {
+        "name": "Z_input",
+        "shape": "(None, 4)"
+    }
+}
