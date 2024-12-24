@@ -144,7 +144,7 @@ def load_data_excluding_year(data_directory, mode, validation_year = validation_
 
     # Loop over each year
     for year in years:
-        print(year)
+        #print(year)
         if year in validation_year:
             print("validation year", year)
         if year in test_year:
@@ -179,7 +179,7 @@ def load_data_excluding_year(data_directory, mode, validation_year = validation_
                     all_space_times.append(space_time)
             else:
                 print(f"Warning: Files not found for year {year} and month {month}")
-                print(label_path, feature_path)
+                #print(label_path, feature_path)
 
     # Concatenate all loaded data into single arrays
     all_features = np.concatenate(all_features, axis=0)
@@ -320,7 +320,7 @@ def main(X, Y, X_val, Y_val, loss='huber', activ='relu', NAME='best_model', st_e
     model = keras.Model(inputs=inputs, outputs=outputs)
     model.compile(
     optimizer='adam',
-    loss='binary_crossentropy',
+    loss='huber',
     metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
 )
     if st_embed:
@@ -329,7 +329,7 @@ def main(X, Y, X_val, Y_val, loss='huber', activ='relu', NAME='best_model', st_e
        model = keras.Model(inputs=[inputs, z_input], outputs=outputs)
        model.compile(
     optimizer='adam',
-    loss='binary_crossentropy',
+    loss='huber',
     metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
 )
     model.summary()
