@@ -1,6 +1,6 @@
 {
   "inputs": [
-    {"name": "inputs", "shape": "X.shape[1:]"}
+    {"name": "inputs", "shape": "[64,64,13]"}
   ],
   "process_flows": [
     {
