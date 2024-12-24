@@ -321,7 +321,7 @@ def normalize_Z(Z):
 # Model
 #==============================================================================================
 def main(X, Y, X_val, Y_val, loss='huber', activ='relu', NAME='best_model', st_embed=False, Z=None, Z_val=None, batch_size = batch_size, epoch = num_epochs):
-    config = load_json_config(config)
+    config = load_json_config(config_path)
     model = build_model_from_json(config, st_embed=st_embed)
     
     # Include `z_input` in the inputs
