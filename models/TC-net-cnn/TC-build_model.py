@@ -113,6 +113,7 @@ def apply_operation(x, op, inputs):
         if 'inputs' not in op or not isinstance(op['inputs'], list):
             raise ValueError("Invalid 'concatenate' operation configuration. 'inputs' must be a list of input names.")
         concat_inputs = [inputs[item] if item in inputs else item for item in op['inputs']]
+        print(concat_inputs)
         return layers.concatenate(concat_inputs, axis=op.get('axis', -1))
     
     # Handle Flatten
@@ -132,14 +133,42 @@ def apply_operation(x, op, inputs):
         if 'factor' not in op:
             raise ValueError("RandomZoom requires a 'factor' parameter.")
         return layers.RandomZoom(height_factor=op['factor'], width_factor=op['factor'])(x)
+    # Handle MaxPooling2D
+    elif op['type'] == 'MaxPooling2D':
+        return layers.MaxPooling2D(**{k: v for k, v in op.items() if k != 'type'})(x)
     elif op['type'] == 'RandomFlip':
         if 'mode' not in op:
             raise ValueError("RandomFlip requires a 'mode' parameter ('horizontal', 'vertical', or 'horizontal_and_vertical').")
         return layers.RandomFlip(mode=op['mode'])(x)
-    
+    elif op['type'] == 'BatchNormalization':
+        # Typically no parameters are needed, but you can pass parameters like momentum and epsilon if specified
+        bn_params = {k: v for k, v in op.items() if k != 'type'}
+        return layers.BatchNormalization(**bn_params)(x)
+    elif op['type'] == 'Dropout':
+        if 'rate' not in op:
+            raise ValueError("Dropout requires a 'rate' parameter.")
+        return layers.Dropout(rate=op['rate'])(x)
     # Handle Unsupported Operation
+    elif op['type'] == 'conditional':
+        # Conditional operation handling
+        if op['condition'] == 'st_embed':
+            print(inputs,11111)
+            branch = op['true_branch'] if inputs.get('st_embed', True) else op['false_branch']
+            print(branch,2222)
+            for sub_op in branch:
+                print(123141234)
+                x = apply_operation(x, sub_op, inputs)
+        return x
+    elif op['type'] == 'Input':
+        # Register a new input based on configuration specified in the operation
+        if 'name' in op and 'shape' in op:
+            inputs[op['name']] = keras.Input(shape=op['shape'], name=op['name'])
+            return inputs[op['name']]
+        else:
+            raise ValueError("Input operation must specify 'name' and 'shape'.")
     else:
         raise ValueError(f"Unsupported operation type: {op['type']}")
+
 
 def build_model_from_json(config, st_embed=False):
     inputs = {inp['name']: keras.Input(shape=inp['shape'], name=inp['name'])
@@ -147,16 +176,35 @@ def build_model_from_json(config, st_embed=False):
 
     flows = {}
     for flow in config['process_flows']:
+        print("Processing flow: ", flow['name'])  # Debug print
         if 'condition' in flow and flow['condition'] == 'st_embed' and not st_embed:
+            print("Skipping flow due to condition: ", flow['name'])  # Debug skip message
             continue
-        x = inputs[flow['input']] if 'input' in flow else [flows[inp] for inp in flow['inputs']]
+        
+        # Handling for whether input comes directly from another flow or the initial inputs
+        if 'input' in flow:
+            if flow['input'] in flows:
+                x = flows[flow['input']]
+            elif flow['input'] in inputs:
+                x = inputs[flow['input']]
+            else:
+                raise ValueError(f"Input {flow['input']} not found in inputs or flows.")
+        else:
+            # If multiple inputs are needed, they should all be in flows already
+            x = [flows[inp] for inp in flow['inputs'] if inp in flows]
+            if len(x) != len(flow['inputs']):
+                missing_inputs = set(flow['inputs']) - set(flows.keys())
+                raise ValueError(f"Missing required inputs: {missing_inputs}")
+        
+        print("Input to operations: ", x)  # Debug print to check inputs before operations
         for op in flow['operations']:
             x = apply_operation(x, op, inputs)
         flows[flow['name']] = x
+        print("Output of flow stored: ", flow['name'])  # Confirm output is stored
 
     model = keras.Model(inputs=list(inputs.values()), outputs=flows[config['process_flows'][-1]['name']])
+    print("Model built successfully.")  # Confirm model build completion
     return model
-
 
 def mode_switch(mode):
     switcher = {
