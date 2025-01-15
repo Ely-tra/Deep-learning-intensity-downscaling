@@ -20,7 +20,9 @@ with Python/GPU/3.10.10 on the IU's native BigRed200 HPC environment.
 + Aug 27, 2024: VIT main function created from previous CK's TCG project by TN
 + Sep 10, 2024: Implemented for TC intensity retrieval using the CNN workflow by KL 
 + Oct 16, 2024: packaged by TN and KL
-+ Otc 17, 2024: sanity checked and noted by CK  
++ Oct 17, 2024: sanity checked and noted by CK  
++ Nov 17, 2024: revised workflow by TN and KL.
++ Nov 19, 2024: sanity checked by CK
 
 ## CONTRIBUTION:
 + Khanh Luong: IU Earth and Atmospheric Sciences (kmluong@iu.edu or mk223338@gmail.com)

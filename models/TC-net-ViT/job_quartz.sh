@@ -1,12 +1,12 @@
 #!/bin/bash -l
 #SBATCH -N 1
 #SBATCH -t 36:00:00
-#SBATCH -J TC-ViT
+#SBATCH -J VITtrain
 #SBATCH -p gpu --gpus 1
 #SBATCH -A r00043
 #SBATCH --mem=128G
 set -x
-module load PrgEnv-gnu
+conda deactivate
 module load python/gpu/3.10.10
 cd /N/u/ckieu/BigRed200/model/Deep-learning-intensity-downscaling/models/TC-net-ViT
 datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'
@@ -21,7 +21,7 @@ x_size=64                      # resized of the x-dim
 y_size=64                      # resized of the y-dim
 kernel_size=7                  # kernel size for CNN architecture
 seasonal='NO'                  # option to do TC intensity retrieval for each month
-mode='VMAX'                    # mode of training for VMAX PMIN RMW
+mode='VMAX'                    # mode o training for VMAX PMIN RMW
 st_embed=1                     # extra information for training, otherwise leave empty
 learning_rate=0.001            # learning rate for VIT model
 weight_decay=0.0001            # learning rate decay weight
@@ -33,7 +33,7 @@ projection_dim=64              # embedding dimension for VIT
 num_heads=4                    # number of parallel heads     
 transformer_layers=8           # number of enconder layers for VIT
 mlp_head_units="2048 1024"     # number of feed forward layers for each encoder block
-model_name='VIT'               # model name
+model_name='VIT_Quartz'        # model name
 validation_years=(2014)        # validation years to monitor/save best model, e.g. (2015 2016 ...)
 test_years=(2017)              # test years to verify... this is IMPORTANT for TC intensity
 xfold=10                       # NO NEED: number of folds for statistical robustness check
@@ -64,8 +64,7 @@ if [ "$step1" == "1" ]; then
         --minlon -180.0 --maxlon 180.0 \
         --maxwind 10000 --minwind 0 \
         --maxpres 10000 --minpres 0 \
-        --maxrmw 10000 --minrmw 0 \
-        --modelName "$model_name"
+        --maxrmw 10000 --minrmw 0
 else
     echo "Step 1: MERRA2tc_domain.py will be skipped"
 fi
@@ -98,8 +97,8 @@ fi
 #$windowsize_x $windowsize_y --kfold $xfold --var_num $var_num
 
 if [ "$step4" == "1" ]; then
-    echo "Running step 4: TC-build_model.py ..."
-    python TC-build_model.py \
+    echo "Running step 4: TC-build_model_new.py ..."
+    python TC-build_model_new.py \
         --mode $mode \
         --root $workdir \
         --windowsize $windowsize_x $windowsize_y \

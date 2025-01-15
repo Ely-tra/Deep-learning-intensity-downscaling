@@ -8,7 +8,7 @@
 # HIST: - Jan 26, 2024: created by Khanh Luong for CNN
 #       - Oct 02, 2024: adapted for VIT by Tri Nguyen
 #       - Oct 19, 2024: cross-checked and cleaned up by CK
-#
+#       - Oct 30, 2024: added arguments input by TN
 #====================================================================================
 import tensorflow as tf
 import numpy as np
@@ -17,21 +17,48 @@ import matplotlib.pyplot as plt
 from keras import backend as K
 from matplotlib.lines import Line2D
 from tensorflow.keras import layers
-#
-# Define parameters and data path. Note that x_size is the input data size. By default
-# is (64x64) after resized for windowsize < 26x26. For a larger windown size, set it
-# to 128.
-#
-workdir = "/N/project/Typhoon-deep-learning/output/"
-windowsize = [19,19]
-mode = "VMAX"
-st_embed = True
-xfold = 7 #vi co ta sinh ngay 17-10
-model_name = 'ViT_model1_fold' + str(xfold) + '_' + mode + ('_st' if st_embed else '')
-exp_name = "exp_13features_" + str(windowsize[0])+'x'+str(windowsize[1])
+import argparse
+import re
+
+# argument settings
+def parse_args():
+    parser = argparse.ArgumentParser(description="Test and Plot Model Predictions for TC Intensity")
+    parser.add_argument("--mode", default="VMAX", type=str, 
+                        help="Mode of operation (e.g., VMAX, PMIN, RMW)")
+    parser.add_argument("--workdir", default="/N/project/Typhoon-deep-learning/output/", type=str, 
+                        help="Directory to save output data")
+    parser.add_argument("--windowsize", default=[19, 19], type=int, nargs=2, 
+                        help="Window size as two integers (e.g., 19 19)")
+    parser.add_argument("--var_num", type=int, default = 13, 
+                        help="Number of vars (not used directly but might be needed for file paths)")
+    parser.add_argument("--x_size", type=int, default = 72, help="X dimension size for input")
+    parser.add_argument("--y_size", type=int, default = 72, help="Y dimension size for input")
+    parser.add_argument('--st_embed', type=int, default = 0, help='extra space-time info')
+    parser.add_argument("--model_name", default='ViTmodel1', type=str, help="Base of the model name")
+    parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], 
+                        help='Year(s) taken for validation')
+    parser.add_argument('--test_year', nargs='+', type=int, default=[2017], 
+                        help='Year(s) taken for test')
+    return parser.parse_args()
+
+# Set parameters based on parsed arguments
+args = parse_args()
+validation_year = args.validation_year
+test_year = args.test_year
+mode = args.mode
+workdir = args.workdir
+windowsize = list(args.windowsize)
+var_num = args.var_num
+x_size = args.x_size
+y_size = args.y_size
+st_embed = args.st_embed
+model_name = args.model_name
+model_name = f'{model_name}_{mode}{"_st" if st_embed == 1 else ""}'
+exp_name = f"exp_{var_num}features_{windowsize[0]}x{windowsize[1]}/"
 directory = workdir + exp_name
 data_dir = directory + '/data/'
 model_dir = directory + '/model/' + model_name
+windows = f'{windowsize[0]}x{windowsize[1]}'
 ######################################################################################
 # All fucntions below
 ######################################################################################
@@ -43,36 +70,81 @@ def mode_switch(mode):
     }
     # Return the corresponding value if mode is found, otherwise return None as default
     return switcher.get(mode, None)
+def get_year_directories(data_directory):
+    """
+    List all directory names within a given directory that are formatted as four-digit years.
 
-def load_data_fold(data_directory, xfold = xfold, mode = mode):
+    Parameters:
+    - data_directory (str): Path to the directory containing potential year-named subdirectories.
+
+    Returns:
+    - list: A list of directory names that match the four-digit year format.
+    """
+    all_entries = os.listdir(data_directory)
+    year_directories = [
+        int(entry) for entry in all_entries
+        if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
+    ]
+    return year_directories
+
+def load_data_for_test_year(data_directory, mode, test_year, var_num, windows):
+    """
+    Loads data from specified directory for specified test years and organizes it into test sets.
+
+    Args:
+        data_directory (str): The root directory where data files are stored.
+        mode (str): Mode of operation which defines how labels should be manipulated or filtered.
+        test_year (list): List of years to be used for testing.
+        var_num (int): Variable number identifier used in file naming.
+        windows (str): Window size identifier used in file naming.
+
+    Returns:
+        tuple: Tuple containing three elements:
+               - test_features (np.ndarray): Array of test features from the test years.
+               - test_labels (np.ndarray): Array of test labels corresponding to test_features.
+               - test_space_times (np.ndarray): Array of test spatial and temporal data corresponding to test_features.
+    """
+    years = get_year_directories(data_directory)
     months = range(1, 13)  # Months labeled 1 to 12
-    b = mode_switch(mode)
-    all_features = []
-    all_labels = []
-    all_space_times = []
+    b = mode_switch(mode)  # Adjust this function to handle different modes appropriately
+    test_features, test_labels, test_space_times = [], [], []
 
-    # Process only the specified fold
-    for month in months:
-        feature_filename = f'test_features_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
-        label_filename = f'test_labels_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
-        space_time_filename = f'test_spacetime_fold{xfold}_{windowsize[0]}x{windowsize[1]}{month:02d}fixed.npy'
+    # Loop over each year
+    for year in years:
+        if year not in test_year:
+            continue  # Focus only on the test year
 
-        # Construct full paths
-        feature_path = os.path.join(data_directory, feature_filename)
-        label_path = os.path.join(data_directory, label_filename)
-        space_time_path = os.path.join(data_directory, space_time_filename)
+        # Loop over each month
+        for month in months:
+            feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
+            label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
+            space_time_filename = f'space_time_info{var_num}_{windows}{month:02d}.npy'
 
-        # Check if files exist before loading
-        if os.path.exists(feature_path) and os.path.exists(label_path):
-            # Load the data
-            features = np.load(feature_path)
-            labels = np.load(label_path)[:, b]
-            space_times = np.load(space_time_path)
+            # Construct full paths
+            feature_path = os.path.join(data_directory, str(year), feature_filename)
+            label_path = os.path.join(data_directory, str(year), label_filename)
+            space_time_path = os.path.join(data_directory, str(year), space_time_filename)
 
-        else:
-            print(f"Warning: Files not found for fold {xfold} and month {month}")
+            # Check if files exist before loading
+            if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
+                features = np.load(feature_path)
+                labels = np.load(label_path)[:, b]
+                space_time = np.load(space_time_path)
 
-    return features, labels, space_times
+                # Append to test lists
+                test_features.append(features)
+                test_labels.append(labels)
+                test_space_times.append(space_time)
+            else:
+                print(f"Warning: Files not found for year {year} and month {month}")
+                print(label_path, feature_path)
+
+    # Concatenate all loaded data into single arrays
+    test_features = np.concatenate(test_features, axis=0) if test_features else np.array([])
+    test_labels = np.concatenate(test_labels, axis=0) if test_labels else np.array([])
+    test_space_times = np.concatenate(test_space_times, axis=0) if test_space_times else np.array([])
+
+    return test_features, test_labels, test_space_times
 
 def root_mean_squared_error(y_true, y_pred):
     """Calculate root mean squared error."""
@@ -134,7 +206,9 @@ class Patches(layers.Layer):
         num_patches_h = height // self.patch_size
         num_patches_w = width // self.patch_size
 
-        patches = tf.image.extract_patches(images, sizes=[1, self.patch_size, self.patch_size, 1], strides=[1, self.patch_size, self.patch_size, 1], rates=[1, 1, 1, 1], padding='VALID')
+        patches = tf.image.extract_patches(images, sizes=[1, self.patch_size, self.patch_size, 1], 
+                                           strides=[1, self.patch_size, self.patch_size, 1], 
+                                           rates=[1, 1, 1, 1], padding='VALID')
 
         patches = tf.reshape(
             patches,
@@ -146,6 +220,7 @@ class Patches(layers.Layer):
         config = super().get_config()
         config.update({"patch_size": self.patch_size})
         return config
+
 class PatchEncoder(layers.Layer):
     def __init__(self, num_patches, projection_dim, **kwargs):
         super().__init__(**kwargs)
@@ -174,11 +249,8 @@ def normalize_Z(Z):
     Z[:,3] = (Z[:,3]+180) / 360
     return Z
 
-#==============================================================================================
 # Main call
-#==============================================================================================
-
-X, Y, Z = load_data_fold(data_dir, xfold)
+X, Y, Z = load_data_for_test_year(data_dir, mode, test_year, var_num, windows)
 X=np.transpose(X, (0, 2, 3, 1))
 
 # Normalize the data before encoding
@@ -188,7 +260,18 @@ number_channels=x.shape[3]
 # Load model and perform predictions
 model = tf.keras.models.load_model(model_dir, custom_objects={'Patches': Patches, 'PatchEncoder': PatchEncoder})
 name = model_name
-predict = model.predict([x, z])
+if st_embed == 1:
+    predict = model.predict([x, z])
+else:
+    predict = model.predict(x)
+
+# select unit
+if mode == "VMAX":
+    unit = "Knots"
+elif mode == "PMIN":
+    unit = "hPa"
+else:
+    unit = "nm"
 
 # Calculate metrics and store results
 datadict[name + 'rmse'] = root_mean_squared_error(predict, y)
@@ -199,7 +282,7 @@ datadict[name] = predict
 fig, axs = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={'width_ratios': [1.2, 1]})
 axs[0].boxplot([datadict[name].reshape(-1), y])
 axs[0].grid(True)
-axs[0].set_ylabel('Knots', fontsize=20)
+axs[0].set_ylabel(unit, fontsize=20)
 axs[0].text(0.95, 0.05, '(a)', transform=axs[0].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
             bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
 axs[0].tick_params(axis='both', which='major', labelsize=14)
@@ -227,7 +310,7 @@ custom_lines = [
 
 axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
 
-plt.savefig(directory + '/fig_' + str(name) + '.png')
-print(f'Saved the result as Model:{name}.png')
+plt.savefig(directory + '/fig_' + str(name) + '_' + str(test_year[0])+'_'+str(validation_year[0])+'.png')
+print(f'Saved the result as fig_{name}_{test_year[0]}_{str(validation_year[0])}.png')
 print('RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE'])))
 print('Completed!')

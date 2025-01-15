@@ -1,16 +1,9 @@
 import numpy as np
 import os
 from sklearn.utils import shuffle
-import sys
 from sklearn.model_selection import KFold
+import argparse
 
-#
-# Set the path and parameters before running this script to split the data
-#
-workdir = '/N/project/Typhoon-deep-learning/output/'
-windowsize = [19,19]
-var_num = 13
-k = 10
 def split_data(features, labels, spacetime=0, test_percentage=10):
     """
     Shuffle and split the data into training and testing datasets.
@@ -32,8 +25,9 @@ def split_data(features, labels, spacetime=0, test_percentage=10):
     shuffled_indices = shuffle(indices, random_state=0)
     features = features[shuffled_indices]
     labels = labels[shuffled_indices]
-    if spacetime.any() !=0:
+    if spacetime.any() != 0:
         spacetime = spacetime[shuffled_indices]
+    
     # Compute the split index
     split_idx = int(len(features) * (test_percentage / 100))
 
@@ -50,48 +44,66 @@ def split_data(features, labels, spacetime=0, test_percentage=10):
     else:
         return train_features, train_spacetime, train_labels, test_features, test_spacetime, test_labels
 
-# MAIN CALL:
-windows = f"{windowsize[0]}x{windowsize[1]}"
-data_directory = f"{workdir}/exp_{var_num}features_{windows}/data/"
+if __name__ == "__main__":
+    # Argument parser setup
+    parser = argparse.ArgumentParser(description="Data splitting and K-Fold cross-validation.")
+    parser.add_argument("--workdir", type=str, required=True, help="Directory to save output data")
+    parser.add_argument("--windowsize", type=int, nargs=2, required=True, help="Window size for data extraction as two integers, e.g., '19 19'")
+    parser.add_argument("--var_num", type=int, required=True, help="Number of variables to process")
+    parser.add_argument("--kfold", type=int, required=True, help="K-fold value for cross-validation")
+    
+    # Parse arguments
+    args = parser.parse_args()
+    workdir = args.workdir
+    windowsize = list(args.windowsize)
+    var_num = args.var_num
+    k = args.kfold
+    
+    # Set up paths and ensure the data directory exists
+    windows = f"{windowsize[0]}x{windowsize[1]}"
+    data_directory = f"{workdir}/exp_{var_num}features_{windows}/data/"
 
-# Ensure the data directory exists
-if not os.path.exists(data_directory):
-    print(f"Must have the input data by now....exit {data_directory}")
-    exit()
-kf = KFold(n_splits=k, shuffle=True)  # KFold instance
+    if not os.path.exists(data_directory):
+        print(f"Must have the input data by now....exit {data_directory}")
+        exit()
 
-for file in os.listdir(data_directory):
-    if file.startswith('CNNfeatures') and 'fixed.npy' in file:
-        feature_file = file
-        label_file = file.replace('features', 'labels').replace('fixed.npy', '.npy')
-        spacetimefile = file.replace('features', 'space_time_info').replace('fixed.npy', '.npy')
+    # Set up K-Fold
+    kf = KFold(n_splits=k, shuffle=True, random_state=0)
 
-        # Load the data
-        features = np.load(data_directory + feature_file)
-        labels = np.load(data_directory + label_file)
-        spacetime = np.load(data_directory + spacetimefile)
+    # Process each file in the data directory
+    for file in os.listdir(data_directory):
+        if file.startswith('CNNfeatures') and 'fixed.npy' in file:
+            feature_file = file
+            label_file = file.replace('features', 'labels').replace('fixed.npy', '.npy')
+            spacetimefile = file.replace('features', 'space_time_info').replace('fixed.npy', '.npy')
 
-        # Initialize lists to hold concatenated training data
-        all_train_features = []
-        all_train_labels = []
-        all_train_spacetime = []
+            # Load the data
+            features = np.load(data_directory + feature_file)
+            labels = np.load(data_directory + label_file)
+            spacetime = np.load(data_directory + spacetimefile)
 
-        # K-fold cross-validation
-        fold = 1
-        for train_index, test_index in kf.split(features):
-            train_features, test_features = features[train_index], features[test_index]
-            train_labels, test_labels = labels[train_index], labels[test_index]
-            train_spacetime, test_spacetime = spacetime[train_index], spacetime[test_index]
+            # Initialize lists to hold concatenated training data
+            all_train_features = []
+            all_train_labels = []
+            all_train_spacetime = []
 
-            # Append to list for later concatenation
-            all_train_features.append(train_features)
-            all_train_labels.append(train_labels)
-            all_train_spacetime.append(train_spacetime)
+            # K-fold cross-validation
+            fold = 1
+            for train_index, test_index in kf.split(features):
+                train_features, test_features = features[train_index], features[test_index]
+                train_labels, test_labels = labels[train_index], labels[test_index]
+                train_spacetime, test_spacetime = spacetime[train_index], spacetime[test_index]
 
-            # Save the test data
-            base_name = feature_file.split('_')[1]  # To get the variant number and use it in the saved filenames
-            np.save(data_directory + f'test_features_fold{fold}_{base_name}', test_features)
-            np.save(data_directory + f'test_labels_fold{fold}_{base_name}', test_labels)
-            np.save(data_directory + f'test_spacetime_fold{fold}_{base_name}', test_spacetime)
-            fold += 1
-print('Completed')
+                # Append to list for later concatenation
+                all_train_features.append(train_features)
+                all_train_labels.append(train_labels)
+                all_train_spacetime.append(train_spacetime)
+
+                # Save the test data
+                base_name = feature_file.split('_')[1]  # Get the variant number for filenames
+                np.save(data_directory + f'test_features_fold{fold}_{base_name}', test_features)
+                np.save(data_directory + f'test_labels_fold{fold}_{base_name}', test_labels)
+                np.save(data_directory + f'test_spacetime_fold{fold}_{base_name}', test_spacetime)
+                fold += 1
+    print('Completed')
+
