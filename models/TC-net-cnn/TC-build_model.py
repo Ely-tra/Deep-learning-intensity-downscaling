@@ -75,8 +75,6 @@ learning_rate = args.learning_rate
 batch_size = args.batch_size
 num_epochs = args.num_epochs        	
 image_size = args.image_size  				
-validation_year = args.validation_year
-test_year = args.test_year
 mode = args.mode
 root = args.root
 windowsize = list(args.windowsize)
@@ -349,6 +347,7 @@ def normalize_Z(Z):
 # Model
 #==============================================================================================
 def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, epoch=100, val_pc=None):
+    # Load model configuration and build the model
     config = load_json_config(config_path)
     model = build_model_from_json(config, st_embed=st_embed)
     
@@ -365,21 +364,22 @@ def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, e
         keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1)
     ]
     
+    # Set up training inputs and labels
     train_inputs = [X]
-    val_inputs = []
-    val_data = None
-    
-    # Dynamically include Z and Z_val if they exist and are not None
+    train_Y = Y  # Default training labels
     if st_embed and 'train_z' in globals() and train_z is not None:
         train_inputs.append(train_z)
-
-    # Check for existing validation data or split based on val_pc
+    
+    # Determine validation data and labels
     if 'val_x' in globals() and val_x is not None and 'val_y' in globals() and val_y is not None:
-        val_inputs = [val_x, val_y]
         if st_embed and 'val_z' in globals() and val_z is not None:
-            val_inputs[0] = [val_x, val_z]
-        val_data = (val_inputs, val_y)
+            val_inputs = [val_x, val_z]
+        else:
+            val_inputs = [val_x]
+        val_Y = val_y
+        val_data = (val_inputs, val_Y)
     elif val_pc and 0 < val_pc < 100:
+        # Split X, Y (and optionally train_z) into training and validation sets
         split_index = int(len(X) * (1 - val_pc / 100))
         if st_embed and 'train_z' in globals() and train_z is not None:
             X_train, X_val = X[:split_index], X[split_index:]
@@ -387,14 +387,22 @@ def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, e
             Z_train, Z_val = train_z[:split_index], train_z[split_index:]
             train_inputs = [X_train, Z_train]
             val_inputs = [X_val, Z_val]
+            train_Y = Y_train
+            val_Y = Y_val
         else:
             X_train, X_val = X[:split_index], X[split_index:]
             Y_train, Y_val = Y[:split_index], Y[split_index:]
-            train_inputs = X_train
-            val_inputs = X_val
-        val_data = (val_inputs, Y_val)
+            train_inputs = [X_train]
+            val_inputs = [X_val]
+            train_Y = Y_train
+            val_Y = Y_val
+        val_data = (val_inputs, val_Y)
+    else:
+        val_data = None
 
-    history = model.fit(train_inputs, Y, batch_size=batch_size, epochs=epoch, validation_data=val_data, verbose=2, callbacks=callbacks)
+    # Fit the model using the (possibly split) training labels
+    history = model.fit(train_inputs, train_Y, batch_size=batch_size, epochs=epoch,
+                        validation_data=val_data, verbose=2, callbacks=callbacks)
 
     return history
 
@@ -435,8 +443,8 @@ if 'val_x' in globals():
 # Assuming train_x is defined and checking the number of channels
 number_channels = train_x.shape[3]
 
-print('Input shape of the X features data: ',X.shape)
-print('Input shape of the y label data: ',Y.shape)
+print('Input shape of the X features data: ',train_x.shape)
+print('Input shape of the y label data: ',train_y.shape)
 print('Number of input channel extracted from X is: ',number_channels)
 
 history = main(X=train_x, Y=train_y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, val_pc=val_pc)
