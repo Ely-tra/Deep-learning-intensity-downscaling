@@ -38,19 +38,7 @@ config='model_core/test.json'
 
 # This is a proposed workflow
 #
-    parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
-    parser.add_argument('-r', '--root', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Working directory path')
-    parser.add_argument('-ws', '--windowsize', type=int, nargs=2, default=[19, 19], help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('-vno', '--var_num', type=int, default=13, help='Number of variables')
-    parser.add_argument('-st', '--st_embed', type=bool, default=False, help='Including space-time embedded')
-    parser.add_argument('-vym', '--validation_year_merra', nargs='+', type=int, default=[2014], help='Year(s) taken for validation (MERRA2 dataset)')
-    parser.add_argument('-tym', '--test_year_merra', nargs='+', type=int, default=[2017], help='Year(s) taken for test (MERRA2 dataset)')
-    parser.add_argument('-tew', '--test_experiment_wrf', nargs='+', type=int, default=[5], help='Experiment taken for test (WRF dataset)')
-    parser.add_argument('-vew', '--validation_experiment_wrf', nargs='+', type=int, default=None, help='Experiment taken for validation (WRF dataset)')
-    parser.add_argument('-ss', '--data_source', type=str, default='MERRA', help='Data source to conduct experiment on')
-    parser.add_argument('-dxx', '--dxx', type=str, default='d01', help='Label quality for WRF experiments, d01 is the best, d03 is the worst')
-    parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
-    return parser.parse_args()
+
 python MERRA2tc_domain.py \
     --csvdataset "$besttrack" \ 
     --datapath "$datapath" \ 
@@ -85,19 +73,7 @@ python TC-universal_data_reader.py \
     --test_year_merra "${test_years[@]}" \
     -temp "${temporary_folder}" \
     -ss ${data_source}
-    parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
-    parser.add_argument('-r', '--root', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Working directory path')
-    parser.add_argument('-ws', '--windowsize', type=int, nargs=2, default=[19, 19], help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('-vno', '--var_num', type=int, default=13, help='Number of variables')
-    parser.add_argument('-st', '--st_embed', type=bool, default=False, help='Including space-time embedded')
-    parser.add_argument('-vym', '--validation_year_merra', nargs='+', type=int, default=[2014], help='Year(s) taken for validation (MERRA2 dataset)')
-    parser.add_argument('-tym', '--test_year_merra', nargs='+', type=int, default=[2017], help='Year(s) taken for test (MERRA2 dataset)')
-    parser.add_argument('-tew', '--test_experiment_wrf', nargs='+', type=int, default=[5], help='Experiment taken for test (WRF dataset)')
-    parser.add_argument('-vew', '--validation_experiment_wrf', nargs='+', type=int, default=None, help='Experiment taken for validation (WRF dataset)')
-    parser.add_argument('-ss', '--data_source', type=str, default='MERRA', help='Data source to conduct experiment on')
-    parser.add_argument('-dxx', '--dxx', type=str, default='d01', help='Label quality for WRF experiments, d01 is the best, d03 is the worst')
-    parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
-    return parser.parse_args()
+
 python TC-build_model.py \
     --mode $mode \
     --root $workdir \
