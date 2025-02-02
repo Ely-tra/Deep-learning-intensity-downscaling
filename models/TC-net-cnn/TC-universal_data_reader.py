@@ -267,10 +267,10 @@ def write_data(data_dict, work_folder):
         print(f"Saved {file_path}")
 
 
-if ss == 'MERRA':
+if data_source == 'MERRA':
     data_dir = os.path.join(root, f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')
-    results = load_merra_data(data_dir, validation_year=validation_year_merra, test_year=test_year_merra)
-if ss == 'WRF':
+    results = load_merra_data(data_dir,windowsize, validation_year=validation_year_merra, test_year=test_year_merra)
+if data_source == 'WRF':
     data_dir = os.path.join(root, 'wrf_data')
     results = load_wrf_data(data_dir, dxx, test = test_experiment_wrf, val=validation_experiment_wrf)
 write_data(results, work_folder)

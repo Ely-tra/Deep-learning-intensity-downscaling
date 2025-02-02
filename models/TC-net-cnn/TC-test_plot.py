@@ -24,32 +24,33 @@ import re
 # is (64x64) after resized for windowsize < 26x26. For a larger wind:wown size, set it
 # to 128.
 #
-
 def parse_args():
     parser = argparse.ArgumentParser(description="Test and Plot Model Predictions for TC Intensity")
     parser.add_argument("--mode", default="VMAX", type=str, help="Mode of operation (e.g., VMAX, PMIN, RMW)")
-    parser.add_argument("--workdir", default="/N/project/Typhoon-deep-learning/output/", type=str, help="Directory to save output data")
-    parser.add_argument("--windowsize", default=[19, 19], type=int, nargs=2, help="Window size as two integers (e.g., 19 19)")
-    parser.add_argument("--var_num", type=int, default = 13, help="Number of variables (not used directly here but might be needed for file paths)")
-    parser.add_argument('--image_size', type=int, default=64, help='Size to resize the image to')
+    parser.add_argument('-r', "--root", default="/N/project/Typhoon-deep-learning/output/", type=str, help="Directory to save output data")
+    parser.add_argument('-ws', "--windowsize", default=[19, 19], type=int, nargs=2, help="Window size as two integers (e.g., 19 19)")
+    parser.add_argument('-vno', "--var_num", type=int, default = 13, help="Number of variables (not used directly here but might be needed for file paths)")
+    parser.add_argument('-imsize', '--image_size', type=int, default=64, help='Size to resize the image to')
     parser.add_argument('--st_embed', type=bool, default=False, help='Including space-time embedded')
     parser.add_argument("--model_name", default='CNNmodel', type=str, help="Base of the model name")
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
     parser.add_argument("--text_report_name", default= 'report.txt', type=str, help="Filename to write text report to, will be inside text_report dir")
+    parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source')
 
     return parser.parse_args()
 args = parse_args()
 # Set parameters based on parsed arguments
 mode = args.mode
-workdir = args.workdir
+workdir = args.root
 windowsize = list(args.windowsize)
 var_num = args.var_num
 image_size = args.image_size
 st_embed = args.st_embed
 model_name = args.model_name
 text_report_name=args.text_report_name
-
-model_name = f'{model_name}_{mode}{"_st" if st_embed else ""}'
+data_source=args.data_source
+work_folder=args.work_folder
+model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
 exp_name = f"exp_{var_num}features_{windowsize[0]}x{windowsize[1]}/"
 directory = workdir + exp_name
 report_directory = os.path.join(directory, 'text_report')

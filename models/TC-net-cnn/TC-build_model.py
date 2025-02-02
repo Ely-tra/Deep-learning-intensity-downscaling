@@ -60,7 +60,7 @@ def parse_args():
     parser.add_argument('-r', '--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Working directory path')
     parser.add_argument('-ws', '--windowsize', type=int, nargs=2, default = [19,19], help='Window size as two integers (e.g., 19 19)')
     parser.add_argument('-vno', '--var_num', type=int, default = 13, help='Number of variables')
-    parser.add_argument('-st', '--st_embed', action='store_true', help='Including space-time embedded')
+    parser.add_argument('-st', '--st_embed', type=bool, default = False, help='Including space-time embedded')
     parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='Initial learning rate')
     parser.add_argument('-bsize', '--batch_size', type=int, default=256, help='Batch size for training')
     parser.add_argument('-eno', '--num_epochs', type=int, default=100, help='Number of epochs for training')
@@ -402,7 +402,7 @@ def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, e
 
     # Fit the model using the (possibly split) training labels
     history = model.fit(train_inputs, train_Y, batch_size=batch_size, epochs=epoch,
-                        validation_data=val_data, verbose=2, callbacks=callbacks)
+                        validation_data=val_data, verbose=2, callbacks=callbacks, shuffle=True)
 
     return history
 
