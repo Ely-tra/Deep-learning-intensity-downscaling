@@ -66,7 +66,6 @@ def parse_args():
     parser.add_argument('-eno', '--num_epochs', type=int, default=100, help='Number of epochs for training')
     parser.add_argument('-imsize', '--image_size', type=int, default=64, help='Size to resize the image to')
     parser.add_argument('-cfg', '--config', type=str, default = 'model_core/test.json')
-    parser.add_argument('-val_pc', '--val_percentage', type=int, default = 10, help='Optional, how many percent of the train set is used for validation')
     parser.add_argument('-ss', '--data_source', type=str, default = 'MERRA2')
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
     return parser.parse_args()
@@ -77,19 +76,14 @@ num_epochs = args.num_epochs
 image_size = args.image_size  				
 mode = args.mode
 root = args.root
-windowsize = list(args.windowsize)
 var_num = args.var_num
 st_embed = args.st_embed
 config_path = args.config
 data_source=args.data_source
-val_pc=args.val_percentage
 work_folder=args.work_folder
 
 
-windows = f'{windowsize[0]}x{windowsize[1]}'
-work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
-data_dir = work_dir + 'data/'
-model_dir = work_dir + 'model/'
+model_dir = os.path.join(root, 'model')
 model_name = args.model_name
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
 temp_dir = os.path.join(work_folder, 'temp')
@@ -346,7 +340,7 @@ def normalize_Z(Z):
 #==============================================================================================
 # Model
 #==============================================================================================
-def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, epoch=100, val_pc=None):
+def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, epoch=100):
     # Load model configuration and build the model
     config = load_json_config(config_path)
     model = build_model_from_json(config, st_embed=st_embed)
@@ -377,25 +371,6 @@ def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, e
         else:
             val_inputs = [val_x]
         val_Y = val_y
-        val_data = (val_inputs, val_Y)
-    elif val_pc and 0 < val_pc < 100:
-        # Split X, Y (and optionally train_z) into training and validation sets
-        split_index = int(len(X) * (1 - val_pc / 100))
-        if st_embed and 'train_z' in globals() and train_z is not None:
-            X_train, X_val = X[:split_index], X[split_index:]
-            Y_train, Y_val = Y[:split_index], Y[split_index:]
-            Z_train, Z_val = train_z[:split_index], train_z[split_index:]
-            train_inputs = [X_train, Z_train]
-            val_inputs = [X_val, Z_val]
-            train_Y = Y_train
-            val_Y = Y_val
-        else:
-            X_train, X_val = X[:split_index], X[split_index:]
-            Y_train, Y_val = Y[:split_index], Y[split_index:]
-            train_inputs = [X_train]
-            val_inputs = [X_val]
-            train_Y = Y_train
-            val_Y = Y_val
         val_data = (val_inputs, val_Y)
     else:
         val_data = None
