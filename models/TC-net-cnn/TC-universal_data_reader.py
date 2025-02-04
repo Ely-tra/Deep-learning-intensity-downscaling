@@ -17,6 +17,8 @@ def parse_args():
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source to conduct experiment on')
     parser.add_argument('-dxx', '--dxx', type=str, default='d01', help='Label quality for WRF experiments, d01 is the best, d03 is the worst')
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
+    parser.add_argument('-val_pc', '--validation_percentage', type=int, default=10, 
+                        help='Validation set split percentage (based on train set), if a specific validation set is not provided')
     return parser.parse_args()
 
 def set_variables_from_args(args):
@@ -142,14 +144,14 @@ def load_merra_data(data_directory, windowsize, validation_year=None, test_year=
     results = {}
     results['train_x.npy'] = train_features
     results['train_y.npy'] = train_labels
-    results['train_space_times.npy'] = train_space_times
+    results['train_z.npy'] = train_space_times
     results['test_x.npy'] = test_features
     results['test_y.npy'] = test_labels
-    results['test_space_times.npy'] = test_space_times
+    results['test_z.npy'] = test_space_times
     if validation_year:
         results['val_x.npy'] = val_features
         results['val_y.npy'] = val_labels
-        results['val_space_times.npy'] = val_space_times
+        results['val_z.npy'] = val_space_times
     
     return results
 def load_wrf_data(workdir, dxx, test=None, val=None):
@@ -244,14 +246,16 @@ def load_wrf_data(workdir, dxx, test=None, val=None):
     return results
 
 
-def write_data(data_dict, work_folder):
+def write_data(data_dict, work_folder, val_pc=20):
     """
     Saves all arrays contained in data_dict as .npy files in a 'temp' subdirectory within work_folder.
+    If necessary validation files are missing, it shuffles and splits the training data to create them.
     
     Parameters:
-        data_dict (dict): A dictionary where each key is a file name (e.g., 'train_x.npy', 'test_y.npy', etc.)
+        data_dict (dict): A dictionary where each key is a file name (e.g., 'train_x.npy', 'train_y.npy', etc.)
                           and each value is the corresponding numpy array to save.
         work_folder (str): The directory in which the 'temp' subfolder will be created and the files saved.
+        val_pc (int): The percentage of data to be used as validation data if validation files are missing.
     
     Outputs:
         The function writes each numpy array to a file whose name is the dictionary key.
@@ -260,6 +264,27 @@ def write_data(data_dict, work_folder):
     temp_folder = os.path.join(work_folder, 'temp')
     os.makedirs(temp_folder, exist_ok=True)
     
+    # Check for validation files
+    if 'val_x.npy' not in data_dict or 'val_y.npy' not in data_dict:
+        # Determine which arrays need splitting
+        train_x = data_dict.get('train_x.npy')
+        train_y = data_dict.get('train_y.npy')
+        train_z = data_dict.get('train_z.npy') if 'train_z.npy' in data_dict else None
+        
+        # Shuffle data
+        indices = np.random.permutation(len(train_x))
+        split_idx = int(len(indices) * (1 - val_pc / 100))
+        
+        # Split and assign training and validation data
+        data_dict['train_x.npy'] = train_x[indices[:split_idx]]
+        data_dict['val_x.npy'] = train_x[indices[split_idx:]]
+        data_dict['train_y.npy'] = train_y[indices[:split_idx]]
+        data_dict['val_y.npy'] = train_y[indices[split_idx:]]
+        
+        if train_z is not None:
+            data_dict['train_z.npy'] = train_z[indices[:split_idx]]
+            data_dict['val_z.npy'] = train_z[indices[split_idx:]]
+
     # Iterate over the dictionary and save each array with the given file name
     for file_name, array in data_dict.items():
         file_path = os.path.join(temp_folder, file_name)
@@ -273,4 +298,4 @@ if data_source == 'MERRA2':
 if data_source == 'WRF':
     data_dir = os.path.join(root, 'wrf_data')
     results = load_wrf_data(data_dir, dxx, test = test_experiment_wrf, val=validation_experiment_wrf)
-write_data(results, work_folder)
+write_data(results, work_folder, val_pc = validation_percentage)
