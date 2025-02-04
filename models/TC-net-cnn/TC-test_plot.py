@@ -28,8 +28,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Test and Plot Model Predictions for TC Intensity")
     parser.add_argument("--mode", default="VMAX", type=str, help="Mode of operation (e.g., VMAX, PMIN, RMW)")
     parser.add_argument('-r', "--root", default="/N/project/Typhoon-deep-learning/output/", type=str, help="Directory to save output data")
-    parser.add_argument('-ws', "--windowsize", default=[19, 19], type=int, nargs=2, help="Window size as two integers (e.g., 19 19)")
-    parser.add_argument('-vno', "--var_num", type=int, default = 13, help="Number of variables (not used directly here but might be needed for file paths)")
     parser.add_argument('-imsize', '--image_size', type=int, default=64, help='Size to resize the image to')
     parser.add_argument('--st_embed', type=bool, default=False, help='Including space-time embedded')
     parser.add_argument("--model_name", default='CNNmodel', type=str, help="Base of the model name")
@@ -42,8 +40,6 @@ args = parse_args()
 # Set parameters based on parsed arguments
 mode = args.mode
 workdir = args.root
-windowsize = list(args.windowsize)
-var_num = args.var_num
 image_size = args.image_size
 st_embed = args.st_embed
 model_name = args.model_name
@@ -51,13 +47,9 @@ text_report_name=args.text_report_name
 data_source=args.data_source
 work_folder=args.work_folder
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
-exp_name = f"exp_{var_num}features_{windowsize[0]}x{windowsize[1]}/"
-directory = workdir + exp_name
-report_directory = os.path.join(directory, 'text_report')
+report_directory = os.path.join(root, 'text_report')
 text_report_path=os.path.join(report_directory, text_report_name)
-data_dir = directory + '/data/'
-model_dir = directory + '/model/' + model_name
-windows = f'{windowsize[0]}x{windowsize[1]}'
+model_dir = root + '/model/' + model_name
 temp_dir = os.path.join(work_folder, 'temp')
 ######################################################################################
 # All fucntions below
