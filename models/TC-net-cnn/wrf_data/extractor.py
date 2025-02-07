@@ -253,30 +253,23 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
     for key in common_keys:
         ds1_file = ds1_files_dict[key]
         ds2_file = ds2_files_dict[key]
-        print(ds1_file, ds2_file, 'Processing with matching m_id and suffix')
+        print(f"Processing {ds1_file} and {ds2_file} with matching m_id and suffix")
         ds1 = xr.open_dataset(ds1_file)
         ds2 = xr.open_dataset(ds2_file)
         
-        # Extract core variables. (Pass imsize_x and imsize_y as needed.)
-        result, y = extract_core_variables(ds1, ds2, imsize1=imsize_x, imsize2=imsize_y)
-        results.append(result)
-        ys.append(y)
-    
-    if not results:
-        raise ValueError("No valid file pairs produced any results.")
+        # Extract core variables.
+        result, y = extract_core_variables(ds1, ds2, imsize1=(imsize_x, imsize_y))
 
-    # Concatenate results and y arrays from all processed file pairs.
-    final_data = np.concatenate(results, axis=0)
-    final_y = np.concatenate(ys, axis=0)
-    
-    # For output naming, use the last processed m_id (from the last key).
-    last_m_id = common_keys[-1][0]
-    x_filename = f"x_{eid}_{imsize_x}x{imsize_y}_{last_m_id}.npy"
-    y_filename = f"y_{eid}_{imsize_x}x{imsize_y}_{last_m_id}.npy"
-    
-    np.save(os.path.join(root, x_filename), final_data)
-    np.save(os.path.join(root, y_filename), final_y)
-    print(f"Saved {x_filename} and {y_filename} in {root}.")
+        # Instead of appending, directly save the result for this m**
+        m_id = key[0]  # Extract m_id from key
+        x_filename = f"x_{eid}_{imsize_x[0]}x{imsize_x[1]}_{m_id}.npy"
+        y_filename = f"y_{eid}_{imsize_y[0]}x{imsize_y[1]}_{m_id}.npy"
+        
+        np.save(os.path.join(root, x_filename), result)
+        np.save(os.path.join(root, y_filename), y)
+        print(f"Saved {x_filename} and {y_filename} in {root}.")
+
+    print("All m** directories have been processed and saved individually.")
 
 
 
