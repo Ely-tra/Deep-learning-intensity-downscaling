@@ -12,33 +12,12 @@ cd /N/slate/trihnguy/Deep-learning-intensity-downscaling/models/TC-net-ViT/
 # Set up experiment parameters, which will be used to generate Python scripts.
 # These parameters are currently hardwired in each script.
 #
-windowsize_x=19
-windowsize_y=19
-var_num=13
-mode='VMAX' #VMAX PMIN RMW
-st_embed=0  # Include if you want space-time embedding, otherwise leave empty
-learning_rate=0.001
-batch_size=256
-num_epochs=100
-image_size=64
-model_name='CNNmodel'
-validation_years=(2014)  # Specify validation years here
-test_years=(2017)        # Specify test years here
-datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'
-workdir='/N/project/Typhoon-deep-learning/output-Tri/'
-besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-inputpath='/N/project/Typhoon-deep-learning/output-Tri/TC_domain/'
-list_vars=("U850" "V850" "T850" "RH850" "U950" "V950" "T950" "RH950" "U750" "V750" "T750" "RH750" "SLP750")
-list_vars="${list_vars[@]}"
-temporary_folder='/N/project/Typhoon-deep-learning/output/'
-text_report_name='report.txt'
-data_source='MERRA2' #Not to change
-val_pc=10 #Useless for now
-config='model_core/test.json'
 
 # This is a proposed workflow
 #
-
+# ===============================================================================================================================================
+# MERRA2
+# ===============================================================================================================================================
 python MERRA2tc_domain.py \
     --csvdataset "$besttrack" \ 
     --datapath "$datapath" \ 
@@ -63,6 +42,25 @@ python TC-CA_NaN_filling.py \
     --windowsize "$windowsize_x" "$windowsize_y" \
     --var_num "$var_num"
 
+
+
+    
+# ===============================================================================================================================================
+# WRF
+# ===============================================================================================================================================\
+
+
+python wrf_data/extractor.py \
+    -exp_id \
+    -ix \
+    -iy \
+    -r $workdir \
+    -b \
+
+
+# ===============================================================================================================================================
+# Builder
+# ===============================================================================================================================================
 #python TC-Split_KFold.py --workdir $workdir --windowsize $windowsize_x $windowsize_y --kfold $xfold --var_num $var_num
 python TC-universal_data_reader.py \
     --root $workdir \
