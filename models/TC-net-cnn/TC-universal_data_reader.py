@@ -15,10 +15,15 @@ def parse_args():
     parser.add_argument('-tew', '--test_experiment_wrf', nargs='+', type=int, default=[5], help='Experiment taken for test (WRF dataset)')
     parser.add_argument('-vew', '--validation_experiment_wrf', nargs='+', type=int, default=None, help='Experiment taken for validation (WRF dataset)')
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source to conduct experiment on')
-    parser.add_argument('-dxx', '--dxx', type=str, default='d01', help='Label quality for WRF experiments, d01 is the best, d03 is the worst')
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
     parser.add_argument('-val_pc', '--validation_percentage', type=int, default=10, 
                         help='Validation set split percentage (based on train set), if a specific validation set is not provided')
+    parser.add_argument('-wrf_eid', '--wrf_experiment_identification', type = str, default = 'H18h18', 
+                        help =  'WRF experiment identification, H/L 18/06/02 h/l 18/06/02, please read wrf/extractor.py for a better understanding.')
+    parser.add_argument('-wrf_ix', '--wrf_variables_imsize', type = int, nargs=2, default = [64,64], 
+                        help = 'Image size for wrf variable data, for data identification only')
+    parser.add_argument('-wrf_iy', '--wrf_labelss_imsize', type = int, nargs=2, default = [64,64], 
+                        help = 'Image size for wrf label data (data is extracted from this domain), for data identification only')
     return parser.parse_args()
 
 def set_variables_from_args(args):
@@ -154,95 +159,114 @@ def load_merra_data(data_directory, windowsize, validation_year=None, test_year=
         results['val_z.npy'] = val_space_times
     
     return results
-def load_wrf_data(workdir, dxx, test=None, val=None):
+def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
     """
-    Reads and processes WRF data files from a specific directory, separating them into training, testing,
-    and validation datasets based on provided numeric identifiers. Any file whose identifier (the two digits
-    following 'm') is not listed in the test or validation identifiers is treated as training data.
-    The output is packaged in a dictionary with keys corresponding to file names, for example,
-    'train_x.npy', 'train_y.npy', 'test_x.npy', 'test_y.npy', etc.
+    Load and split paired x and y .npy files from the given working directory.
+    
+    Files are assumed to be in the subfolder: workdir / "wrf_data"
+    
+    The x-files must follow the pattern:
+        x_{eid}_{ix[0]}_{ix[1]}_m<digits>.npy
+    and the y-files must follow the pattern:
+        y_{eid}_{iy[0]}_{iy[1]}_m<digits>.npy
+
+    The <digits> part (extracted from after '_m' and before '.npy') is converted
+    to an integer. If this integer is in the provided 'test' collection, the pair
+    is added to the test split. If in the 'val' collection (if provided), it is
+    added to the validation split. Otherwise, the pair is added to the training split.
     
     Parameters:
-        workdir (str): The base directory where the data files are stored.
-        dxx (str): Descriptor or resolution identifier to match specific data files.
-        test (list or None): Numeric identifiers for test data sets, if any.
-        val (list or None): Numeric identifiers for validation data sets, if any.
+        workdir (str or Path): The base directory containing the "wrf_data" folder.
+        eid (str or int): The experiment ID used in the file names.
+        ix (list or tuple): Two elements for the x file indices.
+        iy (list or tuple): Two elements for the y file indices.
+        test (iterable of int, optional): m-numbers to assign to the test set.
+        val (iterable of int, optional): m-numbers to assign to the validation set.
     
     Returns:
-        dict: A dictionary containing numpy arrays for train, test, and validation datasets with keys:
-              'train_x.npy', 'train_y.npy', 'test_x.npy', 'test_y.npy'
-              and if applicable:
-              'val_x.npy', 'val_y.npy'
+        dict: A dictionary with keys:
+            'train_x.npy', 'train_y.npy', 'test_x.npy', 'test_y.npy'
+        and if a validation set is provided:
+            'val_x.npy', 'val_y.npy'
+        Each key maps to a list of the loaded NumPy arrays.
     """
-    # Ensure test and val are lists
-    if test is None:
-        test = []
-    else:
-        test = list(test) if isinstance(test, (list, tuple)) else [test]
+    # Ensure workdir is a Path object and point to the "wrf_data" subfolder.
+    workdir = Path(workdir)
+    data_dir = workdir / "wrf_data"
 
-    if val is None:
-        val = []
-    else:
-        val = list(val) if isinstance(val, (list, tuple)) else [val]
+    # Prepare the test and validation sets.
+    test_set = set(test) if test is not None else set()
+    if val is not None:
+        val_set = set(val)
 
-    output_dir = os.path.join(workdir, "wrf_data")
-    all_files = os.listdir(output_dir)
-    
-    # Initialize containers for each dataset
+    # Initialize dataset containers.
     datasets = {
         'train_x': [],
         'train_y': [],
         'test_x': [],
-        'test_y': [],
-        'val_x': [],
-        'val_y': []
+        'test_y': []
     }
-    
-    # Compile regex to capture files with the pattern: mXX_<dxx> where XX are exactly two digits.
-    mxx_pattern = re.compile(r"m(\d{2})_" + re.escape(dxx))
-    
-    for file_name in all_files:
-        if '_variables.npy' in file_name:
-            m = mxx_pattern.search(file_name)
-            if m:
-                # Extract the two-digit identifier and convert to an integer
-                mxx = int(m.group(1))
-                # Determine the dataset type based on the identifier
-                if mxx in test:
-                    dataset_type = 'test'
-                elif mxx in val:
-                    dataset_type = 'val'
-                else:
-                    dataset_type = 'train'
-            else:
-                continue  # Skip files that do not match the mXX_<dxx> pattern
-            
-            # Load the features (x)
-            data_path = os.path.join(output_dir, file_name)
-            data_array = np.load(data_path)
-            datasets[f'{dataset_type}_x'].append(data_array)
-            
-            # Determine the corresponding label file by replacing '_variables.npy' with '_{dxx}_ys.npy'
-            label_file_name = file_name.replace('_variables.npy', f'_{dxx}_ys.npy')
-            label_path = os.path.join(output_dir, label_file_name)
-            label_array = np.load(label_path)
-            datasets[f'{dataset_type}_y'].append(label_array)
-    
-    # Concatenate the lists along the first dimension if they are non-empty
-    for key in datasets:
-        if datasets[key]:
-            datasets[key] = np.concatenate(datasets[key], axis=0)
-    
-    # Package the data into a dictionary with keys mimicking file names
-    results = {}
-    results['train_x.npy'] = datasets['train_x']
-    results['train_y.npy'] = datasets['train_y']
-    results['test_x.npy'] = datasets['test_x']
-    results['test_y.npy'] = datasets['test_y']
-    if val:  # Only include validation data if provided
+    if val is not None:
+        datasets['val_x'] = []
+        datasets['val_y'] = []
+
+    # Define the pattern for x files using the ix indices.
+    pattern_x = f"x_{eid}_{ix[0]}x{ix[1]}_m*.npy"
+    x_files = sorted(data_dir.glob(pattern_x))
+
+    # Regular expression to extract the m-number from the filename.
+    m_regex = re.compile(r'_m(\d+)\.npy$')
+
+    # Process each x file.
+    for x_file in x_files:
+        match = m_regex.search(x_file.name)
+        if not match:
+            # Skip any file that doesn't match the expected pattern.
+            continue
+        m_str = match.group(1)
+        try:
+            m_number = int(m_str)
+        except ValueError:
+            continue  # skip if conversion fails
+
+        # Construct the corresponding y file name using the iy indices.
+        y_filename = f"y_{eid}_{iy[0]}x{iy[1]}_m{m_str}.npy"
+        y_file = data_dir / y_filename
+
+        if not y_file.exists():
+            print(f"Warning: y file '{y_filename}' does not exist for x file '{x_file.name}'. Skipping this pair.")
+            continue
+
+        # Load the numpy arrays.
+        try:
+            x_data = np.load(x_file)
+            y_data = np.load(y_file)
+        except Exception as e:
+            print(f"Error loading files '{x_file.name}' and/or '{y_filename}': {e}")
+            continue
+
+        # Assign to the appropriate split.
+        if m_number in test_set:
+            datasets['test_x'].append(x_data)
+            datasets['test_y'].append(y_data)
+        elif val is not None and m_number in val_set:
+            datasets['val_x'].append(x_data)
+            datasets['val_y'].append(y_data)
+        else:
+            datasets['train_x'].append(x_data)
+            datasets['train_y'].append(y_data)
+
+    # Prepare the results dictionary.
+    results = {
+        'train_x.npy': datasets['train_x'],
+        'train_y.npy': datasets['train_y'],
+        'test_x.npy': datasets['test_x'],
+        'test_y.npy': datasets['test_y']
+    }
+    if val is not None:
         results['val_x.npy'] = datasets['val_x']
         results['val_y.npy'] = datasets['val_y']
-    
+
     return results
 
 
@@ -297,5 +321,5 @@ if data_source == 'MERRA2':
     results = load_merra_data(data_dir,windowsize, validation_year=validation_year_merra, test_year=test_year_merra)
 if data_source == 'WRF':
     data_dir = os.path.join(root, 'wrf_data')
-    results = load_wrf_data(data_dir, dxx, test = test_experiment_wrf, val=validation_experiment_wrf)
+    results = load_wrf_data(data_dir, wrf_experiment_identification, wrf_variables_imsize, wrf_labels_imsize, test = test_experiment_wrf, val=validation_experiment_wrf)
 write_data(results, work_folder, val_pc = validation_percentage)
