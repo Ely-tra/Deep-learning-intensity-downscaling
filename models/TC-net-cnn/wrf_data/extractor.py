@@ -20,7 +20,6 @@ imsize_y = args.imsize_labels
 eid = args.experiment_identification
 root = args.root
 base_path = args.wrf_base
-print(imsize_x)
 def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_resolution=int(eid[-2:])):
     """
     Extract core variables from ds1 and compute the target array y from ds2.
@@ -258,7 +257,7 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
         ds2 = xr.open_dataset(ds2_file)
         
         # Extract core variables.
-        result, y = extract_core_variables(ds1, ds2, imsize1=(imsize_x, imsize_y))
+        result, y = extract_core_variables(ds1, ds2, imsize1=imsize_x, imsize2=imsize_y)
 
         # Instead of appending, directly save the result for this m**
         m_id = key[0]  # Extract m_id from key
