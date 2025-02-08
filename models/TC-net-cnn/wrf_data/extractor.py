@@ -18,7 +18,7 @@ args = parse_args()
 imsize_x = args.imsize_variables
 imsize_y = args.imsize_labels
 eid = args.experiment_identification
-root = args.root
+root = os.path.join(args.root, 'wrf_data')
 base_path = args.wrf_base
 def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_resolution=int(eid[-2:])):
     """
