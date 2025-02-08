@@ -3,6 +3,7 @@ import time
 import sys
 import argparse
 import os
+from pathlib import Path
 import re
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
@@ -22,7 +23,7 @@ def parse_args():
                         help =  'WRF experiment identification, H/L 18/06/02 h/l 18/06/02, please read wrf/extractor.py for a better understanding.')
     parser.add_argument('-wrf_ix', '--wrf_variables_imsize', type = int, nargs=2, default = [64,64], 
                         help = 'Image size for wrf variable data, for data identification only')
-    parser.add_argument('-wrf_iy', '--wrf_labelss_imsize', type = int, nargs=2, default = [64,64], 
+    parser.add_argument('-wrf_iy', '--wrf_labels_imsize', type = int, nargs=2, default = [64,64], 
                         help = 'Image size for wrf label data (data is extracted from this domain), for data identification only')
     return parser.parse_args()
 
@@ -192,7 +193,7 @@ def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
     """
     # Ensure workdir is a Path object and point to the "wrf_data" subfolder.
     workdir = Path(workdir)
-    data_dir = workdir / "wrf_data"
+    data_dir = workdir
 
     # Prepare the test and validation sets.
     test_set = set(test) if test is not None else set()
@@ -213,7 +214,6 @@ def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
     # Define the pattern for x files using the ix indices.
     pattern_x = f"x_{eid}_{ix[0]}x{ix[1]}_m*.npy"
     x_files = sorted(data_dir.glob(pattern_x))
-
     # Regular expression to extract the m-number from the filename.
     m_regex = re.compile(r'_m(\d+)\.npy$')
 
@@ -258,10 +258,10 @@ def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
 
     # Prepare the results dictionary.
     results = {
-        'train_x.npy': datasets['train_x'],
-        'train_y.npy': datasets['train_y'],
-        'test_x.npy': datasets['test_x'],
-        'test_y.npy': datasets['test_y']
+        'train_x.npy': f_r(datasets['train_x']),
+        'train_y.npy': f_r(datasets['train_y']),
+        'test_x.npy': f_r(datasets['test_x']),
+        'test_y.npy': f_r(datasets['test_y'])
     }
     if val is not None:
         results['val_x.npy'] = datasets['val_x']
@@ -269,6 +269,9 @@ def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
 
     return results
 
+def f_r(ilist):
+    ''' A quick reshaper'''
+    return np.concatenate(ilist, axis=0)
 
 def write_data(data_dict, work_folder, val_pc=20):
     """
@@ -287,7 +290,6 @@ def write_data(data_dict, work_folder, val_pc=20):
     # Create the target directory if it does not exist
     temp_folder = os.path.join(work_folder, 'temp')
     os.makedirs(temp_folder, exist_ok=True)
-    
     # Check for validation files
     if 'val_x.npy' not in data_dict or 'val_y.npy' not in data_dict:
         # Determine which arrays need splitting
@@ -298,7 +300,6 @@ def write_data(data_dict, work_folder, val_pc=20):
         # Shuffle data
         indices = np.random.permutation(len(train_x))
         split_idx = int(len(indices) * (1 - val_pc / 100))
-        
         # Split and assign training and validation data
         data_dict['train_x.npy'] = train_x[indices[:split_idx]]
         data_dict['val_x.npy'] = train_x[indices[split_idx:]]
@@ -314,7 +315,6 @@ def write_data(data_dict, work_folder, val_pc=20):
         file_path = os.path.join(temp_folder, file_name)
         np.save(file_path, array)
         print(f"Saved {file_path}")
-
 
 if data_source == 'MERRA2':
     data_dir = os.path.join(root, f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')

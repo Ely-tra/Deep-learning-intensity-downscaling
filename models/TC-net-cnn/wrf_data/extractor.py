@@ -161,6 +161,9 @@ def collect_files(pattern, file_subpattern):
             file_dict[key] = f
     return file_dict
 
+
+
+
 def process_eid(eid, base_path, imsize_x, imsize_y, root):
     """
     Process an experiment id (eid) with format AxxByy, load matching ds1 and ds2 files 
@@ -182,6 +185,10 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
       - Instead of matching the full experiment directory, we only match the m** portion and
         the suffix (the text after wrfout_dXX_) between ds1 and ds2 files.
     """
+    import os
+    import numpy as np
+    import xarray as xr
+
     # --- Parse and validate the eid string ---
     if len(eid) != 6:
         raise ValueError(f"eid must have 6 characters. Got: {eid}")
@@ -244,10 +251,10 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
     # Sort common keys naturally (first by m_id, then by suffix)
     common_keys = sorted(common_keys, key=lambda k: (natural_sort_key(k[0]), natural_sort_key(k[1])))
     
-    # --- Prepare lists to hold extracted results ---
-    results = []
-    ys = []
-    
+    # --- Prepare dictionaries to accumulate extracted results by m_id ---
+    results_by_m = {}
+    ys_by_m = {}
+
     # Process each matching file pair.
     for key in common_keys:
         ds1_file = ds1_files_dict[key]
@@ -259,16 +266,35 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
         # Extract core variables.
         result, y = extract_core_variables(ds1, ds2, imsize1=imsize_x, imsize2=imsize_y)
 
-        # Instead of appending, directly save the result for this m**
-        m_id = key[0]  # Extract m_id from key
+        # Extract m_id from key (assumed to be the first element of the key tuple).
+        m_id = key[0]
+        
+        # Initialize the lists for this m_id if they don't exist yet.
+        if m_id not in results_by_m:
+            results_by_m[m_id] = []
+            ys_by_m[m_id] = []
+        
+        # Append the extracted data to the lists.
+        results_by_m[m_id].append(result)
+        ys_by_m[m_id].append(y)
+    
+    # Concatenate and save the data for each m_id.
+    for m_id in results_by_m:
+        # Concatenate along axis 0 (adjust axis if needed).
+        concatenated_result = np.concatenate(results_by_m[m_id], axis=0)
+        concatenated_y = np.concatenate(ys_by_m[m_id], axis=0)
+        
+        # Build filenames including the m_id.
         x_filename = f"x_{eid}_{imsize_x[0]}x{imsize_x[1]}_{m_id}.npy"
         y_filename = f"y_{eid}_{imsize_y[0]}x{imsize_y[1]}_{m_id}.npy"
         
-        np.save(os.path.join(root, x_filename), result)
-        np.save(os.path.join(root, y_filename), y)
-        print(f"Saved {x_filename} and {y_filename} in {root}.")
+        # Save the concatenated arrays.
+        np.save(os.path.join(root, x_filename), concatenated_result)
+        np.save(os.path.join(root, y_filename), concatenated_y)
+        print(f"Saved concatenated {x_filename} and {y_filename} in {root}.")
 
-    print("All m** directories have been processed and saved individually.")
+    print("All m_id directories have been processed and saved with concatenated data.")
+
 
 
 
