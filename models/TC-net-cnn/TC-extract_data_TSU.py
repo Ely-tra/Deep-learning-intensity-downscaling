@@ -49,7 +49,6 @@ import re
 #####################################################################################
 def get_args():
     parser = argparse.ArgumentParser(description='Process MERRA2 data for TC domain.')
-    parser.add_argument('--inputpath', type=str, default='/N/project/Typhoon-deep-learning/output/TC_domain/', help='Path to the input data directory')
     parser.add_argument('--workdir', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Working directory path')
     parser.add_argument('--windowsize', type=int, nargs=2, default=[19, 19], help='Window size as two integers (e.g., 19 19)')
     parser.add_argument('--force_rewrite', action='store_true', help='Overwrite previous dataset if this flag is set')
@@ -57,8 +56,8 @@ def get_args():
                         help='List of variables with levels, formatted as VarLevel (e.g., "V950")')
     return parser.parse_args()
 args = get_args()
-inputpath = args.inputpath  # Take input path from command-line argument
 workdir = args.workdir  # Take working directory from command-line argument
+inputpath = os.path.join(workdir,'TC_domain')  # Take input path from command-line argument
 windowsize = args.windowsize  # Take window size from command-line argument
 force_rewrite = args.force_rewrite  # Overwrite previous dataset option
 list_vars = args.list_vars
