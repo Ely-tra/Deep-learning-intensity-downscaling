@@ -51,7 +51,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Process MERRA2 data for TC domain.')
     parser.add_argument('--workdir', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Working directory path')
     parser.add_argument('--windowsize', type=int, nargs=2, default=[19, 19], help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('--force_rewrite', action='store_true', help='Overwrite previous dataset if this flag is set')
+    parser.add_argument('--force_rewrite', type=bool, default=False, help='Overwrite previous dataset if this flag is set')
     parser.add_argument('--list_vars', type=str, nargs='+', default=['U850', 'V850', 'T850', 'RH850', 'U950', 'V950', 'T950', 'RH950', 'U750', 'V750', 'T750', 'RH750', 'SLP750'],
                         help='List of variables with levels, formatted as VarLevel (e.g., "V950")')
     return parser.parse_args()
