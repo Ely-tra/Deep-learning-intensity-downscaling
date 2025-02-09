@@ -1,5 +1,12 @@
 # var_control.sh
 # ===============================================================================================================================================
+# CONTROL SEQUENCE
+# WHICH STEPS TO RUN
+# ===============================================================================================================================================
+merra=(1 1 1)  # Control execution for MERRA2 related scripts
+wrf=1          # Control execution for WRF related scripts
+build=(1 1 1)  # Control execution for Builder related scripts
+# ===============================================================================================================================================
 # COMMON SETTINGS
 # These settings are common across different parts of the script and provide basic configuration.
 # ===============================================================================================================================================
@@ -8,7 +15,11 @@ workdir='/N/project/Typhoon-deep-learning/output/'  # Directory for output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to best track data
 data_source='MERRA2'  # Data source to be used, MERRA2/WRF
 val_pc=10  # Percentage of training data reserved for validation, will be used if no validation set is specified
-
+if [ "$data_source" = "MERRA2" ]; then
+    merra=(0 0 0)  # Sets all elements in the merra control array to 0
+elif [ "$data_source" = "WRF" ]; then
+    wrf=0  # Sets the wrf control variable to 0
+fi
 # ===============================================================================================================================================
 # MERRA2 CONFIGURATION
 # Specific configuration for handling MERRA2 dataset.
