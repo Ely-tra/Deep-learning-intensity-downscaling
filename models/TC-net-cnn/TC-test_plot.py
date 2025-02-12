@@ -236,16 +236,16 @@ axs[0].set_xticklabels(['Predicted', 'Truth'], fontsize=20)
 
 
 # Second subplot
-axs[1].scatter(y, datadict[name].reshape(-1))
+axs[1].scatter(test_y, datadict[name].reshape(-1))
 axs[1].grid()
 axs[1].set_xlabel('Truth', fontsize=20)
 axs[1].set_ylabel('Prediction', fontsize=20)
 axs[1].text(0.95, 0.05, '(b)', transform=axs[1].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
             bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
-axs[1].plot(np.arange(min(y), max(y)), np.arange(min(y), max(y)), 'r-', alpha=0.8)
+axs[1].plot(np.arange(min(test_y), max(test_y)), np.arange(min(test_y), max(test_y)), 'r-', alpha=0.8)
 mae = datadict[name+'MAE']
 rmse = datadict[name+'rmse']
-axs[1].fill_between(np.arange(min(y), max(y)), np.arange(min(y), max(y)) + mae, np.arange(min(y), max(y)) - mae, color='red', alpha=0.3)
+axs[1].fill_between(np.arange(min(test_y), max(test_y)), np.arange(min(test_y), max(test_y)) + mae, np.arange(min(test_y), max(test_y)) - mae, color='red', alpha=0.3)
 axs[1].tick_params(axis='both', which='major', labelsize=14)
 
 # Legends with RMSE and MAE without markers
@@ -256,15 +256,15 @@ custom_lines = [
 
 axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
 
-plt.savefig(directory + '/fig_' + str(name) + '.png')
-print(f"Saving result to: {directory + '/fig_' + str(name) + '.png'}")
+plt.savefig(report_directory + '/fig_' + str(name) + '.png')
+print(f"Saving result to: {report_directory + '/fig_' + str(name) + '.png'}")
 print('RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE'])))
 output_str = 'RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE']))
 if not os.path.exists(report_directory):
     os.makedirs(report_directory)
 with open(text_report_path, 'w') as file:
-    file.write(f"Saving result to: {directory + '/fig_' + str(name) + '.png'}")
+    file.write(f"Saving result to: {report_directory + '/fig_' + str(name) + '.png'}")
     file.write(output_str + '\n')
     file.write('Predictions: ' + np.array2string(predict, separator=', ') + '\n')
-    file.write('Actual Values: ' + np.array2string(y, separator=', ') + '\n')
+    file.write('Actual Values: ' + np.array2string(test_y, separator=', ') + '\n')
 print('Completed!')
