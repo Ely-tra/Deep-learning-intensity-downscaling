@@ -266,6 +266,8 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
         
         # Extract core variables.
         result, y = extract_core_variables(ds1, ds2, imsize1=imsize_x, imsize2=imsize_y)
+        if y[0]==0 or y[1]==0:
+            continue
 
         # Extract m_id from key (assumed to be the first element of the key tuple).
         m_id = key[0]
