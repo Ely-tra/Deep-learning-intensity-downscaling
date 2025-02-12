@@ -7,12 +7,13 @@
 #SBATCH --mem=128G
 module load PrgEnv-gnu
 module load python/gpu/3.10.10
-cd /N/slate/trihnguy/Deep-learning-intensity-downscaling/models/TC-net-ViT/
+cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
+
 #
 # Set up experiment parameters, which will be used to generate Python scripts.
 # These parameters are currently hardwired in each script.
 #
-source var_control.sh
+source ./var_control.sh
 
 # Now the variables and settings from var_control.sh are available to use in this script
 echo "Data source is set to $data_source"
@@ -60,7 +61,7 @@ if [ "$wrf" -eq 1 ]; then
         -ix $imsize_variables\
         -iy $imsize_labels\
         -r $workdir \
-        -b $wrf_base\
+        -b $wrf_base
 fi
 
 # ===============================================================================================================================================
@@ -90,18 +91,15 @@ if [ "${build[1]}" -eq 1 ]; then
         --batch_size $batch_size \
         --num_epochs $num_epochs \
         --image_size $image_size \
-        --validation_year "${validation_years[@]}" \
-        --test_year "${test_years[@]}" \
         -temp "${temporary_folder}" \
-        -ss ${data_source}
+        -ss ${data_source} \
+        -cfg $config
 fi
 
 if [ "${build[2]}" -eq 1 ]; then
     python TC-test_plot.py \
         --mode $mode \
         --root $workdir \
-        --windowsize $windowsize_x $windowsize_y \
-        --var_num $var_num \
         --image_size $image_size \
         --st_embed $st_embed \
         --model_name $model_name \

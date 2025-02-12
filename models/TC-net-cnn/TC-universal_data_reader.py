@@ -10,7 +10,7 @@ def parse_args():
     parser.add_argument('-r', '--root', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Working directory path')
     parser.add_argument('-ws', '--windowsize', type=int, nargs=2, default=[19, 19], help='Window size as two integers (e.g., 19 19)')
     parser.add_argument('-vno', '--var_num', type=int, default=13, help='Number of variables')
-    parser.add_argument('-st', '--st_embed', type=bool, default=False, help='Including space-time embedded')
+    parser.add_argument('-st', '--st_embed', type=int, default=0, help='Including space-time embedded')
     parser.add_argument('-vym', '--validation_year_merra', nargs='+', type=int, default=[2014], help='Year(s) taken for validation (MERRA2 dataset)')
     parser.add_argument('-tym', '--test_year_merra', nargs='+', type=int, default=[2017], help='Year(s) taken for test (MERRA2 dataset)')
     parser.add_argument('-tew', '--test_experiment_wrf', nargs='+', type=int, default=[5], help='Experiment taken for test (WRF dataset)')
@@ -290,6 +290,16 @@ def write_data(data_dict, work_folder, val_pc=20):
     # Create the target directory if it does not exist
     temp_folder = os.path.join(work_folder, 'temp')
     os.makedirs(temp_folder, exist_ok=True)
+    if os.listdir(temp_folder):  # This checks if the folder is not empty
+        for filename in os.listdir(temp_folder):
+            file_path = os.path.join(temp_folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)  # Remove file or symbolic link
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)  # Remove directory and contents
+            except Exception as e:
+                print(f"Failed to delete {file_path}: {e}")
     # Check for validation files
     if 'val_x.npy' not in data_dict or 'val_y.npy' not in data_dict:
         # Determine which arrays need splitting

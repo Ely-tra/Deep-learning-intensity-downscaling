@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument("--mode", default="VMAX", type=str, help="Mode of operation (e.g., VMAX, PMIN, RMW)")
     parser.add_argument('-r', "--root", default="/N/project/Typhoon-deep-learning/output/", type=str, help="Directory to save output data")
     parser.add_argument('-imsize', '--image_size', type=int, default=64, help='Size to resize the image to')
-    parser.add_argument('--st_embed', type=bool, default=False, help='Including space-time embedded')
+    parser.add_argument('--st_embed', type=int, default=0, help='Including space-time embedded')
     parser.add_argument("--model_name", default='CNNmodel', type=str, help="Base of the model name")
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
     parser.add_argument("--text_report_name", default= 'report.txt', type=str, help="Filename to write text report to, will be inside text_report dir")
@@ -47,9 +47,10 @@ text_report_name=args.text_report_name
 data_source=args.data_source
 work_folder=args.work_folder
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
-report_directory = os.path.join(root, 'text_report')
+report_directory = os.path.join(workdir, 'text_report')
+os.makedirs(report_directory, exist_ok=True)
 text_report_path=os.path.join(report_directory, text_report_name)
-model_dir = root + '/model/' + model_name
+model_dir = workdir + '/model/' + model_name
 temp_dir = os.path.join(work_folder, 'temp')
 ######################################################################################
 # All fucntions below

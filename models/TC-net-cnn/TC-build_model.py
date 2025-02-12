@@ -60,7 +60,7 @@ def parse_args():
     parser.add_argument('-r', '--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Working directory path')
     parser.add_argument('-ws', '--windowsize', type=int, nargs=2, default = [19,19], help='Window size as two integers (e.g., 19 19)')
     parser.add_argument('-vno', '--var_num', type=int, default = 13, help='Number of variables')
-    parser.add_argument('-st', '--st_embed', type=bool, default = False, help='Including space-time embedded')
+    parser.add_argument('-st', '--st_embed', type=int, default = 0, help='Including space-time embedded')
     parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='Initial learning rate')
     parser.add_argument('-bsize', '--batch_size', type=int, default=256, help='Batch size for training')
     parser.add_argument('-eno', '--num_epochs', type=int, default=100, help='Number of epochs for training')
@@ -81,8 +81,7 @@ st_embed = args.st_embed
 config_path = args.config
 data_source=args.data_source
 work_folder=args.work_folder
-
-
+print("st_embed:", args.st_embed, type(args.st_embed))
 model_dir = os.path.join(root, 'model')
 model_name = args.model_name
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
@@ -281,6 +280,8 @@ def resize_preprocess(image, HEIGHT, WIDTH, method):
 # NOTE: normalize only features, not labels (althought requires labels as input)
 # NOTE: normalize by sample, not batch normalization.
 #==============================================================================================
+
+
 def normalize_channels(X,y):
     """
     Normalizes each channel in each sample individually.
@@ -374,8 +375,8 @@ def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, e
         val_data = (val_inputs, val_Y)
     else:
         val_data = None
-
     # Fit the model using the (possibly split) training labels
+    print('AAAA', np.sum(train_inputs), train_Y.shape, np.sum(train_inputs[0]))
     history = model.fit(train_inputs, train_Y, batch_size=batch_size, epochs=epoch,
                         validation_data=val_data, verbose=2, callbacks=callbacks, shuffle=True)
 
@@ -414,12 +415,10 @@ train_x = resize_preprocess(train_x, image_size, image_size, 'lanczos5')
 # Resize and preprocess val_x if it exists
 if 'val_x' in globals():
     val_x = resize_preprocess(val_x, image_size, image_size, 'lanczos5')
-
 # Assuming train_x is defined and checking the number of channels
 number_channels = train_x.shape[3]
-
 print('Input shape of the X features data: ',train_x.shape)
 print('Input shape of the y label data: ',train_y.shape)
 print('Number of input channel extracted from X is: ',number_channels)
 
-history = main(X=train_x, Y=train_y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, val_pc=val_pc)
+history = main(X=train_x, Y=train_y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed)

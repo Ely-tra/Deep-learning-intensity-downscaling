@@ -20,6 +20,7 @@ imsize_y = args.imsize_labels
 eid = args.experiment_identification
 root = os.path.join(args.root, 'wrf_data')
 base_path = args.wrf_base
+os.makedirs(root, exist_ok=True)
 def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_resolution=int(eid[-2:])):
     """
     Extract core variables from ds1 and compute the target array y from ds2.

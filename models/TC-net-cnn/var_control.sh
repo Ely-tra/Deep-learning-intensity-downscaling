@@ -3,22 +3,22 @@
 # CONTROL SEQUENCE
 # WHICH STEPS TO RUN
 # ===============================================================================================================================================
-merra=(1 1 1)  # Control execution for MERRA2 related scripts
-wrf=1          # Control execution for WRF related scripts
+merra=(0 0 0)  # Control execution for MERRA2 related scripts
+wrf=0          # Control execution for WRF related scripts
 build=(1 1 1)  # Control execution for Builder related scripts
 # ===============================================================================================================================================
 # COMMON SETTINGS
 # These settings are common across different parts of the script and provide basic configuration.
 # ===============================================================================================================================================
 mode='VMAX'  # Operation mode (VMAX: maximum sustained wind speed, PMIN: minimum pressure, RMW: radius of maximum winds)
-workdir='/N/project/Typhoon-deep-learning/output/'  # Directory for output files
+workdir='/N/slate/kmluong/TC-net-cnn_workdir/'  # Directory for output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to best track data
-data_source='MERRA2'  # Data source to be used, MERRA2/WRF
+data_source='WRF'  # Data source to be used, MERRA2/WRF
 val_pc=10  # Percentage of training data reserved for validation, will be used if no validation set is specified
 if [ "$data_source" = "MERRA2" ]; then
-    merra=(0 0 0)  # Sets all elements in the merra control array to 0
+    wrf=0  # Sets all elements in the merra control array to 0
 elif [ "$data_source" = "WRF" ]; then
-    wrf=0  # Sets the wrf control variable to 0
+    merra=(0 0 0)  # Sets the wrf control variable to 0
 fi
 # ===============================================================================================================================================
 # MERRA2 CONFIGURATION
@@ -48,10 +48,11 @@ wrf_base="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base path for WRF da
 # MODEL CONFIGURATION
 # Settings for the neural network model.
 # ===============================================================================================================================================
-temporary_folder='/N/project/Typhoon-deep-learning/output/'  # Temporary folder for intermediate data
-model_name='CNNmodel'  # Core name of the model, automatic naming is not supported, so to save multiple models, users need to assign model names manually
+temporary_folder='/N/slate/kmluong/TC-net-cnn_workdir/'  # Temporary folder for intermediate data
+model_name='H18h18'  # Core name of the model, automatic naming is not supported, so to save multiple models, users need to assign model names manually
+learning_rate=0.001
 batch_size=256  # Batch size for training
 num_epochs=100  # Number of training epochs
 image_size=64  # Size of the input images for the model
-config='model_core/test.json'  # Path to the model configuration file
-text_report_name='report.txt'  # Filename for the text report, will be saved under workdir/text_report
+config='model_core/77.json'  # Path to the model configuration file
+text_report_name='H18h18.txt'  # Filename for the text report, will be saved under workdir/text_report

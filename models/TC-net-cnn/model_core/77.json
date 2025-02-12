@@ -15,7 +15,7 @@
       "name": "conv_block_1",
       "input": "data_augmentation",
       "operations": [
-        {"type": "Conv2D", "filters": 128, "kernel_size": 15, "padding": "same", "activation": "relu"},
+        {"type": "Conv2D", "filters": 32, "kernel_size": 7, "padding": "same", "activation": "relu"},
         {"type": "MaxPooling2D", "pool_size": 2},
         {"type": "BatchNormalization"}
       ]
@@ -24,7 +24,7 @@
       "name": "conv_block_2",
       "input": "conv_block_1",
       "operations": [
-        {"type": "Conv2D", "filters": 64, "kernel_size": 15, "padding": "same", "activation": "relu"},
+        {"type": "Conv2D", "filters": 64, "kernel_size": 7, "padding": "same", "activation": "relu"},
         {"type": "MaxPooling2D", "pool_size": 2},
         {"type": "BatchNormalization"}
       ]
@@ -33,7 +33,7 @@
       "name": "conv_block_3",
       "input": "conv_block_2",
       "operations": [
-        {"type": "Conv2D", "filters": 256, "kernel_size": 9, "padding": "same", "activation": "relu"},
+        {"type": "Conv2D", "filters": 128, "kernel_size": 7, "padding": "same", "activation": "relu"},
         {"type": "MaxPooling2D", "pool_size": 2}
       ]
     },
@@ -41,8 +41,8 @@
       "name": "conv_block_4",
       "input": "conv_block_3",
       "operations": [
-        {"type": "Conv2D", "filters": 512, "kernel_size": 5, "padding": "same", "activation": "relu"},
-        {"type": "Conv2D", "filters": 512, "kernel_size": 5, "padding": "valid", "activation": "relu"},
+        {"type": "Conv2D", "filters": 256, "kernel_size": 7, "padding": "same", "activation": "relu"},
+        {"type": "Conv2D", "filters": 512, "kernel_size": 7, "padding": "valid", "activation": "relu"},
         {"type": "BatchNormalization"}
       ]
     },
