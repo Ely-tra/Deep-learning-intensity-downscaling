@@ -29,6 +29,7 @@ root = os.path.join(args.root, 'wrf_data')
 base_path = args.wrf_base
 var_levels = [(var[:-2], int(var[-2:])) if var[-2:].isdigit() else (var, None) for var in args.var_levels]
 os.makedirs(root, exist_ok=True)
+'''
 def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_resolution=int(eid[-2:])):
     """
     Extract core variables from ds1 and compute the target array y from ds2.
@@ -121,9 +122,9 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_
     y = np.array([[max_wind_speed, min_psfc, distance_km]])
 
     return final_result, y
-
+'''
 def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
-                           output_resolution=18, var_levels=None):
+                           output_resolution=eid[-2:], var_levels=None):
     """
     Extract core variables from ds1 and compute the target array y from ds2.
 
@@ -189,6 +190,8 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
         # If the data has a 'south_north' dimension, slice it.
         if 'south_north' in selected_data.dims:
             selected_data = selected_data.isel(south_north=slice(start_y1, end_y1))
+        elif 'south_north_stag' in selected_data.dims:
+            selected_data = selected_data.isel(south_north_stag=slice(start_y1, end_y1))
         # For the east-west direction, check for either "west_east_stag" or "west_east"
         if 'west_east_stag' in selected_data.dims:
             selected_data = selected_data.isel(west_east_stag=slice(start_x1, end_x1))
@@ -198,8 +201,8 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
         # Remove the time dimension if it exists (assuming it's the first dimension)
         arr = np.squeeze(selected_data.values, axis=0)
         # If the resulting array is 2D (i.e. no explicit channel dimension), add one.
-        if arr.ndim == 2:
-            arr = arr[np.newaxis, ...]
+        #if arr.ndim == 2:
+        #    arr = arr[np.newaxis, ...]
         arrays.append(arr)
     
     # Stack all extracted arrays along a new axis (channels) and add a batch dimension.
@@ -376,16 +379,12 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
     for key in common_keys:
         ds1_file = ds1_files_dict[key]
         ds2_file = ds2_files_dict[key]
-        print(f"Processing {ds1_file} and {ds2_file} with matching m_id and suffix")
+        #print(f"Processing {ds1_file} and {ds2_file} with matching m_id and suffix")
         ds1 = xr.open_dataset(ds1_file)
         ds2 = xr.open_dataset(ds2_file)
         
         # Extract core variables.
         result, y = extract_core_variables(ds1, ds2, imsize1=imsize_x, imsize2=imsize_y, var_levels=var_levels)
-        if y[0,0]==0 or y[0,1]==0:
-            print('AAAAAAAAAAA')
-            continue
-
         # Extract m_id from key (assumed to be the first element of the key tuple).
         m_id = key[0]
         

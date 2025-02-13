@@ -18,8 +18,8 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 # WHICH STEPS TO RUN
 # ===============================================================================================================================================
 merra=(0 0 0)  # Control execution for MERRA2 related scripts
-wrf=0          # Control execution for WRF related scripts
-build=(0 1 1)  # Control execution for Builder related scripts
+wrf=1          # Control execution for WRF related scripts
+build=(0 0 0)  # Control execution for Builder related scripts
 # ===============================================================================================================================================
 # COMMON SETTINGS
 # These settings are common across different parts of the script and provide basic configuration.
@@ -53,23 +53,23 @@ test_years=(2017)  # Years used for testing
 # WRF (Weather Research and Forecasting) CONFIGURATION
 # Configuration for WRF model data handling.
 # ===============================================================================================================================================
-experiment_identification='L18l18'  # Identifier for the experiment
+experiment_identification='H18l18'  # Identifier for the experiment
 imsize_variables="64 64"  # Image size for variables
 imsize_labels="64 64"  # Image size for labels
 wrf_base="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base path for WRF data
-
-# ===============================================================================================================================================
+VAR_LEVELS_WRF=("U01" "U02" "U03" "V01" "V02" "V03" "T01" "T02" "T03" "QVAPOR01" "QVAPOR02" "QVAPOR03" "PSFC")
+# =============================================================================================================================================
 # MODEL CONFIGURATION
 # Settings for the neural network model.
 # ===============================================================================================================================================
 temporary_folder='/N/slate/kmluong/TC-net-cnn_workdir/'  # Temporary folder for intermediate data
-model_name='L18l18'  # Core name of the model, automatic naming is not supported, so to save multiple models, users need to assign model names manually
+model_name='H18l18'  # Core name of the model, automatic naming is not supported, so to save multiple models, users need to assign model names manually
 learning_rate=0.0001
 batch_size=256  # Batch size for training
 num_epochs=150  # Number of training epochs
 image_size=64  # Size of the input images for the model
 config='model_core/77.json'  # Path to the model configuration file
-text_report_name='L18l18.txt'  # Filename for the text report, will be saved under workdir/text_report
+text_report_name='H18l18.txt'  # Filename for the text report, will be saved under workdir/text_report
 
 # Now the variables and settings from var_control.sh are available to use in this script
 echo "Data source is set to $data_source"
@@ -117,7 +117,8 @@ if [ "$wrf" -eq 1 ]; then
         -ix $imsize_variables\
         -iy $imsize_labels\
         -r $workdir \
-        -b $wrf_base
+        -b $wrf_base \
+        -vl "${VAR_LEVELS_WRF[@]}"
 fi
 
 # ===============================================================================================================================================
