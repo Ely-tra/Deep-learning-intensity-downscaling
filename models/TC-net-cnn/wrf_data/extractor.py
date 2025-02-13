@@ -12,6 +12,13 @@ def parse_args():
     parser.add_argument('-ix', '--imsize_labels', type=int, nargs=2, default = [64,64], help='Extractor domain for y')
     parser.add_argument('-r', '--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Output directory')
     parser.add_argument('-b', '--wrf_base', type=str, default = "/N/project/Typhoon-deep-learning/data/tc-wrf/" , help='Read from')
+    parser.add_argument('-vl', '--var_levels', type=str, nargs='+', 
+                        default=["U01", "U02", "U03", 
+                        "V01", "V02", "V03",
+                        "T01", "T02", "T03",
+                        "QVAPOR01", "QVAPOR02", "QVAPOR03",
+                        "PSFC"],
+                        help="List of variable levels to extract. Example usage in Bash: ('U01' 'U02' 'V01')")
     return parser.parse_args()
                
 args = parse_args()
@@ -20,6 +27,7 @@ imsize_y = args.imsize_labels
 eid = args.experiment_identification
 root = os.path.join(args.root, 'wrf_data')
 base_path = args.wrf_base
+var_levels = [(var[:-2], int(var[-2:])) if var[-2:].isdigit() else (var, None) for var in args.var_levels]
 os.makedirs(root, exist_ok=True)
 def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_resolution=int(eid[-2:])):
     """
@@ -114,7 +122,115 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_
 
     return final_result, y
 
+def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
+                           output_resolution=18, var_levels=None):
+    """
+    Extract core variables from ds1 and compute the target array y from ds2.
 
+    Parameters:
+        ds1 (xarray.Dataset): Dataset from which to extract the multi‐channel input.
+        ds2 (xarray.Dataset): Dataset from which to compute y (e.g., wind and surface pressure metrics).
+        imsize1 (tuple): (width, height) for ds1 extraction.
+        imsize2 (tuple): (width, height) for ds2 extraction.
+        output_resolution (float): Resolution (km/grid point).
+        var_levels (list of tuples): Each tuple is (variable_name, level) where:
+            - variable_name (str): Name of the variable in ds1.
+            - level (int or None): The desired level for vertical selection.
+              For example, for a variable with a 'bottom_top' dimension, a value of 1 selects ds1[var].isel(bottom_top=1).
+              If level is None, no vertical selection is done (useful for 2D variables like PSFC).
+            
+            Default:
+              [('U', 1), ('U', 2), ('U', 3),
+               ('V', 1), ('V', 2), ('V', 3),
+               ('T', 1), ('T', 2), ('T', 3),
+               ('QVAPOR', 1), ('QVAPOR', 2), ('QVAPOR', 3),
+               ('PSFC', None)]
+    
+    Returns:
+        final_result (numpy.ndarray): Array of shape (1, total_channels, imsize1[1], imsize1[0])
+                                      containing the concatenated extracted ds1 variables.
+        y (numpy.ndarray): Array of shape (1, 3) computed from ds2.
+    """
+    # Set default var_levels if none provided.
+    if var_levels is None:
+        var_levels = [('U', 1), ('U', 2), ('U', 3),
+                      ('V', 1), ('V', 2), ('V', 3),
+                      ('T', 1), ('T', 2), ('T', 3),
+                      ('QVAPOR', 1), ('QVAPOR', 2), ('QVAPOR', 3),
+                      ('PSFC', None)]
+    
+    # ======= Process ds1: extract and concatenate core variables =======
+    # Compute center indices for ds1 horizontal dimensions.
+    mid_x1 = ds1.sizes['west_east'] // 2
+    mid_y1 = ds1.sizes['south_north'] // 2
+    start_x1 = mid_x1 - imsize1[0] // 2
+    end_x1   = mid_x1 + imsize1[0] // 2
+    start_y1 = mid_y1 - imsize1[1] // 2
+    end_y1   = mid_y1 + imsize1[1] // 2
+
+    arrays = []  # List to store extracted arrays
+
+    for var, lev in var_levels:
+        try:
+            # Attempt to select the variable at the specified vertical level.
+            # First, try with "bottom_top" coordinate if available.
+            if lev is not None and 'bottom_top' in ds1[var].dims:
+                selected_data = ds1[var].isel(bottom_top=lev)
+            # Otherwise, try with a coordinate named "lev"
+            elif lev is not None and 'lev' in ds1[var].coords:
+                selected_data = ds1[var].sel(lev=lev)
+            else:
+                selected_data = ds1[var]
+        except Exception as e:
+            # Fallback: if any error occurs, select the variable without level selection.
+            selected_data = ds1[var]
+
+        # Now, slice horizontally based on the computed indices.
+        # If the data has a 'south_north' dimension, slice it.
+        if 'south_north' in selected_data.dims:
+            selected_data = selected_data.isel(south_north=slice(start_y1, end_y1))
+        # For the east-west direction, check for either "west_east_stag" or "west_east"
+        if 'west_east_stag' in selected_data.dims:
+            selected_data = selected_data.isel(west_east_stag=slice(start_x1, end_x1))
+        elif 'west_east' in selected_data.dims:
+            selected_data = selected_data.isel(west_east=slice(start_x1, end_x1))
+        
+        # Remove the time dimension if it exists (assuming it's the first dimension)
+        arr = np.squeeze(selected_data.values, axis=0)
+        # If the resulting array is 2D (i.e. no explicit channel dimension), add one.
+        if arr.ndim == 2:
+            arr = arr[np.newaxis, ...]
+        arrays.append(arr)
+    
+    # Stack all extracted arrays along a new axis (channels) and add a batch dimension.
+    final_result = np.stack(arrays, axis=0)  # Shape: (total_channels, height, width)
+    final_result = final_result[np.newaxis, ...]  # Final shape: (1, total_channels, height, width)
+
+    # ======= Process ds2: compute y (unchanged) =======
+    mid_x2 = ds2.sizes['west_east'] // 2
+    mid_y2 = ds2.sizes['south_north'] // 2
+    start_x2 = mid_x2 - imsize2[0] // 2
+    end_x2   = mid_x2 + imsize2[0] // 2
+    start_y2 = mid_y2 - imsize2[1] // 2
+    end_y2   = mid_y2 + imsize2[1] // 2
+
+    u10 = ds2.U10.isel(south_north=slice(start_y2, end_y2), west_east=slice(start_x2, end_x2))
+    v10 = ds2.V10.isel(south_north=slice(start_y2, end_y2), west_east=slice(start_x2, end_x2))
+    wind_speed = np.sqrt(u10**2 + v10**2)
+    max_wind_speed = np.max(wind_speed.values)
+
+    psfc_ds2 = ds2.PSFC.isel(south_north=slice(start_y2, end_y2), west_east=slice(start_x2, end_x2))
+    min_psfc = np.min(psfc_ds2.values)
+
+    max_wind_loc = np.unravel_index(np.argmax(wind_speed.values, axis=None), wind_speed.shape)
+    min_psfc_loc = np.unravel_index(np.argmin(psfc_ds2.values, axis=None), psfc_ds2.shape)
+    dist_x = np.abs(max_wind_loc[1] - min_psfc_loc[1])
+    dist_y = np.abs(max_wind_loc[0] - min_psfc_loc[0])
+    distance_km = np.sqrt(dist_x**2 + dist_y**2) * output_resolution
+
+    y = np.array([[max_wind_speed, min_psfc, distance_km]])
+
+    return final_result, y
 #exp_dirs = ["exp_18km_m05"]
 def natural_sort_key(s):
     """
@@ -265,7 +381,7 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
         ds2 = xr.open_dataset(ds2_file)
         
         # Extract core variables.
-        result, y = extract_core_variables(ds1, ds2, imsize1=imsize_x, imsize2=imsize_y)
+        result, y = extract_core_variables(ds1, ds2, imsize1=imsize_x, imsize2=imsize_y, var_levels=var_levels)
         if y[0,0]==0 or y[0,1]==0:
             print('AAAAAAAAAAA')
             continue
