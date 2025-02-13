@@ -210,7 +210,8 @@ load_data(temp_dir)
 # Normalize the data before encoding
 test_x=np.transpose(test_x, (0, 2, 3, 1))
 test_x, test_y = normalize_channels(test_x, test_y[:,b])
-if test_z and st_embed:
+test_x = resize_preprocess(test_x, image_size, image_size, 'lanczos5')
+if st_embed:
     test_z = normalize_Z(test_z)
 number_channels=test_x.shape[3]
 # Load model and perform predictions

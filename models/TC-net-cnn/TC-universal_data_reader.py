@@ -421,7 +421,6 @@ def write_data(data_dict, work_folder, val_pc=20):
 
 if data_source == 'MERRA2':
     data_dir = os.path.join(root, 'Domain_data', f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')
-    print(random_split,'aaaa')
     if random_split:
         results = load_merra_data_by_percentage(data_dir,windowsize, val_pc=validation_percentage, test_pc=test_percentage)
     else:

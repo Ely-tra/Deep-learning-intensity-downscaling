@@ -19,7 +19,7 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 # ===============================================================================================================================================
 merra=(0 0 0)  # Control execution for MERRA2 related scripts
 wrf=0          # Control execution for WRF related scripts
-build=(1 0 0)  # Control execution for Builder related scripts
+build=(1 1 1)  # Control execution for Builder related scripts
 # ===============================================================================================================================================
 # COMMON SETTINGS
 # These settings are common across different parts of the script and provide basic configuration.
@@ -69,7 +69,7 @@ temporary_folder='/N/slate/kmluong/TC-net-cnn_workdir/'  # Temporary folder for 
 model_name='H18l18'  # Core name of the model, automatic naming is not supported, so to save multiple models, users need to assign model names manually
 learning_rate=0.0001
 batch_size=256  # Batch size for training
-num_epochs=150  # Number of training epochs
+num_epochs=300  # Number of training epochs
 image_size=64  # Size of the input images for the model
 config='model_core/77.json'  # Path to the model configuration file
 text_report_name='H18l18.txt'  # Filename for the text report, will be saved under workdir/text_report
