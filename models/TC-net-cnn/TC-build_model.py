@@ -68,6 +68,7 @@ def parse_args():
     parser.add_argument('-cfg', '--config', type=str, default = 'model_core/test.json')
     parser.add_argument('-ss', '--data_source', type=str, default = 'MERRA2')
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
+    parser.add_argument('-tid', 'temp_id', type=str)
     return parser.parse_args()
 args = parse_args()
 learning_rate = args.learning_rate
@@ -81,6 +82,7 @@ st_embed = args.st_embed
 config_path = args.config
 data_source=args.data_source
 work_folder=args.work_folder
+temp_id=args.temp_id
 print("st_embed:", args.st_embed, type(args.st_embed))
 model_dir = os.path.join(root, 'model')
 model_name = args.model_name
@@ -232,24 +234,24 @@ def mode_switch(mode):
     }
     # Return the corresponding value if mode is found, otherwise return None or a default value
     return switcher.get(mode, None)
-def load_data(temp_dir):
+def load_data(temp_dir, temp_id=temp_id):
     global train_x, train_y, train_z, val_x, val_y, val_z
 
     # Check for training data files and load them if they exist
     if 'train_x.npy' in os.listdir(temp_dir):
-        train_x = np.load(os.path.join(temp_dir, 'train_x.npy'))
+        train_x = np.load(os.path.join(temp_dir, f'train_x_{temp_id}.npy'))
     if 'train_y.npy' in os.listdir(temp_dir):
-        train_y = np.load(os.path.join(temp_dir, 'train_y.npy'))
+        train_y = np.load(os.path.join(temp_dir, f'train_y_{temp_id}.npy'))
     if 'train_z.npy' in os.listdir(temp_dir):
-        train_z = np.load(os.path.join(temp_dir, 'train_z.npy'))
+        train_z = np.load(os.path.join(temp_dir, f'train_z_{temp_id}.npy'))
 
     # Check for validation data files and load them if they exist
     if 'val_x.npy' in os.listdir(temp_dir):
-        val_x = np.load(os.path.join(temp_dir, 'val_x.npy'))
+        val_x = np.load(os.path.join(temp_dir, f'val_x_{temp_id}.npy'))
     if 'val_y.npy' in os.listdir(temp_dir):
-        val_y = np.load(os.path.join(temp_dir, 'val_y.npy'))
+        val_y = np.load(os.path.join(temp_dir, f'val_y_{temp_id}.npy'))
     if 'val_z.npy' in os.listdir(temp_dir):
-        val_z = np.load(os.path.join(temp_dir, 'val_z.npy'))
+        val_z = np.load(os.path.join(temp_dir, f'val_z_{temp_id}.npy'))
 
 
 # Defining metrics
