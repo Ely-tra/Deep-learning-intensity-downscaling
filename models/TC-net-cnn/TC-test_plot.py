@@ -204,9 +204,9 @@ custom_objects = {
 
 b=mode_switch(mode)
 load_data(temp_dir)
-test_x=np.transpose(test_x, (0, 2, 3, 1))
 
 # Normalize the data before encoding
+test_x=np.transpose(test_x, (0, 2, 3, 1))
 test_x, test_y = normalize_channels(test_x, test_y[:,b])
 if test_z and st_embed:
     test_z = normalize_Z(test_z)
