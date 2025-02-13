@@ -18,14 +18,17 @@ def parse_args():
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source to conduct experiment on')
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
     parser.add_argument('-val_pc', '--validation_percentage', type=int, default=10, 
-                        help='Validation set split percentage (based on train set), if a specific validation set is not provided')
+                        help='Validation set split percentage (based on train set), if a specific validation set is not provided.')
+    parser.add_argument('-test_pc', '--test_percentage', type=int, default=10, 
+                        help='Test set split percentage (based on train set), if a specific test set is not provided.')
     parser.add_argument('-wrf_eid', '--wrf_experiment_identification', type = str, default = 'H18h18', 
                         help =  'WRF experiment identification, H/L 18/06/02 h/l 18/06/02, please read wrf/extractor.py for a better understanding.')
     parser.add_argument('-wrf_ix', '--wrf_variables_imsize', type = int, nargs=2, default = [64,64], 
                         help = 'Image size for wrf variable data, for data identification only')
     parser.add_argument('-wrf_iy', '--wrf_labels_imsize', type = int, nargs=2, default = [64,64], 
                         help = 'Image size for wrf label data (data is extracted from this domain), for data identification only')
-    parser.add_argument('-tid', '--temp_id', type=str)
+    parser.add_argument('-tid', '--temp_id', type=str, default='testtemp')
+    parser.add_argument('-r_split', '--random_split', type=int, default=0, help = 'Perform random split or not, based )
     return parser.parse_args()
 
 def set_variables_from_args(args):
@@ -159,6 +162,105 @@ def load_merra_data(data_directory, windowsize, validation_year=None, test_year=
         results['val_x.npy'] = val_features
         results['val_y.npy'] = val_labels
         results['val_z.npy'] = val_space_times
+    
+    return results
+
+def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc=10):
+    """
+    Loads data from all available year directories in the given root directory, concatenates
+    them, and then splits the combined dataset into training, validation, and test sets based on 
+    the provided percentages.
+    
+    Args:
+        data_directory (str): The root directory where data files are stored.
+        windowsize (tuple): A tuple (height, width) defining the window size.
+        val_pc (float): Fraction (between 0 and 1) of the total data to use as the validation set.
+        test_pc (float): Fraction (between 0 and 1) of the total data to use as the test set.
+        
+    Returns:
+        dict: A dictionary with the following keys and their corresponding data arrays:
+              'train_x.npy', 'train_y.npy', 'train_z.npy',
+              'test_x.npy', 'test_y.npy', 'test_z.npy',
+              'val_x.npy', 'val_y.npy', 'val_z.npy'
+    """
+    windows = f'{windowsize[0]}x{windowsize[1]}'
+    # Retrieve the list of year directories (assumes get_year_directories is defined)
+    years = get_year_directories(data_directory)
+    months = range(1, 13)  # Assumes months 1 to 12
+    
+    # Containers for all data
+    all_features, all_labels, all_space_times = [], [], []
+    
+    # Loop over each year and month to load available data files
+    for year in years:
+        for month in months:
+            feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
+            label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
+            space_time_filename = f'space_time_info{var_num}_{windows}{month:02d}.npy'
+            
+            feature_path = os.path.join(data_directory, str(year), feature_filename)
+            label_path = os.path.join(data_directory, str(year), label_filename)
+            space_time_path = os.path.join(data_directory, str(year), space_time_filename)
+            
+            # Load the files only if they exist
+            if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
+                features = np.load(feature_path)
+                labels = np.load(label_path)
+                space_time = np.load(space_time_path)
+                
+                all_features.append(features)
+                all_labels.append(labels)
+                all_space_times.append(space_time)
+            else:
+                print(f"Warning: Files not found for year {year} and month {month:02d}")
+    
+    # Concatenate the loaded arrays if any data was found
+    if not all_features:
+        print("No data loaded!")
+        return {}
+    
+    all_features = np.concatenate(all_features, axis=0)
+    all_labels = np.concatenate(all_labels, axis=0)
+    all_space_times = np.concatenate(all_space_times, axis=0)
+    
+    # Determine the total number of samples and compute split sizes
+    total_samples = all_features.shape[0]
+    test_samples = int(total_samples * test_pc)
+    val_samples = int(total_samples * val_pc)
+    
+    # Shuffle indices to randomize the data split
+    indices = np.random.permutation(total_samples)
+    
+    # Split indices for test, validation, and training sets
+    test_indices = indices[:test_samples]
+    val_indices = indices[test_samples:test_samples + val_samples]
+    train_indices = indices[test_samples + val_samples:]
+    
+    # Partition the data using the computed indices
+    train_x = all_features[train_indices]
+    train_y = all_labels[train_indices]
+    train_z = all_space_times[train_indices]
+    
+    test_x = all_features[test_indices]
+    test_y = all_labels[test_indices]
+    test_z = all_space_times[test_indices]
+    
+    val_x = all_features[val_indices]
+    val_y = all_labels[val_indices]
+    val_z = all_space_times[val_indices]
+    
+    # Package the split data into a dictionary
+    results = {
+        'train_x.npy': train_x,
+        'train_y.npy': train_y,
+        'train_z.npy': train_z,
+        'test_x.npy': test_x,
+        'test_y.npy': test_y,
+        'test_z.npy': test_z,
+        'val_x.npy': val_x,
+        'val_y.npy': val_y,
+        'val_z.npy': val_z
+    }
     
     return results
 def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
@@ -319,7 +421,11 @@ def write_data(data_dict, work_folder, val_pc=20):
 
 if data_source == 'MERRA2':
     data_dir = os.path.join(root, f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')
-    results = load_merra_data(data_dir,windowsize, validation_year=validation_year_merra, test_year=test_year_merra)
+    print(random_split,'aaaa')
+    if random_split:
+        results = load_merra_data_by_percentage(data_dir,windowsize, val_pc=validation_percentage, test_pc=test_percentage)
+    else:
+        results = load_merra_data(data_dir,windowsize, validation_year=validation_year_merra, test_year=test_year_merra)
 if data_source == 'WRF':
     data_dir = os.path.join(root, 'wrf_data')
     results = load_wrf_data(data_dir, wrf_experiment_identification, wrf_variables_imsize, wrf_labels_imsize, test = test_experiment_wrf, val=validation_experiment_wrf)
