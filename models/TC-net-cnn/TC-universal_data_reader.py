@@ -28,7 +28,7 @@ def parse_args():
     parser.add_argument('-wrf_iy', '--wrf_labels_imsize', type = int, nargs=2, default = [64,64], 
                         help = 'Image size for wrf label data (data is extracted from this domain), for data identification only')
     parser.add_argument('-tid', '--temp_id', type=str, default='testtemp')
-    parser.add_argument('-r_split', '--random_split', type=int, default=0, help = 'Perform random split or not, based )
+    parser.add_argument('-r_split', '--random_split', type=int, default=0, help = 'Perform random split or not')
     return parser.parse_args()
 
 def set_variables_from_args(args):
@@ -225,8 +225,8 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
     
     # Determine the total number of samples and compute split sizes
     total_samples = all_features.shape[0]
-    test_samples = int(total_samples * test_pc)
-    val_samples = int(total_samples * val_pc)
+    test_samples = int(total_samples * test_pc/100)
+    val_samples = int(total_samples * val_pc/100)
     
     # Shuffle indices to randomize the data split
     indices = np.random.permutation(total_samples)
@@ -420,7 +420,7 @@ def write_data(data_dict, work_folder, val_pc=20):
         print(f"Saved {file_path}")
 
 if data_source == 'MERRA2':
-    data_dir = os.path.join(root, f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')
+    data_dir = os.path.join(root, 'Domain_data', f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')
     print(random_split,'aaaa')
     if random_split:
         results = load_merra_data_by_percentage(data_dir,windowsize, val_pc=validation_percentage, test_pc=test_percentage)

@@ -19,7 +19,7 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 # ===============================================================================================================================================
 merra=(0 0 0)  # Control execution for MERRA2 related scripts
 wrf=0          # Control execution for WRF related scripts
-build=(1 1 1)  # Control execution for Builder related scripts
+build=(1 0 0)  # Control execution for Builder related scripts
 # ===============================================================================================================================================
 # COMMON SETTINGS
 # These settings are common across different parts of the script and provide basic configuration.
@@ -27,7 +27,7 @@ build=(1 1 1)  # Control execution for Builder related scripts
 mode='VMAX'  # Operation mode (VMAX: maximum sustained wind speed, PMIN: minimum pressure, RMW: radius of maximum winds)
 workdir='/N/slate/kmluong/TC-net-cnn_workdir/'  # Directory for output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to best track data
-data_source='WRF'  # Data source to be used, MERRA2/WRF
+data_source='MERRA2'  # Data source to be used, MERRA2/WRF
 val_pc=20 # Percentage of training data reserved for validation, will be used if no validation set is specified, or MERRA2 random split is enabled
 if [ "$data_source" = "MERRA2" ]; then
     wrf=0  # Sets all elements in the merra control array to 0
@@ -46,11 +46,11 @@ st_embed=0  # Space-time embedding toggle (0 for off)
 force_rewrite=False  # Force rewrite of existing files toggle
 datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'  # Path to raw MERRA2 data
 list_vars=("U850" "V850" "T850" "RH850" "U950" "V950" "T950" "RH950" "U750" "V750" "T750" "RH750" "SLP750")  # List of meteorological variables
-windowsize_x=19  # Window size along the x-axis (degree)
-windowsize_y=19  # Window size along the y-axis (degree)
+windowsize_x=18  # Window size along the x-axis (degree)
+windowsize_y=18  # Window size along the y-axis (degree)
 validation_years=(2014)  # Years used for validation
 test_years=(2017)  # Years used for testing
-random_split=0 # Use val_pc and test_pc instead of year.
+random_split=1 # Use val_pc and test_pc instead of year.
 # ===============================================================================================================================================
 # WRF (Weather Research and Forecasting) CONFIGURATION
 # Configuration for WRF model data handling.
@@ -175,4 +175,4 @@ if [ "${build[2]}" -eq 1 ]; then
         -tid "$temp_id"
 fi
 
-find "$workdir/temp/" -type f -name "*$temp_id*" -delete
+#find "$workdir/temp/" -type f -name "*$temp_id*" -delete
