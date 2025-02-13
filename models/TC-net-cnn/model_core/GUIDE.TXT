@@ -49,15 +49,17 @@ Example:
 ----------------------------------------------------------------------
 The "process_flows" section is an array where each element defines a flow. Each flow
 specifies:
-  - "name": A unique identifier for the flow.
+  - "name": A unique identifier for the flow, name it whatever you like.
   - "input" or "inputs": The starting tensor(s) for this flow. This can refer to an input 
-    defined in the "inputs" section or a previously processed flow.
+    defined in the "inputs" section or a previously processed flow. NAME OF THE FEEDING LAYER,
+    if you want to feed layer N1 to layer N3 then in layer N3, you would have its input N1.
   - "operations": An ordered list of operations (detailed in the next section) that are applied 
     sequentially.
 
 Optional:
   - "condition": For example, "st_embed". If present and the condition is not met, the entire 
-    flow is skipped.
+    flow is skipped. EVEN IF SKIPPED, THE NAME OF THIS LAYER CAN STILL BE USED FOR THE NEXT LAYER,
+    AND THE THE NEXT LAYER WILL INHERIT THIS LAYER'S INPUT.
 
 Example:
 ---------
