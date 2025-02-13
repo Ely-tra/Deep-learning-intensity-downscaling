@@ -68,7 +68,7 @@ def parse_args():
     parser.add_argument('-cfg', '--config', type=str, default = 'model_core/test.json')
     parser.add_argument('-ss', '--data_source', type=str, default = 'MERRA2')
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
-    parser.add_argument('-tid', 'temp_id', type=str)
+    parser.add_argument('-tid', '--temp_id', type=str)
     return parser.parse_args()
 args = parse_args()
 learning_rate = args.learning_rate
@@ -83,7 +83,6 @@ config_path = args.config
 data_source=args.data_source
 work_folder=args.work_folder
 temp_id=args.temp_id
-print("st_embed:", args.st_embed, type(args.st_embed))
 model_dir = os.path.join(root, 'model')
 model_name = args.model_name
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
@@ -119,7 +118,6 @@ def apply_operation(x, op, inputs, flows, st_embed = False):
                 concat_inputs.append(flows[item])
             else:
                 raise ValueError(f"Cannot find '{item}' in either 'inputs' or 'flows'.")
-        print(concat_inputs)
         return layers.concatenate(concat_inputs, axis=op.get('axis', -1))
     
     # Handle Flatten
@@ -238,19 +236,19 @@ def load_data(temp_dir, temp_id=temp_id):
     global train_x, train_y, train_z, val_x, val_y, val_z
 
     # Check for training data files and load them if they exist
-    if 'train_x.npy' in os.listdir(temp_dir):
+    if f'train_x_{temp_id}.npy' in os.listdir(temp_dir):
         train_x = np.load(os.path.join(temp_dir, f'train_x_{temp_id}.npy'))
-    if 'train_y.npy' in os.listdir(temp_dir):
+    if f'train_y_{temp_id}.npy' in os.listdir(temp_dir):
         train_y = np.load(os.path.join(temp_dir, f'train_y_{temp_id}.npy'))
-    if 'train_z.npy' in os.listdir(temp_dir):
+    if f'train_z_{temp_id}.npy' in os.listdir(temp_dir):
         train_z = np.load(os.path.join(temp_dir, f'train_z_{temp_id}.npy'))
 
     # Check for validation data files and load them if they exist
-    if 'val_x.npy' in os.listdir(temp_dir):
+    if f'val_x_{temp_id}.npy' in os.listdir(temp_dir):
         val_x = np.load(os.path.join(temp_dir, f'val_x_{temp_id}.npy'))
-    if 'val_y.npy' in os.listdir(temp_dir):
+    if f'val_y_{temp_id}.npy' in os.listdir(temp_dir):
         val_y = np.load(os.path.join(temp_dir, f'val_y_{temp_id}.npy'))
-    if 'val_z.npy' in os.listdir(temp_dir):
+    if f'val_z_{temp_id}.npy' in os.listdir(temp_dir):
         val_z = np.load(os.path.join(temp_dir, f'val_z_{temp_id}.npy'))
 
 
@@ -378,7 +376,6 @@ def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, e
     else:
         val_data = None
     # Fit the model using the (possibly split) training labels
-    print('AAAA', np.sum(train_inputs), train_Y.shape, np.sum(train_inputs[0]))
     history = model.fit(train_inputs, train_Y, batch_size=batch_size, epochs=epoch,
                         validation_data=val_data, verbose=2, callbacks=callbacks, shuffle=True)
 

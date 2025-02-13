@@ -18,8 +18,8 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 # WHICH STEPS TO RUN
 # ===============================================================================================================================================
 merra=(0 0 0)  # Control execution for MERRA2 related scripts
-wrf=1          # Control execution for WRF related scripts
-build=(0 0 0)  # Control execution for Builder related scripts
+wrf=0          # Control execution for WRF related scripts
+build=(1 1 1)  # Control execution for Builder related scripts
 # ===============================================================================================================================================
 # COMMON SETTINGS
 # These settings are common across different parts of the script and provide basic configuration.
@@ -59,7 +59,7 @@ imsize_variables="64 64"  # Image size for variables
 imsize_labels="64 64"  # Image size for labels
 wrf_base="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base path for WRF data
 VAR_LEVELS_WRF=("U01" "U02" "U03" "V01" "V02" "V03" "T01" "T02" "T03" "QVAPOR01" "QVAPOR02" "QVAPOR03" "PSFC")
-test_exp=5
+test_exp_wrf=5
 # =============================================================================================================================================
 # MODEL CONFIGURATION
 # Settings for the neural network model.
@@ -120,7 +120,7 @@ if [ "$wrf" -eq 1 ]; then
         -iy $imsize_labels\
         -r $workdir \
         -b $wrf_base \
-        -vl "${VAR_LEVELS_WRF[@]}" \
+        -vl "${VAR_LEVELS_WRF[@]}"
 fi
 
 # ===============================================================================================================================================
@@ -136,8 +136,7 @@ if [ "${build[0]}" -eq 1 ]; then
         --test_year_merra "${test_years[@]}" \
         -temp "${temporary_folder}" \
         -ss ${data_source} \
-        -eno $num_epochs \
-        -tid $temp_id
+        -tid "$temp_id" \
         -tew $test_exp_wrf
         
 fi
@@ -157,7 +156,7 @@ if [ "${build[1]}" -eq 1 ]; then
         -temp "${temporary_folder}" \
         -ss ${data_source} \
         -cfg $config \
-        -tid $temp_id
+        -tid "$temp_id"
 fi
 
 if [ "${build[2]}" -eq 1 ]; then
@@ -169,6 +168,7 @@ if [ "${build[2]}" -eq 1 ]; then
         --model_name $model_name \
         -temp ${temporary_folder} \
         -ss ${data_source} \
-        -tid $temp_id
+        -tid "$temp_id"
 fi
+
 find "$workdir/temp/" -type f -name "*$temp_id*" -delete

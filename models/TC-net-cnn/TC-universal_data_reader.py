@@ -313,7 +313,7 @@ def write_data(data_dict, work_folder, val_pc=20):
 
     # Iterate over the dictionary and save each array with the given file name
     for file_name, array in data_dict.items():
-        file_path = os.path.join(temp_folder, file_name[-4:], '_', temp_id, '.npy')
+        file_path = os.path.join(temp_folder, f'{file_name[:-4]}_{temp_id}.npy')
         np.save(file_path, array)
         print(f"Saved {file_path}")
 

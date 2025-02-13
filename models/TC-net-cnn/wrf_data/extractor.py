@@ -124,7 +124,7 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_
     return final_result, y
 '''
 def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
-                           output_resolution=eid[-2:], var_levels=None):
+                           output_resolution=float(eid[-2:]), var_levels=None):
     """
     Extract core variables from ds1 and compute the target array y from ds2.
 

@@ -90,7 +90,7 @@ def load_data(temp_dir, temp_id=temp_id):
     test_y = np.load(os.path.join(temp_dir, f'test_y_{temp_id}.npy'))
 
     # Optionally load test_z if it exists
-    if 'test_z.npy' in os.listdir(temp_dir):
+    if f'test_z_{temp_id}.npy' in os.listdir(temp_dir):
         test_z = np.load(os.path.join(temp_dir, f'test_z_{temp_id}.npy'))
     else:
         test_z = None  # Ensure test_z is defined even if it does not exist
