@@ -34,6 +34,7 @@ def parse_args():
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
     parser.add_argument("--text_report_name", default= 'report.txt', type=str, help="Filename to write text report to, will be inside text_report dir")
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source')
+    parser.add_argument('-tid', '--temp_id', type=str)
 
     return parser.parse_args()
 args = parse_args()
@@ -46,6 +47,7 @@ model_name = args.model_name
 text_report_name=args.text_report_name
 data_source=args.data_source
 work_folder=args.work_folder
+temp_id=args.temp_id
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
 report_directory = os.path.join(workdir, 'text_report')
 os.makedirs(report_directory, exist_ok=True)
@@ -80,16 +82,16 @@ def get_year_directories(data_directory):
     ]
     return year_directories
 
-def load_data(temp_dir):
+def load_data(temp_dir, temp_id=temp_id):
     global test_x, test_y, test_z
 
     # Load mandatory test data files
-    test_x = np.load(os.path.join(temp_dir, 'test_x.npy'))
-    test_y = np.load(os.path.join(temp_dir, 'test_y.npy'))
+    test_x = np.load(os.path.join(temp_dir, f'test_x_{temp_id}.npy'))
+    test_y = np.load(os.path.join(temp_dir, f'test_y_{temp_id}.npy'))
 
     # Optionally load test_z if it exists
     if 'test_z.npy' in os.listdir(temp_dir):
-        test_z = np.load(os.path.join(temp_dir, 'test_z.npy'))
+        test_z = np.load(os.path.join(temp_dir, f'test_z_{temp_id}.npy'))
     else:
         test_z = None  # Ensure test_z is defined even if it does not exist
 
