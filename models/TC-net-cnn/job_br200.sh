@@ -28,13 +28,14 @@ mode='VMAX'  # Operation mode (VMAX: maximum sustained wind speed, PMIN: minimum
 workdir='/N/slate/kmluong/TC-net-cnn_workdir/'  # Directory for output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to best track data
 data_source='WRF'  # Data source to be used, MERRA2/WRF
-val_pc=2/9*100  # Percentage of training data reserved for validation, will be used if no validation set is specified
+val_pc=20 # Percentage of training data reserved for validation, will be used if no validation set is specified, or MERRA2 random split is enabled
 if [ "$data_source" = "MERRA2" ]; then
     wrf=0  # Sets all elements in the merra control array to 0
 elif [ "$data_source" = "WRF" ]; then
     merra=(0 0 0)  # Sets the wrf control variable to 0
 fi
 temp_id=$(echo "$(date +%s%N)$$$BASHPID$RANDOM$(uuidgen)" | sha256sum | tr -dc 'A-Za-z0-9' | head -c10)
+test_pc=10 # Percentage of training data reserved for test, will be used if MERRA2 random split is enabled
 # ===============================================================================================================================================
 # MERRA2 CONFIGURATION
 # Specific configuration for handling MERRA2 dataset.
@@ -49,7 +50,7 @@ windowsize_x=19  # Window size along the x-axis (degree)
 windowsize_y=19  # Window size along the y-axis (degree)
 validation_years=(2014)  # Years used for validation
 test_years=(2017)  # Years used for testing
-
+random_split=0 # Use val_pc and test_pc instead of year.
 # ===============================================================================================================================================
 # WRF (Weather Research and Forecasting) CONFIGURATION
 # Configuration for WRF model data handling.
@@ -137,7 +138,10 @@ if [ "${build[0]}" -eq 1 ]; then
         -temp "${temporary_folder}" \
         -ss ${data_source} \
         -tid "$temp_id" \
-        -tew $test_exp_wrf
+        -tew $test_exp_wrf \
+        -r_split $random_split \
+        -test_pc $test_pc \
+        -val_pc $val_pc
         
 fi
 
