@@ -34,6 +34,7 @@ if [ "$data_source" = "MERRA2" ]; then
 elif [ "$data_source" = "WRF" ]; then
     merra=(0 0 0)  # Sets the wrf control variable to 0
 fi
+temp_id=$(echo "$(date +%s%N)$$$BASHPID$RANDOM$(uuidgen)" | sha256sum | tr -dc 'A-Za-z0-9' | head -c10)
 # ===============================================================================================================================================
 # MERRA2 CONFIGURATION
 # Specific configuration for handling MERRA2 dataset.
@@ -118,7 +119,8 @@ if [ "$wrf" -eq 1 ]; then
         -iy $imsize_labels\
         -r $workdir \
         -b $wrf_base \
-        -vl "${VAR_LEVELS_WRF[@]}"
+        -vl "${VAR_LEVELS_WRF[@]}" \
+        -tid=$temp_id
 fi
 
 # ===============================================================================================================================================
@@ -134,7 +136,8 @@ if [ "${build[0]}" -eq 1 ]; then
         --test_year_merra "${test_years[@]}" \
         -temp "${temporary_folder}" \
         -ss ${data_source} \
-        -eno $num_epochs
+        -eno $num_epochs \
+        -tid=$temp_id
 fi
 
 if [ "${build[1]}" -eq 1 ]; then
@@ -151,7 +154,8 @@ if [ "${build[1]}" -eq 1 ]; then
         --image_size $image_size \
         -temp "${temporary_folder}" \
         -ss ${data_source} \
-        -cfg $config
+        -cfg $config \
+        -tid=$temp_id
 fi
 
 if [ "${build[2]}" -eq 1 ]; then
@@ -162,5 +166,6 @@ if [ "${build[2]}" -eq 1 ]; then
         --st_embed $st_embed \
         --model_name $model_name \
         -temp ${temporary_folder} \
-        -ss ${data_source}
+        -ss ${data_source} \
+        -tid=$temp_id
 fi
