@@ -25,6 +25,7 @@ def parse_args():
                         help = 'Image size for wrf variable data, for data identification only')
     parser.add_argument('-wrf_iy', '--wrf_labels_imsize', type = int, nargs=2, default = [64,64], 
                         help = 'Image size for wrf label data (data is extracted from this domain), for data identification only')
+    parser.add_argument('-tid', '--temp_id', type=str)
     return parser.parse_args()
 
 def set_variables_from_args(args):
@@ -290,16 +291,6 @@ def write_data(data_dict, work_folder, val_pc=20):
     # Create the target directory if it does not exist
     temp_folder = os.path.join(work_folder, 'temp')
     os.makedirs(temp_folder, exist_ok=True)
-    if os.listdir(temp_folder):  # This checks if the folder is not empty
-        for filename in os.listdir(temp_folder):
-            file_path = os.path.join(temp_folder, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)  # Remove file or symbolic link
-                elif os.path.isdir(file_path):
-                    shutil.rmtree(file_path)  # Remove directory and contents
-            except Exception as e:
-                print(f"Failed to delete {file_path}: {e}")
     # Check for validation files
     if 'val_x.npy' not in data_dict or 'val_y.npy' not in data_dict:
         # Determine which arrays need splitting
@@ -322,7 +313,7 @@ def write_data(data_dict, work_folder, val_pc=20):
 
     # Iterate over the dictionary and save each array with the given file name
     for file_name, array in data_dict.items():
-        file_path = os.path.join(temp_folder, file_name)
+        file_path = os.path.join(temp_folder, file_name[-4:], '_', temp_id, '.npy')
         np.save(file_path, array)
         print(f"Saved {file_path}")
 
