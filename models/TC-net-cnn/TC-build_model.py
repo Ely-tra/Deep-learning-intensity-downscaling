@@ -55,41 +55,38 @@ import json
 #
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a Vision Transformer model for TC intensity correction.')
-    parser.add_argument('--mode', type=str, default = 'VMAX', help='Mode of operation (e.g., VMAX, PMIN, RMW)')
-    parser.add_argument('--model_name', type=str, default = 'CNNmodel', help='Core name of the model')
-    parser.add_argument('--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Working directory path')
-    parser.add_argument('--windowsize', type=int, nargs=2, default = [19,19], help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('--var_num', type=int, default = 13, help='Number of variables')
-    parser.add_argument('--st_embed', action='store_true', help='Including space-time embedded')
-    parser.add_argument('--learning_rate', type=float, default=0.001, help='Initial learning rate')
-    parser.add_argument('--batch_size', type=int, default=256, help='Batch size for training')
-    parser.add_argument('--num_epochs', type=int, default=100, help='Number of epochs for training')
-    parser.add_argument('--image_size', type=int, default=64, help='Size to resize the image to')
-    parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation')
-    parser.add_argument('--test_year', nargs='+', type=int, default=[2017], help='Year(s) taken for test')
-    parser.add_argument('--config', type=str, default = 'model_core/test.json')
+    parser.add_argument('-m', '--mode', type=str, default = 'VMAX', help='Mode of operation (e.g., VMAX, PMIN, RMW)')
+    parser.add_argument('-mname', '--model_name', type=str, default = 'CNNmodel', help='Core name of the model')
+    parser.add_argument('-r', '--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Working directory path')
+    parser.add_argument('-ws', '--windowsize', type=int, nargs=2, default = [19,19], help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('-vno', '--var_num', type=int, default = 13, help='Number of variables')
+    parser.add_argument('-st', '--st_embed', type=int, default = 0, help='Including space-time embedded')
+    parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='Initial learning rate')
+    parser.add_argument('-bsize', '--batch_size', type=int, default=256, help='Batch size for training')
+    parser.add_argument('-eno', '--num_epochs', type=int, default=100, help='Number of epochs for training')
+    parser.add_argument('-imsize', '--image_size', type=int, default=64, help='Size to resize the image to')
+    parser.add_argument('-cfg', '--config', type=str, default = 'model_core/test.json')
+    parser.add_argument('-ss', '--data_source', type=str, default = 'MERRA2')
+    parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
+    parser.add_argument('-tid', '--temp_id', type=str)
     return parser.parse_args()
 args = parse_args()
 learning_rate = args.learning_rate
 batch_size = args.batch_size
 num_epochs = args.num_epochs        	
 image_size = args.image_size  				
-validation_year = args.validation_year
-test_year = args.test_year
 mode = args.mode
 root = args.root
-windowsize = list(args.windowsize)
 var_num = args.var_num
 st_embed = args.st_embed
 config_path = args.config
-    
-windows = f'{windowsize[0]}x{windowsize[1]}'
-work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
-data_dir = work_dir + 'data/'
-model_dir = work_dir + 'model/'
+data_source=args.data_source
+work_folder=args.work_folder
+temp_id=args.temp_id
+model_dir = os.path.join(root, 'model')
 model_name = args.model_name
-model_name = f'{model_name}_{mode}{"_st" if st_embed else ""}'
-
+model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
+temp_dir = os.path.join(work_folder, 'temp')
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
@@ -121,7 +118,6 @@ def apply_operation(x, op, inputs, flows, st_embed = False):
                 concat_inputs.append(flows[item])
             else:
                 raise ValueError(f"Cannot find '{item}' in either 'inputs' or 'flows'.")
-        print(concat_inputs)
         return layers.concatenate(concat_inputs, axis=op.get('axis', -1))
     
     # Handle Flatten
@@ -236,99 +232,24 @@ def mode_switch(mode):
     }
     # Return the corresponding value if mode is found, otherwise return None or a default value
     return switcher.get(mode, None)
-def get_year_directories(data_directory):
-    """
-    List all directory names within a given directory that are formatted as four-digit years.
+def load_data(temp_dir, temp_id=temp_id):
+    global train_x, train_y, train_z, val_x, val_y, val_z
 
-    Parameters:
-    - data_directory (str): Path to the directory containing potential year-named subdirectories.
+    # Check for training data files and load them if they exist
+    if f'train_x_{temp_id}.npy' in os.listdir(temp_dir):
+        train_x = np.load(os.path.join(temp_dir, f'train_x_{temp_id}.npy'))
+    if f'train_y_{temp_id}.npy' in os.listdir(temp_dir):
+        train_y = np.load(os.path.join(temp_dir, f'train_y_{temp_id}.npy'))
+    if f'train_z_{temp_id}.npy' in os.listdir(temp_dir):
+        train_z = np.load(os.path.join(temp_dir, f'train_z_{temp_id}.npy'))
 
-    Returns:
-    - list: A list of directory names that match the four-digit year format.
-    """
-    all_entries = os.listdir(data_directory)
-    year_directories = [
-        int(entry) for entry in all_entries
-        if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
-    ]
-    return year_directories
-
-def load_data_excluding_year(data_directory, mode, validation_year = validation_year, test_year = test_year):
-    """
-    Loads data from specified directory excluding specified years and organizes it into training and validation sets.
-
-    Args:
-        data_directory (str): The root directory where data files are stored.
-        mode (str): Mode of operation which defines how labels should be manipulated or filtered.
-        validation_year (list): List of years to be used for validation.
-        test_year (list): List of years to be excluded from the loading process.
-        var_num (int): Variable number identifier used in file naming.
-        windows (str): Window size identifier used in file naming.
-
-    Returns:
-        tuple: Tuple containing six elements:
-               - all_features (np.ndarray): Array of all features excluding validation and test years.
-               - all_labels (np.ndarray): Array of all labels corresponding to all_features.
-               - all_space_times (np.ndarray): Array of all spatial and temporal data corresponding to all_features.
-               - val_features (np.ndarray): Array of validation features from the validation years.
-               - val_labels (np.ndarray): Array of validation labels corresponding to val_features.
-               - val_space_times (np.ndarray): Array of validation spatial and temporal data corresponding to val_features.
-    """
-    years = get_year_directories(data_directory)
-    months = range(1, 13)  # Months labeled 1 to 12
-    b = mode_switch(mode)  # Make sure this function is defined elsewhere
-    all_features, all_labels, all_space_times = [], [], []
-    val_features, val_labels, val_space_times = [], [], []
-
-    # Loop over each year
-    for year in years:
-        #print(year)
-        if year in validation_year:
-            print("validation year", year)
-        if year in test_year:
-            print("test", year)
-            continue  # Skip the excluded year
-        
-        # Loop over each month
-        for month in months:
-            feature_filename = f'features{var_num}_{windows}{month:02d}fixed.npy'
-            label_filename = f'labels{var_num}_{windows}{month:02d}.npy'
-            space_time_filename = f'space_time_info{var_num}_{windows}{month:02d}.npy'
-            
-            # Construct full paths
-            feature_path = os.path.join(data_directory, str(year), feature_filename)
-            label_path = os.path.join(data_directory, str(year), label_filename)
-            space_time_path = os.path.join(data_directory, str(year), space_time_filename)
-
-            # Check if files exist before loading
-            if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
-                features = np.load(feature_path)
-                labels = np.load(label_path)[:, b]
-                space_time = np.load(space_time_path)
-                # Append to lists
-                if year in validation_year:
-                    #
-                    val_features.append(features)
-                    val_labels.append(labels)
-                    val_space_times.append(space_time)
-                else:
-                    all_features.append(features)
-                    all_labels.append(labels)
-                    all_space_times.append(space_time)
-            else:
-                print(f"Warning: Files not found for year {year} and month {month}")
-                #print(label_path, feature_path)
-
-    # Concatenate all loaded data into single arrays
-    all_features = np.concatenate(all_features, axis=0)
-    all_labels = np.concatenate(all_labels, axis=0)
-    all_space_times = np.concatenate(all_space_times, axis=0)
-    val_features = np.concatenate(val_features, axis=0)
-    val_labels = np.concatenate(val_labels, axis=0)
-    val_space_times = np.concatenate(val_space_times, axis=0)
-
-    return all_features, all_labels, all_space_times, val_features, val_labels, val_space_times
-
+    # Check for validation data files and load them if they exist
+    if f'val_x_{temp_id}.npy' in os.listdir(temp_dir):
+        val_x = np.load(os.path.join(temp_dir, f'val_x_{temp_id}.npy'))
+    if f'val_y_{temp_id}.npy' in os.listdir(temp_dir):
+        val_y = np.load(os.path.join(temp_dir, f'val_y_{temp_id}.npy'))
+    if f'val_z_{temp_id}.npy' in os.listdir(temp_dir):
+        val_z = np.load(os.path.join(temp_dir, f'val_z_{temp_id}.npy'))
 
 
 # Defining metrics
@@ -359,6 +280,8 @@ def resize_preprocess(image, HEIGHT, WIDTH, method):
 # NOTE: normalize only features, not labels (althought requires labels as input)
 # NOTE: normalize by sample, not batch normalization.
 #==============================================================================================
+
+
 def normalize_channels(X,y):
     """
     Normalizes each channel in each sample individually.
@@ -418,49 +341,82 @@ def normalize_Z(Z):
 #==============================================================================================
 # Model
 #==============================================================================================
-def main(X, Y, X_val, Y_val, loss='huber', activ='relu', NAME='best_model', st_embed=False, Z=None, Z_val=None, batch_size = batch_size, epoch = num_epochs):
+def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, epoch=100):
+    # Load model configuration and build the model
     config = load_json_config(config_path)
     model = build_model_from_json(config, st_embed=st_embed)
     
-    # Include `z_input` in the inputs
     model.compile(
         optimizer='adam',
-        loss='huber',
+        loss=loss,
         metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
     )
     
-    # Redefine the model with updated inputs and outputs
     model.summary()
+    
     callbacks = [
         keras.callbacks.ModelCheckpoint(NAME, save_best_only=True),
         keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1)
     ]
-
-    if st_embed:
-        history = model.fit([X, Z], Y, batch_size=batch_size, epochs=epoch, validation_data=([X_val, Z_val], Y_val), verbose=2, callbacks=callbacks)
+    
+    # Set up training inputs and labels
+    train_inputs = [X]
+    train_Y = Y  # Default training labels
+    if st_embed and 'train_z' in globals() and train_z is not None:
+        train_inputs.append(train_z)
+    
+    # Determine validation data and labels
+    if 'val_x' in globals() and val_x is not None and 'val_y' in globals() and val_y is not None:
+        if st_embed and 'val_z' in globals() and val_z is not None:
+            val_inputs = [val_x, val_z]
+        else:
+            val_inputs = [val_x]
+        val_Y = val_y
+        val_data = (val_inputs, val_Y)
     else:
-        history = model.fit(X, Y, batch_size=batch_size, epochs=epoch, validation_data=(X_val, Y_val), verbose=2, callbacks=callbacks)
+        val_data = None
+    # Fit the model using the (possibly split) training labels
+    history = model.fit(train_inputs, train_Y, batch_size=batch_size, epochs=epoch,
+                        validation_data=val_data, verbose=2, callbacks=callbacks, shuffle=True)
 
     return history
+
 
 #==============================================================================================
 # MAIN CALL:
 #==============================================================================================
-X, Y, Z, X_val, Y_val, Z_val = load_data_excluding_year(data_dir, mode) 
-X=np.transpose(X, (0, 2, 3, 1))
-    
-# Normalize the data before encoding
-X,Y = normalize_channels(X, Y)
-Z = normalize_Z(Z)
-X_val,Y_val = normalize_channels(X_val, Y_val)
-X_val = np.transpose(X_val, (0, 2, 3, 1))
-Z_val = normalize_Z(Z_val)
-X=resize_preprocess(X, image_size,image_size, 'lanczos5')
-X_val=resize_preprocess(X_val, image_size,image_size, 'lanczos5')
-number_channels=X.shape[3]
 
-print('Input shape of the X features data: ',X.shape)
-print('Input shape of the y label data: ',Y.shape)
+b=mode_switch(mode)
+load_data(temp_dir)
+
+# Transpose train_x as it is always present
+
+# Normalize train data, which is always present
+train_x = np.transpose(train_x, (0, 2, 3, 1))
+train_x, train_y = normalize_channels(train_x, train_y[:,b])
+# Check if train_z exists and should be normalized
+if 'train_z' in globals() and train_z is not None and st_embed:
+    train_z = normalize_Z(train_z)
+
+# Check if validation data exists before normalization and transposition
+if 'val_x' in globals() and 'val_y' in globals():
+    val_x = np.transpose(val_x, (0, 2, 3, 1))
+    val_x, val_y = normalize_channels(val_x, val_y[:,b])
+
+# Normalize val_z if it exists and st_embed is true
+if 'val_z' in globals() and val_z is not None and st_embed:
+    Z_val = normalize_Z(val_z)
+
+# Resize train_x since it is always present
+train_x = resize_preprocess(train_x, image_size, image_size, 'lanczos5')
+
+# Resize and preprocess val_x if it exists
+if 'val_x' in globals():
+    val_x = resize_preprocess(val_x, image_size, image_size, 'lanczos5')
+# Assuming train_x is defined and checking the number of channels
+number_channels = train_x.shape[3]
+print('Input shape of the X features data: ',train_x.shape)
+print('Input shape of the y label data: ',train_y.shape)
 print('Number of input channel extracted from X is: ',number_channels)
 
-history = main(X=X, Y=Y, X_val=X_val, Y_val=Y_val, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, Z=Z, Z_val=Z_val)
+history = main(X=train_x, Y=train_y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, epoch=num_epochs)

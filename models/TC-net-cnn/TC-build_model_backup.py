@@ -1,4 +1,3 @@
-
 # DESCRIPTION: This script utilizes TensorFlow to implement a (CNN) designed for correcting 
 #       TC intensity/structure from grided climate data, using the workflow inherited from the
 #       previous TC formation project (https://github.com/kieucq/tcg_deep_learning). The model 
@@ -50,6 +49,7 @@ from tensorflow.keras.callbacks import TensorBoard
 import argparse
 import os
 import re
+import json
 #
 # Edit the parameters properly before running this script
 #
@@ -67,6 +67,7 @@ def parse_args():
     parser.add_argument('--image_size', type=int, default=64, help='Size to resize the image to')
     parser.add_argument('--validation_year', nargs='+', type=int, default=[2014], help='Year(s) taken for validation')
     parser.add_argument('--test_year', nargs='+', type=int, default=[2017], help='Year(s) taken for test')
+    parser.add_argument('--config', type=str, default = 'model_core/test.json')
     return parser.parse_args()
 args = parse_args()
 learning_rate = args.learning_rate
@@ -80,6 +81,7 @@ root = args.root
 windowsize = list(args.windowsize)
 var_num = args.var_num
 st_embed = args.st_embed
+config_path = args.config
     
 windows = f'{windowsize[0]}x{windowsize[1]}'
 work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
@@ -91,6 +93,141 @@ model_name = f'{model_name}_{mode}{"_st" if st_embed else ""}'
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
+def load_json_config(path):
+    with open(path, 'r') as file:
+        return json.load(file)
+
+def apply_operation(x, op, inputs, flows, st_embed = False):
+    # Handle 'slice' operation
+    if op['type'] == 'slice':
+        if 'slice_range' not in op or not isinstance(op['slice_range'], list) or len(op['slice_range']) != 2:
+            raise ValueError("Invalid 'slice' operation configuration. 'slice_range' must be a list of two integers.")
+        return layers.Lambda(lambda x: x[:, :, :, op['slice_range'][0]:op['slice_range'][1]])(x)
+    
+    # Handle Conv2D
+    elif op['type'] == 'Conv2D':
+        return layers.Conv2D(**{k: v for k, v in op.items() if k != 'type'})(x)
+    
+    # Handle Concatenate
+    elif op['type'] == 'concatenate':
+        if 'inputs' not in op or not isinstance(op['inputs'], list):
+            raise ValueError("Invalid 'concatenate' operation configuration. 'inputs' must be a list of input names.")
+        # UPDATED: Look up tensors in both inputs and flows
+        concat_inputs = []
+        for item in op['inputs']:
+            if item in inputs:
+                concat_inputs.append(inputs[item])
+            elif item in flows:
+                concat_inputs.append(flows[item])
+            else:
+                raise ValueError(f"Cannot find '{item}' in either 'inputs' or 'flows'.")
+        print(concat_inputs)
+        return layers.concatenate(concat_inputs, axis=op.get('axis', -1))
+    
+    # Handle Flatten
+    elif op['type'] == 'Flatten':
+        return layers.Flatten()(x)
+    
+    # Handle Dense
+    elif op['type'] == 'Dense':
+        return layers.Dense(**{k: v for k, v in op.items() if k != 'type'})(x)
+    
+    # Handle Data Augmentation
+    elif op['type'] == 'RandomRotation':
+        if 'factor' not in op:
+            raise ValueError("RandomRotation requires a 'factor' parameter.")
+        return layers.RandomRotation(factor=op['factor'])(x)
+    elif op['type'] == 'RandomZoom':
+        if 'factor' not in op:
+            raise ValueError("RandomZoom requires a 'factor' parameter.")
+        return layers.RandomZoom(height_factor=op['factor'], width_factor=op['factor'])(x)
+
+    # Handle MaxPooling2D
+    elif op['type'] == 'MaxPooling2D':
+        return layers.MaxPooling2D(**{k: v for k, v in op.items() if k != 'type'})(x)
+
+    elif op['type'] == 'RandomFlip':
+        if 'mode' not in op:
+            raise ValueError("RandomFlip requires a 'mode' parameter ('horizontal', 'vertical', or 'horizontal_and_vertical').")
+        return layers.RandomFlip(mode=op['mode'])(x)
+
+    elif op['type'] == 'BatchNormalization':
+        # Typically no parameters are needed, but you can pass parameters like momentum and epsilon if specified
+        bn_params = {k: v for k, v in op.items() if k != 'type'}
+        return layers.BatchNormalization(**bn_params)(x)
+
+    elif op['type'] == 'Dropout':
+        if 'rate' not in op:
+            raise ValueError("Dropout requires a 'rate' parameter.")
+        return layers.Dropout(rate=op['rate'])(x)
+
+    # Handle Conditional Operation
+    elif op['type'] == 'conditional':
+        if op['condition'] == 'st_embed':
+            # Instead of looking in inputs, just check the st_embed flag
+            branch = op['true_branch'] if st_embed else op['false_branch']
+            for sub_op in branch:
+                x = apply_operation(x, sub_op, inputs, flows)
+        return x
+
+    elif op['type'] == 'Input':
+        # Register a new input based on configuration specified in the operation
+        if 'name' in op and 'shape' in op:
+            inputs[op['name']] = keras.Input(shape=op['shape'], name=op['name'])
+            return inputs[op['name']]
+        else:
+            raise ValueError("Input operation must specify 'name' and 'shape'.")
+
+    else:
+        raise ValueError(f"Unsupported operation type: {op['type']}")
+
+def build_model_from_json(config, st_embed=False):
+    # Collect the initial inputs
+    inputs = {
+        inp['name']: keras.Input(shape=inp['shape'], name=inp['name'])
+        for inp in config['inputs']
+        if not inp.get('optional', False) or (inp.get('optional') and inp.get('use_if') == 'st_embed' and st_embed)
+    }
+
+    # Dictionary to store intermediate flow outputs
+    flows = {}
+
+    for flow in config['process_flows']:
+        print("Processing flow: ", flow['name'])  # Debug print
+        if 'condition' in flow and flow['condition'] == 'st_embed' and not st_embed:
+            print("Skipping flow due to condition: ", flow['name'])  # Debug skip message
+            continue
+        
+        # Check if this flow has a single 'input' or multiple 'inputs'
+        if 'input' in flow:
+            if flow['input'] in flows:
+                x = flows[flow['input']]
+            elif flow['input'] in inputs:
+                x = inputs[flow['input']]
+            else:
+                raise ValueError(f"Input {flow['input']} not found in inputs or flows.")
+        else:
+            # If multiple inputs, gather them from flows
+            x = [flows[inp] for inp in flow['inputs'] if inp in flows]
+            if len(x) != len(flow['inputs']):
+                missing_inputs = set(flow['inputs']) - set(flows.keys())
+                raise ValueError(f"Missing required inputs: {missing_inputs}")
+
+        print("Input to operations: ", x)  # Debug print to check inputs before operations
+        # Apply each operation
+        for op in flow['operations']:
+            x = apply_operation(x, op, inputs, flows, st_embed = st_embed)  # Pass flows here
+
+        # Store the resulting tensor in flows dictionary
+        flows[flow['name']] = x
+        print("Output of flow stored: ", flow['name'])  # Confirm output is stored
+
+    # Build the final model using the last flow as output
+    model = keras.Model(inputs=list(inputs.values()), 
+                        outputs=flows[config['process_flows'][-1]['name']])
+    print("Model built successfully.")  # Confirm model build completion
+    return model
+
 def mode_switch(mode):
     switcher = {
         'VMAX': 0,
@@ -282,57 +419,17 @@ def normalize_Z(Z):
 # Model
 #==============================================================================================
 def main(X, Y, X_val, Y_val, loss='huber', activ='relu', NAME='best_model', st_embed=False, Z=None, Z_val=None, batch_size = batch_size, epoch = num_epochs):
-    data_augmentation = keras.Sequential([
-        layers.RandomRotation(0.1),
-        layers.RandomZoom(0.2)
-    ])
-    print('--> Running configuration: ', NAME)
-
-    inputs = keras.Input(shape=X.shape[1:])
-    x = data_augmentation(inputs)
-    x = layers.Conv2D(filters=128, kernel_size=15, padding='same', activation=activ, name="my_conv2d_11")(x)
-    x = layers.MaxPooling2D(pool_size=2, name="my_pooling_1")(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Conv2D(filters=64, kernel_size=15, padding='same', activation=activ, name="my_conv2d_2")(x)
-    x = layers.MaxPooling2D(pool_size=2, name="my_pooling_2")(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Conv2D(filters=256, kernel_size=9, padding='same', activation=activ, name="my_conv2d_3")(x)
-    x = layers.MaxPooling2D(pool_size=2, name="my_pooling_3")(x)
-    x = layers.Conv2D(filters=512, kernel_size=5, padding='same', activation=activ, name="my_conv2d_4")(x)
-    x = layers.Conv2D(filters=512, kernel_size=5, padding='valid', activation=activ, name="my_conv2d_5")(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Flatten(name="my_flatten")(x)
-    x = layers.Dropout(0.4)(x)
-
-    if st_embed:
-        if Z is not None:
-            # Assuming Z has shape (batch_size, 4), concatenate with flattened output
-            z_input = keras.Input(shape=(4,), name="Z_input")
-            x = layers.Concatenate()([x, z_input])  # Concatenate flattened output with Z
-        else:
-            raise ValueError("Z must be provided if st_embed is True.")
+    config = load_json_config(config_path)
+    model = build_model_from_json(config, st_embed=st_embed)
     
-    for _ in range(2):
-        x = layers.Dense(512 - _ * 200, activation=activ)(x)
-
-    outputs = layers.Dense(1, activation=activ, name="my_dense")(x)
-    #model = keras.Model(inputs=inputs, outputs=outputs,
-     #                  metrics = [mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)])
-    model = keras.Model(inputs=inputs, outputs=outputs)
+    # Include `z_input` in the inputs
     model.compile(
-    optimizer='adam',
-    loss='huber',
-    metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
-)
-    if st_embed:
-       # model = keras.Model(inputs=[inputs, z_input], outputs=outputs,
-        #                   metrics = [mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)])
-       model = keras.Model(inputs=[inputs, z_input], outputs=outputs)
-       model.compile(
-    optimizer='adam',
-    loss='huber',
-    metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
-)
+        optimizer='adam',
+        loss='huber',
+        metrics=[mae_for_output(i) for i in range(1)] + [rmse_for_output(i) for i in range(1)]
+    )
+    
+    # Redefine the model with updated inputs and outputs
     model.summary()
     callbacks = [
         keras.callbacks.ModelCheckpoint(NAME, save_best_only=True),

@@ -1,0 +1,381 @@
+Guide to Building a JSON Configuration File for Model Construction
+===================================================================
+
+This guide explains how to create a JSON configuration file that works with the custom
+functions for building a Keras model. The JSON file serves as a blueprint to define model 
+inputs and the flow of operations (layers) that form the final network architecture.
+
+----------------------------------------------------------------------
+1. Overall Structure
+----------------------------------------------------------------------
+The JSON file consists of two main sections:
+  - "inputs": An array defining the model’s input tensors.
+  - "process_flows": An array defining sequential flows (or stages) where operations 
+    are applied to build the model.
+
+The final model is built using the output of the last process flow.
+
+----------------------------------------------------------------------
+2. Defining Inputs
+----------------------------------------------------------------------
+Each entry in the "inputs" array is an object with the following keys:
+
+Required Keys:
+  - "name": A unique identifier for the input.
+  - "shape": A list representing the input tensor shape (excluding the batch dimension).
+
+Optional Keys:
+  - "optional": (Boolean) If true, the input is included only under a specific condition.
+  - "use_if": (String) The condition (e.g., "st_embed") that must be true for the input 
+             to be used.
+
+Example:
+---------
+"inputs": [
+    {
+        "name": "image_input",
+        "shape": [224, 224, 3]
+    },
+    {
+        "name": "metadata_input",
+        "shape": [10],
+        "optional": true,
+        "use_if": "st_embed"
+    }
+]
+
+----------------------------------------------------------------------
+3. Defining Process Flows
+----------------------------------------------------------------------
+The "process_flows" section is an array where each element defines a flow. Each flow
+specifies:
+  - "name": A unique identifier for the flow, name it whatever you like.
+  - "input" or "inputs": The starting tensor(s) for this flow. This can refer to an input 
+    defined in the "inputs" section or a previously processed flow. NAME OF THE FEEDING LAYER,
+    if you want to feed layer N1 to layer N3 then in layer N3, you would have its input N1.
+  - "operations": An ordered list of operations (detailed in the next section) that are applied 
+    sequentially.
+
+Optional:
+  - "condition": For example, "st_embed". If present and the condition is not met, the entire 
+    flow is skipped. EVEN IF SKIPPED, THE NAME OF THIS LAYER CAN STILL BE USED FOR THE NEXT LAYER,
+    AND THE THE NEXT LAYER WILL INHERIT THIS LAYER'S INPUT.
+
+Example:
+---------
+{
+    "name": "conv_block",
+    "input": "image_input",
+    "operations": [
+        {
+            "type": "Conv2D",
+            "filters": 32,
+            "kernel_size": [3, 3],
+            "activation": "relu",
+            "padding": "same"
+        },
+        {
+            "type": "MaxPooling2D",
+            "pool_size": [2, 2]
+        }
+    ]
+}
+
+----------------------------------------------------------------------
+4. Defining Operations
+----------------------------------------------------------------------
+Each operation is a JSON object with a "type" key and other parameters required for that
+operation. Below are the supported operations, along with examples and important notes.
+
+A. "slice" Operation
+---------------------
+- Purpose: Extract a slice of the tensor along the last dimension.
+- Required Keys:
+  - "type": "slice"
+  - "slice_range": A list of exactly two integers [start, end].
+Example:
+{
+    "type": "slice",
+    "slice_range": [0, 16]
+}
+Note: Must be a list of two integers.
+
+B. "Conv2D" Operation
+---------------------
+- Purpose: Applies a 2D convolution.
+- Required Key: "type": "Conv2D"
+- Additional Parameters: Any accepted by tf.keras.layers.Conv2D (e.g., "filters", "kernel_size",
+  "activation", "padding").
+Example:
+{
+    "type": "Conv2D",
+    "filters": 64,
+    "kernel_size": [3, 3],
+    "activation": "relu",
+    "padding": "same"
+}
+Note: Parameter names must exactly match TensorFlow expectations (e.g., "relu" in lowercase).
+
+C. "concatenate" Operation
+--------------------------
+- Purpose: Concatenates tensors along a specified axis.
+- Required Keys:
+  - "type": "concatenate"
+  - "inputs": A list of names referring to existing tensors.
+- Optional Key:
+  - "axis": The axis along which to concatenate (default is -1).
+Example:
+{
+    "type": "concatenate",
+    "inputs": ["conv_block", "metadata_input"],
+    "axis": -1
+}
+Note: Ensure all referenced names exist in previous flows or inputs.
+
+D. "Flatten" Operation
+----------------------
+- Purpose: Flattens the tensor into a 1D vector.
+- Required Key: "type": "Flatten"
+Example:
+{
+    "type": "Flatten"
+}
+
+E. "Dense" Operation
+--------------------
+- Purpose: Applies a fully-connected (dense) layer.
+- Required Key: "type": "Dense"
+- Additional Parameters: Any accepted by tf.keras.layers.Dense (e.g., "units", "activation").
+Example:
+{
+    "type": "Dense",
+    "units": 128,
+    "activation": "relu"
+}
+
+F. Data Augmentation Operations
+---------------------------------
+1. "RandomRotation"
+   - Required Keys:
+     - "type": "RandomRotation"
+     - "factor": A numeric value for the rotation factor.
+   Example:
+   {
+       "type": "RandomRotation",
+       "factor": 0.2
+   }
+
+2. "RandomZoom"
+   - Required Keys:
+     - "type": "RandomZoom"
+     - "factor": A numeric value (used for both height and width zoom).
+   Example:
+   {
+       "type": "RandomZoom",
+       "factor": 0.1
+   }
+
+G. "MaxPooling2D" Operation
+---------------------------
+- Purpose: Applies 2D max pooling.
+- Required Key: "type": "MaxPooling2D"
+- Additional Parameters: As accepted by tf.keras.layers.MaxPooling2D (e.g., "pool_size").
+Example:
+{
+    "type": "MaxPooling2D",
+    "pool_size": [2, 2]
+}
+
+H. "RandomFlip" Operation
+-------------------------
+- Purpose: Randomly flips the input.
+- Required Keys:
+  - "type": "RandomFlip"
+  - "mode": Must be one of "horizontal", "vertical", or "horizontal_and_vertical".
+Example:
+{
+    "type": "RandomFlip",
+    "mode": "horizontal"
+}
+
+I. "BatchNormalization" Operation
+-----------------------------------
+- Purpose: Applies batch normalization.
+- Required Key: "type": "BatchNormalization"
+- Optional Parameters: e.g., "momentum", "epsilon".
+Example:
+{
+    "type": "BatchNormalization",
+    "momentum": 0.99,
+    "epsilon": 0.001
+}
+
+J. "Dropout" Operation
+----------------------
+- Purpose: Applies dropout to the input.
+- Required Keys:
+  - "type": "Dropout"
+  - "rate": A numeric value (0 to 1) specifying the dropout rate.
+Example:
+{
+    "type": "Dropout",
+    "rate": 0.5
+}
+
+K. "conditional" Operation
+--------------------------
+- Purpose: Chooses between two branches of operations based on a condition.
+- Required Keys:
+  - "type": "conditional"
+  - "condition": Currently supports "st_embed".
+  - "true_branch": List of operations if condition is true.
+  - "false_branch": List of operations if condition is false.
+Example:
+{
+    "type": "conditional",
+    "condition": "st_embed",
+    "true_branch": [
+        {
+            "type": "Dense",
+            "units": 64,
+            "activation": "relu"
+        }
+    ],
+    "false_branch": [
+        {
+            "type": "Dense",
+            "units": 32,
+            "activation": "relu"
+        }
+    ]
+}
+Note: Operations in the branches are applied sequentially.
+
+L. "Input" Operation
+--------------------
+- Purpose: Registers a new input tensor within a flow.
+- Required Keys:
+  - "type": "Input"
+  - "name": The name of the input.
+  - "shape": The shape of the input tensor.
+Example:
+{
+    "type": "Input",
+    "name": "aux_input",
+    "shape": [20]
+}
+Note: This new input is stored in the "inputs" dictionary for further use.
+
+----------------------------------------------------------------------
+5. Complete Example JSON Configuration
+----------------------------------------------------------------------
+Below is a complete example that combines multiple inputs, process flows, and operations.
+
+{
+    "inputs": [
+        {
+            "name": "image_input",
+            "shape": [224, 224, 3]
+        },
+        {
+            "name": "metadata_input",
+            "shape": [10],
+            "optional": true,
+            "use_if": "st_embed"
+        }
+    ],
+    "process_flows": [
+        {
+            "name": "conv_block",
+            "input": "image_input",
+            "operations": [
+                {
+                    "type": "Conv2D",
+                    "filters": 32,
+                    "kernel_size": [3, 3],
+                    "activation": "relu",
+                    "padding": "same"
+                },
+                {
+                    "type": "MaxPooling2D",
+                    "pool_size": [2, 2]
+                }
+            ]
+        },
+        {
+            "name": "feature_slice",
+            "input": "conv_block",
+            "operations": [
+                {
+                    "type": "slice",
+                    "slice_range": [0, 16]
+                }
+            ]
+        },
+        {
+            "name": "combined_features",
+            "inputs": ["feature_slice", "metadata_input"],
+            "operations": [
+                {
+                    "type": "concatenate",
+                    "inputs": ["feature_slice", "metadata_input"],
+                    "axis": -1
+                },
+                {
+                    "type": "Flatten"
+                },
+                {
+                    "type": "Dense",
+                    "units": 128,
+                    "activation": "relu"
+                },
+                {
+                    "type": "Dropout",
+                    "rate": 0.5
+                }
+            ]
+        },
+        {
+            "name": "conditional_dense",
+            "input": "combined_features",
+            "operations": [
+                {
+                    "type": "conditional",
+                    "condition": "st_embed",
+                    "true_branch": [
+                        {
+                            "type": "Dense",
+                            "units": 64,
+                            "activation": "relu"
+                        }
+                    ],
+                    "false_branch": [
+                        {
+                            "type": "Dense",
+                            "units": 32,
+                            "activation": "relu"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+----------------------------------------------------------------------
+6. Important Considerations
+----------------------------------------------------------------------
+- **Type and Value Validations:**  
+  - Ensure that lists (e.g., "slice_range" and "kernel_size") are provided in the correct format.
+  - Numeric parameters (e.g., dropout rate, rotation factor) must be within valid ranges.
+
+- **Parameter Naming:**  
+  - Use parameter names exactly as required by TensorFlow/Keras (e.g., "relu" must be lowercase).
+
+- **Order of Flows:**  
+  - Process flows are executed sequentially. Each flow's "input" or "inputs" must refer to a tensor defined in an earlier flow or in "inputs".
+
+- **Error Handling:**  
+  - Misconfigured or missing keys will trigger a ValueError. Double-check your JSON structure.
+
+By following this guide, you can build a JSON configuration file that matches the requirements of the provided model-building functions.
