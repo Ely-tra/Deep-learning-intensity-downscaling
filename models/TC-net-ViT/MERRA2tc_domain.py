@@ -443,7 +443,7 @@ def merge_data(csvdataset, tc_name='', years='', minlat = -90.0, maxlat = 90.0, 
             formatted_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y%m%d%H')  # take YYYYMMDDHH format to build filename
             basin = window_df['BASIN']
             outname = outputpath
-            outname = outname + 'TC_domain_'+modelName+'/' + basin 
+            outname = outname + '/TC_domain/' + basin 
             if not os.path.exists(outname):
                 os.makedirs(outname)
             outname = outname + '/' + formatted_datetime[:4]
