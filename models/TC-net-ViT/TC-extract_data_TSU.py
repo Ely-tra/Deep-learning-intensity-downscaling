@@ -30,8 +30,6 @@
 #       - May 16, 2024: clean up and added more note by CK
 #       - Oct 19, 2024: added a list of vars to be processed by CK
 #       - Oct 26, 2024: added argument parsers by TN  
-#       - Nov 21, 2024: cleaned up by CK
-#
 # AUTH: Minh Khanh Luong @ Indiana University Bloomington (email: kmluong@iu.edu)
 #==========================================================================================
 print('Initiating.', flush=True)
@@ -46,24 +44,23 @@ from datetime import datetime
 import argparse
 import re
 
+#####################################################################################
 # Arguments parser, arguments processing
+#####################################################################################
 def get_args():
     parser = argparse.ArgumentParser(description='Process MERRA2 data for TC domain.')
-    parser.add_argument('--inputpath', type=str, 
-                        default='/N/project/Typhoon-deep-learning/output/TC_domain/', 
-                        help='Path to the input data directory')
-    parser.add_argument('--workdir', type=str, default='/N/project/Typhoon-deep-learning/output/', 
-                        help='Working directory path')
-    parser.add_argument('--windowsize', type=int, nargs=2, default=[19, 19], 
-                        help='Window size as two integers (e.g., 19 19)')
-    parser.add_argument('--force_rewrite', action='store_true', 
-                        help='Overwrite previous dataset if this flag is set')
-    parser.add_argument('--list_vars', type=str, nargs='+', 
-                        default=['U850', 'V850', 'T850', 'RH850', 'U950', 'V950', 'T950', 
-                                 'RH950', 'U750', 'V750', 'T750', 'RH750', 'SLP750'],
+    parser.add_argument('--workdir', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Working directory path')
+    parser.add_argument('--windowsize', type=int, nargs=2, default=[19, 19], help='Window size as two integers (e.g., 19 19)')
+    parser.add_argument('--force_rewrite', type=bool, default=False, help='Overwrite previous dataset if this flag is set')
+    parser.add_argument('--list_vars', type=str, nargs='+', default=['U850', 'V850', 'T850', 'RH850', 'U950', 'V950', 'T950', 'RH950', 'U750', 'V750', 'T750', 'RH750', 'SLP750'],
                         help='List of variables with levels, formatted as VarLevel (e.g., "V950")')
     return parser.parse_args()
-
+args = get_args()
+workdir = args.workdir  # Take working directory from command-line argument
+inputpath = os.path.join(workdir,'TC_domain')  # Take input path from command-line argument
+windowsize = args.windowsize  # Take window size from command-line argument
+force_rewrite = args.force_rewrite  # Overwrite previous dataset option
+list_vars = args.list_vars
 def split_var_level(list_vars):
     """
     Splits each element in a list of combined variable-level strings into separate components.
@@ -77,14 +74,15 @@ def split_var_level(list_vars):
                              Example: ["U850", "V850", "T850"]
 
     Returns:
-    list of tuples: A list of tuples, where each tuple contains the variable as a string 
+    list of tuples: A list of tuples, where each tuple contains the alphabetic variable as a string 
                     and the level as an integer.
                     Example: [('U', 850), ('V', 850), ('T', 850)]
 
     Example:
-    >>> list_vars_input = ['U850', 'V850', 'T850', 'RH850', 'SLP750']
+    >>> list_vars_input = ['U850', 'V850', 'T850', 'RH850', 'U950', 'V950', 'T950', 'RH950', 'U750', 'V750', 'T750', 'RH750', 'SLP750']
     >>> split_var_level(list_vars_input)
-    [('U', 850), ('V', 850), ('T', 850), ('RH', 850), ('SLP', 750)]
+    [('U', 850), ('V', 850), ('T', 850), ('RH', 850), ('U', 950), ('V', 950), ('T', 950), ('RH', 950),
+     ('U', 750), ('V', 750), ('T', 750), ('RH', 750), ('SLP', 750)]
     """
     result = []
     pattern = re.compile(r"([a-zA-Z]+)(\d+)")
@@ -97,6 +95,11 @@ def split_var_level(list_vars):
             result.append((var, level))
     return result
 
+list_vars = split_var_level(list_vars)
+var_num = len(list_vars)
+#####################################################################################
+# DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
+#####################################################################################
 def build_data_array(data, var_levels):
     arrays = []
 
@@ -117,7 +120,6 @@ def build_data_array(data, var_levels):
     data_array_x = np.stack(arrays, axis = 0)
     
     return data_array_x
-
 def convert_date_to_cyclic(date_str):
     """
     Convert a date in 'YYYYMMDD' format to a cyclic representation using sine and cosine.
@@ -250,36 +252,32 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
     print(f'Total {i} dataset processed.', flush=True)
     print(f'With {omit} dataset omitted due to NaNs.', flush=True)
 
+
+
 # MAIN CALL:
 if __name__ == "__main__":
     print('Initiating.', flush=True)
     print('Initiation completed.', flush=True)
 
-    args = get_args()
-    inputpath = args.inputpath 
-    workdir = args.workdir  
-    windowsize = args.windowsize 
-    force_rewrite = args.force_rewrite  # Overwrite previous dataset option
-    list_vars = args.list_vars
-    list_vars = split_var_level(list_vars)
-    var_num = len(list_vars)
     outputpath = os.path.join(workdir, f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')
-
+    if not os.path.exists(outputpath):
+        os.makedirs(outputpath, exist_ok=True)
+        print(f"Created directory: {outputpath}")
     if not os.path.exists(inputpath):
-        print(f"Does not have input data from Step 1....exit {inputpath}")
+        print(f"Must have the input data from Step 1 by now....exit {inputpath}")
         exit()
 
     # Check if output directory is empty
     directory_empty = True  # Assume directory is empty until proven otherwise
-    if os.path.exists(outputpath):
+    try:
         for entry in os.scandir(outputpath):
             if entry.is_file():
                 print(f"Output directory '{outputpath}' is not empty. Data has been processed before.", flush=True)
                 directory_empty = False
                 break
-    else:
-        print(f"Directory {outputpath} does not exist. Create one")
-        os.makedirs(outputpath)
+    except Exception as e:
+        print(f"Error checking directory contents: {str(e)}")
+        exit()
 
     if not directory_empty:
         if force_rewrite:
