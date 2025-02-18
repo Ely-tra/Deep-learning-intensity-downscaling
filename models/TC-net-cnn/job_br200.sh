@@ -141,7 +141,10 @@ if [ "${build[0]}" -eq 1 ]; then
         -tew $test_exp_wrf \
         -r_split $random_split \
         -test_pc $test_pc \
-        -val_pc $val_pc
+        -val_pc $val_pc \
+        -wrf_eid $experiment_identification \
+        -wrf_ix $imsize_variables \
+        -wrf_iy $imsize_labels
         
 fi
 
