@@ -27,7 +27,7 @@ build=(1 1 1)  # Control execution for Builder related scripts
 mode='VMAX'  # Operation mode (VMAX: maximum sustained wind speed, PMIN: minimum pressure, RMW: radius of maximum winds)
 workdir='/N/slate/kmluong/TC-net-cnn_workdir/'  # Directory for output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to best track data
-data_source='MERRA2'  # Data source to be used, MERRA2/WRF
+data_source='WRF'  # Data source to be used, MERRA2/WRF
 val_pc=20 # Percentage of training data reserved for validation, will be used if no validation set is specified, or MERRA2 random split is enabled
 if [ "$data_source" = "MERRA2" ]; then
     wrf=0  # Sets all elements in the merra control array to 0
@@ -55,7 +55,7 @@ random_split=1 # Use val_pc and test_pc instead of year.
 # WRF (Weather Research and Forecasting) CONFIGURATION
 # Configuration for WRF model data handling.
 # ===============================================================================================================================================
-experiment_identification='H18l18'  # Identifier for the experiment
+experiment_identification='H18h18'  # Identifier for the experiment
 imsize_variables="64 64"  # Image size for variables
 imsize_labels="64 64"  # Image size for labels
 wrf_base="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base path for WRF data
@@ -66,13 +66,13 @@ test_exp_wrf=5
 # Settings for the neural network model.
 # ===============================================================================================================================================
 temporary_folder='/N/slate/kmluong/TC-net-cnn_workdir/'  # Temporary folder for intermediate data
-model_name='H18l18'  # Core name of the model, automatic naming is not supported, so to save multiple models, users need to assign model names manually
+model_name='H18h18'  # Core name of the model, automatic naming is not supported, so to save multiple models, users need to assign model names manually
 learning_rate=0.0001
 batch_size=256  # Batch size for training
 num_epochs=300  # Number of training epochs
 image_size=64  # Size of the input images for the model
 config='model_core/77.json'  # Path to the model configuration file
-text_report_name='H18l18.txt'  # Filename for the text report, will be saved under workdir/text_report
+text_report_name='H18h18.txt'  # Filename for the text report, will be saved under workdir/text_report
 
 # Now the variables and settings from var_control.sh are available to use in this script
 echo "Data source is set to $data_source"
@@ -172,7 +172,8 @@ if [ "${build[2]}" -eq 1 ]; then
         --model_name $model_name \
         -temp ${temporary_folder} \
         -ss ${data_source} \
-        -tid "$temp_id"
+        -tid "$temp_id" \
+        --text_report_name $text_report_name
 fi
 
 #find "$workdir/temp/" -type f -name "*$temp_id*" -delete

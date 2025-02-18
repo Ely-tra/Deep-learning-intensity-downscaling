@@ -232,7 +232,6 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
     distance_km = np.sqrt(dist_x**2 + dist_y**2) * output_resolution
 
     y = np.array([[max_wind_speed, min_psfc, distance_km]])
-
     return final_result, y
 #exp_dirs = ["exp_18km_m05"]
 def natural_sort_key(s):
@@ -385,6 +384,8 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
         
         # Extract core variables.
         result, y = extract_core_variables(ds1, ds2, imsize1=imsize_x, imsize2=imsize_y, var_levels=var_levels)
+        if y[0,0]==0 or y[0,0]==1:
+            continue
         # Extract m_id from key (assumed to be the first element of the key tuple).
         m_id = key[0]
         
