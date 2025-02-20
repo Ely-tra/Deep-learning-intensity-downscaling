@@ -8,8 +8,8 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser(description='Extract WRF data.')
     parser.add_argument('-exp_id', '--experiment_identification', type=str, default = 'H18h18', help = 'Experiment ID code')
-    parser.add_argument('-iy', '--imsize_variables', type=int, nargs=2, default = [64,64], help='Image size after extraction')
-    parser.add_argument('-ix', '--imsize_labels', type=int, nargs=2, default = [64,64], help='Extractor domain for y')
+    parser.add_argument('-ix', '--imsize_variables', type=int, nargs=2, default = [64,64], help='Image size after extraction')
+    parser.add_argument('-iy', '--imsize_labels', type=int, nargs=2, default = [64,64], help='Extractor domain for y')
     parser.add_argument('-r', '--root', type=str, default = '/N/project/Typhoon-deep-learning/output/', help='Output directory')
     parser.add_argument('-b', '--wrf_base', type=str, default = "/N/project/Typhoon-deep-learning/data/tc-wrf/" , help='Read from')
     parser.add_argument('-vl', '--var_levels', type=str, nargs='+', 
@@ -114,6 +114,7 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64), output_
     # Calculate distance in km between max wind speed and min pressure locations
     max_wind_loc = np.unravel_index(np.argmax(wind_speed.values, axis=None), wind_speed.shape)
     min_psfc_loc = np.unravel_index(np.argmin(psfc_ds2.values, axis=None), psfc_ds2.shape)
+    print(wind_speed.shape, psfc_ds2.shape, flush=True)
     dist_x = np.abs(max_wind_loc[1] - min_psfc_loc[1])
     dist_y = np.abs(max_wind_loc[0] - min_psfc_loc[0])
     distance_km = np.sqrt(dist_x**2 + dist_y**2) * output_resolution
@@ -128,7 +129,8 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
     """
     Extract core variables from ds1 and compute the target array y from ds2.
 
-    Parameters:
+    Parameter
+s:
         ds1 (xarray.Dataset): Dataset from which to extract the multi‐channel input.
         ds2 (xarray.Dataset): Dataset from which to compute y (e.g., wind and surface pressure metrics).
         imsize1 (tuple): (width, height) for ds1 extraction.
@@ -227,10 +229,9 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
 
     max_wind_loc = np.unravel_index(np.argmax(wind_speed.values, axis=None), wind_speed.shape)
     min_psfc_loc = np.unravel_index(np.argmin(psfc_ds2.values, axis=None), psfc_ds2.shape)
-    dist_x = np.abs(max_wind_loc[1] - min_psfc_loc[1])
-    dist_y = np.abs(max_wind_loc[0] - min_psfc_loc[0])
+    dist_x = np.abs(max_wind_loc[2] - min_psfc_loc[2])
+    dist_y = np.abs(max_wind_loc[1] - min_psfc_loc[1])
     distance_km = np.sqrt(dist_x**2 + dist_y**2) * output_resolution
-
     y = np.array([[max_wind_speed, min_psfc, distance_km]])
     return final_result, y
 #exp_dirs = ["exp_18km_m05"]
@@ -411,6 +412,7 @@ def process_eid(eid, base_path, imsize_x, imsize_y, root):
         # Save the concatenated arrays.
         np.save(os.path.join(root, x_filename), concatenated_result)
         np.save(os.path.join(root, y_filename), concatenated_y)
+        np.savetxt(os.path.join(root, f"{y_filename}.txt"), concatenated_y, fmt="%.6f")
         print(f"Saved concatenated {x_filename} and {y_filename} in {root}.")
 
     print("All m_id directories have been processed and saved with concatenated data.")
