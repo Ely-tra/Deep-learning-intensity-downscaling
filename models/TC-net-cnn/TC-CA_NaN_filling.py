@@ -59,13 +59,34 @@ def get_args():
     parser.add_argument("--windowsize", type=int, nargs=2, default=[19, 19], help="Window size for filling method [width, height].")
     parser.add_argument("--var_num", type=int, default=13, help="Number of variables.")
     args = parser.parse_args()
+    parser.add_argument("--channel_map", type=str, default="0,1:0,1,2,3;4,5:4,5,6,7;8,9:8,9,10,11", help="Mapping of reference channels to channels that need fixing.")
+    args = parser.parse_args()
     return args
 
-# Example usage:
-args = get_args()
+
+
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
+def parse_channel_map(channel_map_str):
+    """
+    Parse the channel mapping string into a dictionary.
+    
+    Example input: "0,1:0,1,2,3;4,5:4,5,6,7"
+    Returns: { (0, 1): [0, 1, 2, 3], (4, 5): [4, 5, 6, 7] }
+    """
+    mapping = {}
+    groups = channel_map_str.split(';')
+    for group in groups:
+        try:
+            ref_str, fix_str = group.split(':')
+            ref_channels = tuple(int(x) for x in ref_str.split(','))
+            fix_channels = [int(x) for x in fix_str.split(',')]
+            mapping[ref_channels] = fix_channels
+        except Exception as e:
+            raise ValueError(f"Invalid channel mapping format: {group}") from e
+    return mapping
+    
 def calfield(array):
     """
     Calculate the normalized vector field from a given array.
@@ -268,7 +289,7 @@ def fill_nan(array):
 
     array = array[:, 1:-1, 1:-1]
     return array
-
+'''
 def fix_data(file):
     """
     Fixes NaN values in the data stored in the given file using the fill_nan function.
@@ -292,16 +313,49 @@ def fix_data(file):
                 xa[i,j*4:4*j+5] = fill_nan(xa[i,j*4:4*j+5])
     #print(np.sum(np.isnan(xa)), flush=True)
     np.save(file[:-4]+'fixed'+'.npy', xa)
+'''
+def fix_data(file, channel_mapping):
+    """
+    Fixes NaN values in the data stored in the given file using the fill_nan function
+    and a user-specified channel mapping.
+    
+    Parameters:
+    - file: str
+        The file path for the data.
+    - channel_mapping: dict
+        Dictionary where keys are tuples of reference channel indices and
+        values are lists of channels to fix (which include the reference channels).
+        
+        For example: { (0, 1): [0, 1, 2, 3], (4, 5): [4, 5, 6, 7] }
+        
+    Returns:
+    - None
+    """
+    xa = np.load(file)
+    # Iterate over each sample in the file
+    for i in range(len(xa)):
+        # Only process samples with NaN values
+        if np.isnan(np.sum(xa[i])):
+            # For each channel mapping group...
+            for ref_channels, fix_channels in channel_mapping.items():
+                # Extract the group data; this should have shape (n_channels, height, width)
+                group_data = xa[i, fix_channels, ...]
+                # Fix the NaNs using the existing fill_nan function
+                fixed_group = fill_nan(group_data)
+                # Place the fixed data back into the original array
+                xa[i, fix_channels, ...] = fixed_group
+    # Save the fixed data file (appending 'fixed' to the file name)
+    np.save(file[:-4] + 'fixed' + '.npy', xa)
 #
 # MAIN CALL: 
 #
 def main():
-
+    args = get_args()
     # Initialize parameters
     workdir = args.workdir
     windowsize = list(args.windowsize)
     var_num = args.var_num
-
+    channel_mapping = parse_channel_map(args.channel_map)
     windows = f"{windowsize[0]}x{windowsize[1]}"
     root = f"{workdir}/exp_{var_num}features_{windows}/"
     pattern = f"{root}**/features*.npy"
@@ -311,7 +365,7 @@ def main():
         print("Checking: ", file)
         if 'fixed' in file:
             continue
-        fix_data(file)
+        fix_data(file, channel_mapping)
 
     print('Processing completed.')
 
