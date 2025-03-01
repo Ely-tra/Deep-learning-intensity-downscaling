@@ -52,6 +52,7 @@ windowsize_y=18  # Window size along the y-axis (degree)
 validation_years=(2014)  # Years used for validation
 test_years=(2017)  # Years used for testing
 random_split=1 # Use val_pc and test_pc instead of year.
+nan_fill_map="0,1:0,1,2,3;4,5:4,5,6,7;8,9:8,9,10,11"
 # ===============================================================================================================================================
 # WRF (Weather Research and Forecasting) CONFIGURATION
 # Configuration for WRF model data handling.
@@ -113,7 +114,8 @@ if [ "${merra[2]}" -eq 1 ]; then
     python TC-CA_NaN_filling.py \
         --workdir "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
-        --var_num "$var_num"
+        --var_num "$var_num" \
+        --channel_map =$nan_fill_map
 fi
 
 # ===============================================================================================================================================
