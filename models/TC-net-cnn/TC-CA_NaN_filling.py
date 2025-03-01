@@ -357,7 +357,7 @@ def main():
     var_num = args.var_num
     channel_mapping = parse_channel_map(args.channel_map)
     windows = f"{windowsize[0]}x{windowsize[1]}"
-    root = os.path.join(workdir, 'Domain_data', f'exp_{var_num}features_{windows}')
+    root = os.path.join(workdir, 'Domain_data', f'exp_{var_num}features_{windows}/')
     pattern = f"{root}**/features*.npy"
 
     # Find and process the files
