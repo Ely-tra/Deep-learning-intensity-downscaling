@@ -181,130 +181,139 @@ def extract_bound(array):
     bound = np.logical_or(s1, np.logical_or(s2, np.logical_or(s3, s4)))
     return bound
 
-def fill4(array, ref, fix):
+def fill4(array):
     """
     Fills NaN values in the input array with a 4-cell pattern.
-    Uses the first referenced channel (index 0 of ref) for boundary extraction and
-    the reference channels (array[ref]) for vector (wind) calculation.
-    Only channels in fix are modified.
-    
+
     Parameters:
-    - array: numpy array of shape (n_channels, H, W)
-    - ref: list/tuple of indices for reference channels (e.g., [0, 1])
-    - fix: list/tuple of indices for channels that need fixing (e.g., [0, 1, 2, 3])
-    
+    - array: numpy array
+
     Returns:
-    - array: numpy array with some NaN values filled.
+    - numpy array
     """
-    bound = extract_bound(array[ref[0]])
-    pattern = np.zeros(bound.shape)
-    pattern[1:-1, 1:-1] = pattern[1:-1, 1:-1]+ bound[1:-1, :-2] + bound[1:-1, 2:] + bound[:-2, 1:-1] + bound[2:, 1:-1]
-    nan4 = np.logical_and(pattern == 4, np.isnan(array[ref[0]]))
+    bound = extract_bound(array[0])
+    nan4 = np.zeros(bound.shape)
+    nan4[1:-1, 1:-1] = nan4[1:-1, 1:-1] + bound[1:-1, :-2] + bound[1:-1, 2:] + bound[:-2, 1:-1] + bound[2:, 1:-1]
+    nan4 = np.logical_and(nan4 == 4, np.isnan(array[0]))
+
     if np.sum(nan4) == 0:
         return array
 
-    # Calculate vector field once from the reference channels
-    vector = calfield(array[ref])
     for i in np.transpose(nan4.nonzero()):
-        weight = weight_field(vector[i[0]-1:i[0]+2, i[1]-1:i[1]+2])
-        for j in fix:
-            if np.isnan(array[j, i[0], i[1]]):
-                array[j, i[0], i[1]] = np.nansum(array[j, i[0]-1:i[0]+2, i[1]-1:i[1]+2] * weight)
+        vector = calfield(array)
+        weight = weight_field(vector[i[0] - 1:i[0] + 2, i[1] - 1:i[1] + 2])
+
+        for j in range(len(array) - 1):
+            array[j, i[0], i[1]] = np.nansum(array[j, i[0] - 1:i[0] + 2, i[1] - 1:i[1] + 2] * weight)
+
     return array
 
-def fill3(array, ref, fix):
+def fill3(array):
     """
     Fills NaN values in the input array with a 3-cell pattern.
-    Uses the first referenced channel (index 0 of ref) for boundary extraction and
-    the reference channels (array[ref]) for vector (wind) calculation.
-    Only channels in fix are modified.
-    
+
     Parameters:
-    - array: numpy array of shape (n_channels, H, W)
-    - ref: list/tuple of indices for reference channels (e.g., [0, 1])
-    - fix: list/tuple of indices for channels that need fixing (e.g., [0, 1, 2, 3])
-    
+    - array: numpy array
+
     Returns:
-    - array: numpy array with some NaN values filled.
+    - numpy array
     """
-    bound = extract_bound(array[ref[0]])
-    pattern = np.zeros(bound.shape)
-    pattern[1:-1, 1:-1] = pattern[1:-1, 1:-1] + bound[1:-1, :-2] + bound[1:-1, 2:] + bound[:-2, 1:-1] + bound[2:, 1:-1]
-    nan3 = np.logical_and(pattern == 3, np.isnan(array[ref[0]]))
+    bound = extract_bound(array[0])
+    nan3 = np.zeros(bound.shape)
+    nan3[1:-1, 1:-1] = nan3[1:-1, 1:-1] + bound[1:-1, :-2] + bound[1:-1, 2:] + bound[:-2, 1:-1] + bound[2:, 1:-1]
+    nan3 = np.logical_and(nan3 == 3, np.isnan(array[0]))
+
     if np.sum(nan3) == 0:
         return array
 
-    # Calculate vector field once from the reference channels
-    vector = calfield(array[ref])
     for i in np.transpose(nan3.nonzero()):
-        weight = weight_field(vector[i[0]-1:i[0]+2, i[1]-1:i[1]+2])
-        for j in fix:
-            if np.isnan(array[j, i[0], i[1]]):
-                array[j, i[0], i[1]] = np.nansum(array[j, i[0]-1:i[0]+2, i[1]-1:i[1]+2] * weight)
+        vector = calfield(array)
+        weight = weight_field(vector[i[0] - 1:i[0] + 2, i[1] - 1:i[1] + 2])
+
+        for j in range(len(array) - 1):
+            array[j, i[0], i[1]] = np.nansum(array[j, i[0] - 1:i[0] + 2, i[1] - 1:i[1] + 2] * weight)
+
     return array
 
-
-def fill2(array, ref, fix):
+def fill2(array):
     """
     Fills NaN values in the input array with a 2-cell pattern.
-    Uses the first referenced channel (index 0 of ref) for boundary extraction and
-    the reference channels (array[ref]) for vector (wind) calculation.
-    Only channels in fix are modified.
-    
+
     Parameters:
-    - array: numpy array of shape (n_channels, H, W)
-    - ref: list/tuple of indices for reference channels (e.g., [0, 1])
-    - fix: list/tuple of indices for channels that need fixing (e.g., [0, 1, 2, 3])
-    
+    - array: numpy array
+
     Returns:
-    - array: numpy array with some NaN values filled.
+    - numpy array
     """
-    bound = extract_bound(array[ref[0]])
-    pattern = np.zeros(bound.shape)
-    pattern[1:-1, 1:-1] = pattern[1:-1, 1:-1] + bound[1:-1, :-2] + bound[1:-1, 2:] + bound[:-2, 1:-1] + bound[2:, 1:-1]
-    nan2 = np.logical_and(pattern == 2, np.isnan(array[ref[0]]))
+    bound = extract_bound(array[0])
+    nan2 = np.zeros(bound.shape)
+    nan2[1:-1, 1:-1] = nan2[1:-1, 1:-1] + bound[1:-1, :-2] + bound[1:-1, 2:] + bound[:-2, 1:-1] + bound[2:, 1:-1]
+    nan2 = np.logical_and(nan2 == 2, np.isnan(array[0]))
+
     if np.sum(nan2) == 0:
         return array
 
-    # Calculate vector field once from the reference channels
-    vector = calfield(array[ref])
     for i in np.transpose(nan2.nonzero()):
-        weight = weight_field(vector[i[0]-1:i[0]+2, i[1]-1:i[1]+2])
-        for j in fix:
-            if np.isnan(array[j, i[0], i[1]]):
-                array[j, i[0], i[1]] = np.nansum(array[j, i[0]-1:i[0]+2, i[1]-1:i[1]+2] * weight)
+        vector = calfield(array)
+        weight = weight_field(vector[i[0] - 1:i[0] + 2, i[1] - 1:i[1] + 2])
+
+        for j in range(len(array) - 1):
+            array[j, i[0], i[1]] = np.nansum(array[j, i[0] - 1:i[0] + 2, i[1] - 1:i[1] + 2] * weight)
+
     return array
 
-def fill_nan(array, ref, fix):
+def fill_nan(array):
     """
     Fills NaN values in the input array using a sequence of fill functions.
 
     Parameters:
-    - array: numpy array of shape (n_channels, H, W)
-    - ref: list/tuple of indices for reference channels (e.g., [0, 1])
-    - fix: list/tuple of indices for channels that need fixing (e.g., [0, 1, 2, 3])
+    - array: numpy array
 
     Returns:
-    - array: numpy array with NaN values filled.
+    - numpy array
     """
-    hold1 = 0
-    while np.sum(np.isnan(array[fix[0], 1:-1, 1:-1])) > 0:
-        array = fill4(array, ref, fix)
-        array = fill3(array, ref, fix)
-        array = fill2(array, ref, fix)
-        hold1 += 1
-        if hold1 == 300:
+    hold1=0
+    while np.sum(np.isnan(array[0, 1:-1, 1:-1])) > 0:
+        array = fill4(array)
+        array = fill3(array)
+        array = fill2(array)
+        hold1+=1
+        if hold1==300:
             break
-    array = np.pad(array, ((0, 0), (1, 1), (1, 1)), mode='constant', constant_values=np.nan)
+    array = np.pad(array, [[0, 0], [1, 1], [1, 1]])
 
-    while np.sum(np.isnan(array[fix[0], 1:-1, 1:-1])) > 0:
-        array = fill4(array, ref, fix)
-        array = fill3(array, ref, fix)
-        array = fill2(array, ref, fix)
+    while np.sum(np.isnan(array[0, 1:-1, 1:-1])) > 0:
+        array = fill4(array)
+        array = fill3(array)
+        array = fill2(array)
 
     array = array[:, 1:-1, 1:-1]
     return array
+'''
+def fix_data(file):
+    """
+    Fixes NaN values in the data stored in the given file using the fill_nan function.
 
+    Parameters:
+    - file: str
+        The file path for the data.
+
+    Returns:
+    - None
+    """
+    xa = np.load(file)
+    #print(xa.shape[1],flush=True)
+    if xa.shape[1] == 5:
+        fillmode = 0
+    else:
+        fillmode = 1
+    for i in range(len(xa)):
+        if np.isnan(np.sum(xa[i])):
+            for j in range(len(xa[i])//4):
+                xa[i,j*4:4*j+5] = fill_nan(xa[i,j*4:4*j+5])
+    #print(np.sum(np.isnan(xa)), flush=True)
+    np.save(file[:-4]+'fixed'+'.npy', xa)
+'''
 def fix_data(file, channel_mapping):
     """
     Fixes NaN values in the data stored in the given file using the fill_nan function
@@ -331,8 +340,8 @@ def fix_data(file, channel_mapping):
             for ref_channels, fix_channels in channel_mapping.items():
                 # Extract the group data; this should have shape (n_channels, height, width)
                 group_data = xa[i, fix_channels, ...]
-                # Fix the NaNs using the fill_nan function, passing ref and fix arrays
-                fixed_group = fill_nan(group_data, ref_channels, fix_channels)
+                # Fix the NaNs using the existing fill_nan function
+                fixed_group = fill_nan(group_data)
                 # Place the fixed data back into the original array
                 xa[i, fix_channels, ...] = fixed_group
     # Save the fixed data file (appending 'fixed' to the file name)
