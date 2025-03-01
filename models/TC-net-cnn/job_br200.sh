@@ -36,6 +36,7 @@ elif [ "$data_source" = "WRF" ]; then
 fi
 temp_id=$(echo "$(date +%s%N)$$$BASHPID$RANDOM$(uuidgen)" | sha256sum | tr -dc 'A-Za-z0-9' | head -c10)
 test_pc=10 # Percentage of training data reserved for test, will be used if MERRA2 random split is enabled
+plot_unit='m/s'
 # ===============================================================================================================================================
 # MERRA2 CONFIGURATION
 # Specific configuration for handling MERRA2 dataset.
@@ -60,7 +61,11 @@ imsize_variables="64 64"  # Image size for variables
 imsize_labels="64 64"  # Image size for labels
 wrf_base="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base path for WRF data
 VAR_LEVELS_WRF=("U01" "U02" "U03" "V01" "V02" "V03" "T01" "T02" "T03" "QVAPOR01" "QVAPOR02" "QVAPOR03" "PSFC")
-test_exp_wrf=5
+train_experiment_wrf=("exp_02km_m01" "exp_02km_m02" "exp_02km_m04" "exp_02km_m05")
+test_experiment_wrf=("exp_02km_m03")
+val_experiment_wrf=''
+X_resolution_wrf='d01'
+Y_resolution_wrf='d01'
 # =============================================================================================================================================
 # MODEL CONFIGURATION
 # Settings for the neural network model.
@@ -116,12 +121,16 @@ fi
 # ===============================================================================================================================================
 if [ "$wrf" -eq 1 ]; then
     python wrf_data/extractor.py \
-        -exp_id $experiment_identification\
         -ix $imsize_variables\
         -iy $imsize_labels\
         -r $workdir \
         -b $wrf_base \
-        -vl "${VAR_LEVELS_WRF[@]}"
+        -vl "${VAR_LEVELS_WRF[@]}" \
+        -xew "${train_experiment_wrf[@]}" \
+        -tew "${test_experiment_wrf[@]}" \
+        -vew "${val_experiment_wrf[@]}" \
+        -xd $X_resolution_wrf \
+        -td $y_resolution_wrf
 fi
 
 # ===============================================================================================================================================
@@ -138,13 +147,17 @@ if [ "${build[0]}" -eq 1 ]; then
         -temp "${temporary_folder}" \
         -ss ${data_source} \
         -tid "$temp_id" \
-        -tew $test_exp_wrf \
         -r_split $random_split \
         -test_pc $test_pc \
         -val_pc $val_pc \
         -wrf_eid $experiment_identification \
         -wrf_ix $imsize_variables \
-        -wrf_iy $imsize_labels
+        -wrf_iy $imsize_labels \
+        -xew "${train_experiment_wrf[@]}" \
+        -tew "${test_experiment_wrf[@]}" \
+        -vew "${val_experiment_wrf[@]}" \
+        -xd $X_resolution_wrf \
+        -td $y_resolution_wrf
         
 fi
 
@@ -176,7 +189,8 @@ if [ "${build[2]}" -eq 1 ]; then
         -temp ${temporary_folder} \
         -ss ${data_source} \
         -tid "$temp_id" \
-        --text_report_name $text_report_name
+        --text_report_name $text_report_name \
+        -u $plot_unit
 fi
 
 #find "$workdir/temp/" -type f -name "*$temp_id*" -delete
