@@ -35,6 +35,7 @@ def parse_args():
     parser.add_argument("--text_report_name", default= 'report.txt', type=str, help="Filename to write text report to, will be inside text_report dir")
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source')
     parser.add_argument('-tid', '--temp_id', type=str)
+    parser.add_argument('-u', '--unit', type=str, default='Knots', help = 'Displayed unit')
 
     return parser.parse_args()
 args = parse_args()
@@ -48,6 +49,7 @@ text_report_name=args.text_report_name
 data_source=args.data_source
 work_folder=args.work_folder
 temp_id=args.temp_id
+unit=args.unit
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
 report_directory = os.path.join(workdir, 'text_report')
 os.makedirs(report_directory, exist_ok=True)
@@ -231,7 +233,7 @@ datadict[name] = predict
 fig, axs = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={'width_ratios': [1.2, 1]})
 axs[0].boxplot([datadict[name].reshape(-1), test_y])
 axs[0].grid(True)
-axs[0].set_ylabel('Knots', fontsize=20)
+axs[0].set_ylabel(unit, fontsize=20)
 axs[0].text(0.95, 0.05, '(a)', transform=axs[0].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
             bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
 axs[0].tick_params(axis='both', which='major', labelsize=14)
@@ -266,8 +268,9 @@ output_str = 'RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and M
 if not os.path.exists(report_directory):
     os.makedirs(report_directory)
 with open(text_report_path, 'w') as file:
-    file.write(f"Saving result to: {report_directory + '/fig_' + str(name) + '.png'}")
+    file.write(f"Saving result to: {report_directory + '/fig_' + str(name) + '.png'}\n")
     file.write(output_str + '\n')
-    file.write('Predictions: ' + np.array2string(predict, separator=', ') + '\n')
-    file.write('Actual Values: ' + np.array2string(test_y, separator=', ') + '\n')
+    file.write('Predictions vs Actual Values:\n')
+    for pred, true in zip(predict, test_y):
+        file.write(f"{pred:.6f}, {true:.6f}\n")
 print('Completed!')
