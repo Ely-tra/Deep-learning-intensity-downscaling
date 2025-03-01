@@ -436,5 +436,5 @@ if data_source == 'MERRA2':
         results = load_merra_data(data_dir,windowsize, validation_year=validation_year_merra, test_year=test_year_merra)
 if data_source == 'WRF':
     data_dir = os.path.join(root, 'wrf_data')
-    results = load_wrf_data(data_dir, wrf_experiment_identification, wrf_variables_imsize, wrf_labels_imsize, test = test_experiment_wrf, val=validation_experiment_wrf)
+    results = load_wrf_data(data_dir, X_resolution, Y_resolution,wrf_variables_imsize, wrf_labels_imsize,train = train_experiment_wrf, test = test_experiment_wrf, val=val_experiment_wrf)
 write_data(results, work_folder, val_pc = validation_percentage)

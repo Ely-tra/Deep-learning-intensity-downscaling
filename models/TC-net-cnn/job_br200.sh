@@ -18,7 +18,7 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 # WHICH STEPS TO RUN
 # ===============================================================================================================================================
 merra=(0 0 0)  # Control execution for MERRA2 related scripts
-wrf=1          # Control execution for WRF related scripts
+wrf=0          # Control execution for WRF related scripts
 build=(1 0 0)  # Control execution for Builder related scripts
 # ===============================================================================================================================================
 # COMMON SETTINGS
@@ -132,7 +132,7 @@ if [ "$wrf" -eq 1 ]; then
         -tew "${test_experiment_wrf[@]}" \
         -vew "${val_experiment_wrf[@]}" \
         -xd $X_resolution_wrf \
-        -td $y_resolution_wrf
+        -td $Y_resolution_wrf
 fi
 
 # ===============================================================================================================================================
@@ -152,14 +152,13 @@ if [ "${build[0]}" -eq 1 ]; then
         -r_split $random_split \
         -test_pc $test_pc \
         -val_pc $val_pc \
-        -wrf_eid $experiment_identification \
         -wrf_ix $imsize_variables \
         -wrf_iy $imsize_labels \
         -xew "${train_experiment_wrf[@]}" \
         -tew "${test_experiment_wrf[@]}" \
         -vew "${val_experiment_wrf[@]}" \
         -xd $X_resolution_wrf \
-        -td $y_resolution_wrf
+        -td $Y_resolution_wrf
         
 fi
 
@@ -195,4 +194,4 @@ if [ "${build[2]}" -eq 1 ]; then
         -u $plot_unit
 fi
 
-#find "$workdir/temp/" -type f -name "*$temp_id*" -delete
+find "$workdir/temp/" -type f -name "*$temp_id*" -delete
