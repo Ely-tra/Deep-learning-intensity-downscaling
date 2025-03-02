@@ -1,6 +1,6 @@
 {
   "inputs": [
-    {"name": "inputs", "shape": [64,64,13]}
+    {"name": "inputs", "shape": [64,64,'var_num']}
   ],
   "process_flows": [
     {
