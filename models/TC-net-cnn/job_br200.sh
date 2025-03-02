@@ -9,82 +9,113 @@ module load PrgEnv-gnu
 module load python/gpu/3.10.10
 cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 
+# ==============================================================================
+# Experiment Setup and Configuration Script
 #
-# Set up experiment parameters, which will be used to generate Python scripts.
-# These parameters are currently hardwired in each script.
-#
-# ===============================================================================================================================================
-# CONTROL SEQUENCE
-# WHICH STEPS TO RUN
-# ===============================================================================================================================================
-merra=(0 0 0)  # Control execution for MERRA2 related scripts
-wrf=0          # Control execution for WRF related scripts
-build=(1 1 1)  # Control execution for Builder related scripts
-# ===============================================================================================================================================
-# COMMON SETTINGS
-# These settings are common across different parts of the script and provide basic configuration.
-# ===============================================================================================================================================
-mode='VMAX'  # Operation mode (VMAX: maximum sustained wind speed, PMIN: minimum pressure, RMW: radius of maximum winds)
-workdir='/N/slate/kmluong/TC-net-cnn_workdir/'  # Directory for output files
-besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to best track data
-data_source='WRF'  # Data source to be used, MERRA2/WRF
-val_pc=20 # Percentage of training data reserved for validation, will be used if no validation set is specified, or MERRA2 random split is enabled
+# This script sets up parameters used to generate and run various Python scripts 
+# for our deep learning experiments. These parameters are hardcoded here to ensure 
+# consistency across different runs and modules.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Control Sequence: Toggle Execution of Different Script Sections
+# ------------------------------------------------------------------------------
+merra=(0 0 0)          # Array to control execution of MERRA2 data processing scripts (0 = off, 1 = on)
+wrf=0                  # Flag to control execution of WRF data processing scripts (0 = off, 1 = on)
+build=(1 1 1)          # Array to control execution of builder scripts (0 = off, 1 = on)
+
+# ------------------------------------------------------------------------------
+# File and Directory Paths: Define Locations for Data, Output, and Intermediate Files
+# ------------------------------------------------------------------------------
+workdir='/N/slate/kmluong/TC-net-cnn_workdir/'   # Working directory for saving output files
+besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to hurricane best track dataset
+datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'  # Directory containing raw MERRA2 meteorological data
+wrf_base="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base directory for WRF simulation data
+temporary_folder='/N/slate/kmluong/TC-net-cnn_workdir/'  # Temporary directory for storing intermediate processing files
+config='model_core/77.json'  # Path to the JSON configuration file for the neural network model
+
+# ------------------------------------------------------------------------------
+# Experiment Naming: Unique Identifiers for Reports and Models
+# ------------------------------------------------------------------------------
+text_report_name='H18h18.txt'          # Filename for the text report (saved under workdir/text_report)
+experiment_identification='H18h18'     # Unique identifier for the experiment
+model_name='H18h18'                    # Model name; manually assigned to differentiate multiple models
+plot_unit='m/s'                        # Unit for plotting results (e.g., wind speed in meters per second)
+
+# ------------------------------------------------------------------------------
+# Common Settings: Basic Configuration Options Used Across Scripts
+# ------------------------------------------------------------------------------
+mode='VMAX'          # Operation mode: VMAX (max sustained wind speed), PMIN (min pressure), or RMW (radius of max winds)
+data_source='WRF'    # Data source selection: options include 'MERRA2' or 'WRF'
+val_pc=20            # Percentage of training data reserved for validation (used if no explicit validation set is provided)
+
+# Adjust control flags based on selected data source:
 if [ "$data_source" = "MERRA2" ]; then
-    wrf=0  # Sets all elements in the merra control array to 0
+    wrf=0  # When using MERRA2, disable WRF-related processing
 elif [ "$data_source" = "WRF" ]; then
-    merra=(0 0 0)  # Sets the wrf control variable to 0
+    merra=(0 0 0)  # When using WRF, disable MERRA2-related processing
 fi
+
+# Create a unique temporary ID based on current time, process ID, random number, and UUID
 temp_id=$(echo "$(date +%s%N)$$$BASHPID$RANDOM$(uuidgen)" | sha256sum | tr -dc 'A-Za-z0-9' | head -c10)
-test_pc=10 # Percentage of training data reserved for test, will be used if MERRA2 random split is enabled
-plot_unit='m/s'
-# ===============================================================================================================================================
-# MERRA2 CONFIGURATION
-# Specific configuration for handling MERRA2 dataset.
-# ===============================================================================================================================================
-regions="EP NA WP"  # To select basins to conduct research on
-var_num=13  # Number of variables to process (solely for dynamic data naming)
-st_embed=0  # Space-time embedding toggle (0 for off)
-force_rewrite=False  # Force rewrite of existing files toggle
-datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'  # Path to raw MERRA2 data
-list_vars=("U850" "V850" "T850" "RH850" "U950" "V950" "T950" "RH950" "U750" "V750" "T750" "RH750" "SLP750")  # List of meteorological variables
-windowsize_x=18  # Window size along the x-axis (degree)
-windowsize_y=18  # Window size along the y-axis (degree)
-validation_years=(2014)  # Years used for validation
-test_years=(2017)  # Years used for testing
-random_split=1 # Use val_pc and test_pc instead of year.
+
+test_pc=10  # Percentage of training data reserved for testing (applies to random split scenarios)
+
+# ------------------------------------------------------------------------------
+# MERRA2 Configuration: Parameters for Processing MERRA2 Data
+# ------------------------------------------------------------------------------
+regions="EP NA WP"      # Basins to analyze (e.g., Eastern Pacific, North Atlantic, Western Pacific)
+var_num=13              # Number of meteorological variables to process (affects dynamic naming)
+st_embed=0              # Toggle for space-time embedding (0 = disabled, 1 = enabled)
+force_rewrite=0     # Flag to force re-creation of files, even if they already exist, use int
+
+# List of meteorological variables to be processed from MERRA2
+list_vars=("U850" "V850" "T850" "RH850" "U950" "V950" "T950" "RH950" "U750" "V750" "T750" "RH750" "SLP750")
+
+# Spatial window dimensions (in degrees) for data extraction
+windowsize_x=18  # Window size along the x-axis
+windowsize_y=18  # Window size along the y-axis
+
+# Define validation and testing periods based on years
+validation_years=(2014)  # Year(s) to use for validation
+test_years=(2017)        # Year(s) to use for testing
+
+random_split=1  # If enabled, use percentages (val_pc and test_pc) instead of year-based splits
+
+# Map for handling NaN values in the dataset (format: "referenced wind field: fields to fix;")
 nan_fill_map="0,1:0,1,2,3;4,5:4,5,6,7;8,9:8,9,10,11"
-# ===============================================================================================================================================
-# WRF (Weather Research and Forecasting) CONFIGURATION
-# Configuration for WRF model data handling.
-# ===============================================================================================================================================
-experiment_identification='H18h18'  # Identifier for the experiment
-imsize_variables="64 64"  # Image size for variables
-imsize_labels="64 64"  # Image size for labels
-wrf_base="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base path for WRF data
+
+# ------------------------------------------------------------------------------
+# WRF (Weather Research and Forecasting) Configuration: Parameters for WRF Data
+# ------------------------------------------------------------------------------
+imsize_variables="64 64"  # Dimensions (width height) for variable images
+imsize_labels="64 64"     # Dimensions (width height) for label images
+
+# Define variable levels for WRF data processing
 VAR_LEVELS_WRF=("U01" "U02" "U03" "V01" "V02" "V03" "T01" "T02" "T03" "QVAPOR01" "QVAPOR02" "QVAPOR03" "PSFC")
+
+# Specify experiment names for training and testing in WRF data
 train_experiment_wrf=("exp_02km_m01" "exp_02km_m02" "exp_02km_m04" "exp_02km_m05")
 test_experiment_wrf=("exp_02km_m03")
-val_experiment_wrf=''
-X_resolution_wrf='d01'
-Y_resolution_wrf='d01'
-# =============================================================================================================================================
-# MODEL CONFIGURATION
-# Settings for the neural network model.
-# ===============================================================================================================================================
-temporary_folder='/N/slate/kmluong/TC-net-cnn_workdir/'  # Temporary folder for intermediate data
-model_name='H18h18'  # Core name of the model, automatic naming is not supported, so to save multiple models, users need to assign model names manually
-learning_rate=0.0001
-batch_size=256  # Batch size for training
-num_epochs=300  # Number of training epochs
-image_size=64  # Size of the input images for the model
-config='model_core/77.json'  # Path to the model configuration file
-text_report_name='H18h18.txt'  # Filename for the text report, will be saved under workdir/text_report
+val_experiment_wrf=''     # Placeholder for WRF validation experiment (if needed)
+X_resolution_wrf='d01'    # Horizontal resolution identifier for X-axis
+Y_resolution_wrf='d01'    # Horizontal resolution identifier for Y-axis
 
-# Now the variables and settings from var_control.sh are available to use in this script
+# ------------------------------------------------------------------------------
+# Model Configuration: Settings for the Neural Network Model Training
+# ------------------------------------------------------------------------------
+learning_rate=0.0001      # Learning rate for the optimizer
+batch_size=256          # Number of samples per training batch
+num_epochs=300          # Total number of training epochs
+image_size=64           # Size of the input images for the model
+
+# ------------------------------------------------------------------------------
+# Final Setup: Display the Configuration Settings
+# ------------------------------------------------------------------------------
 echo "Data source is set to $data_source"
 echo "Working directory is $workdir"
-# This is a proposed workflow
-#
+
+# End of setup script: The variables defined above are now available for subsequent processing steps.
 # ===============================================================================================================================================
 # MERRA2
 # ===============================================================================================================================================
@@ -94,7 +125,7 @@ if [ "${merra[0]}" -eq 1 ]; then
         --datapath "$datapath" \
         --outputpath "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
-        --regions EP NA WP \
+        --regions "$regions" \
         --minlat -90.0 --maxlat 90.0 \
         --minlon -180.0 --maxlon 180.0 \
         --maxwind 10000 --minwind 0 \
@@ -107,7 +138,7 @@ if [ "${merra[1]}" -eq 1 ]; then
         --workdir "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
         --list_vars $list_vars \
-        --force_rewrite
+        --force_rewrite $force_rewrite
 fi
 
 if [ "${merra[2]}" -eq 1 ]; then
