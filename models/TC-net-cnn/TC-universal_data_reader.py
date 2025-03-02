@@ -321,7 +321,7 @@ def load_wrf_data(workdir, xd, td, ix, iy, train=None, test=None, val=None):
         'test_x': [],
         'test_y': []
     }
-    if val is not None:
+    if val[0] != '':
         datasets['val_x'] = []
         datasets['val_y'] = []
     
@@ -332,16 +332,12 @@ def load_wrf_data(workdir, xd, td, ix, iy, train=None, test=None, val=None):
     # Regular expression to extract the experiment id (exp) from the filename.
     # This assumes the filename ends with _<exp>.npy
     exp_regex = re.compile(rf'_([^_]+)\.npy$')
-    
+     
     # Process each x file.
     for x_file in x_files:
-        match = exp_regex.search(x_file.name)
-        if not match:
-            # Skip any file that doesn't match the expected pattern.
-            continue
-        exp = match.group(1)
-    
-        # Construct the corresponding y file name using the td and iy indices.
+        prefix = f"x_{xd}_{ix[0]}x{ix[1]}_"
+        if x_file.name.startswith(prefix) and x_file.name.endswith(".npy"):
+            exp = x_file.name[len(prefix):-4]  # Remove the prefix and the '.npy'
         y_filename = f"y_{td}_{iy[0]}x{iy[1]}_{exp}.npy"
         y_file = data_dir / y_filename
     
@@ -370,14 +366,14 @@ def load_wrf_data(workdir, xd, td, ix, iy, train=None, test=None, val=None):
     
     # Prepare the results dictionary.
     results = {
-        'train_x.npy': datasets['train_x'],
-        'train_y.npy': datasets['train_y'],
-        'test_x.npy': datasets['test_x'],
-        'test_y.npy': datasets['test_y']
+        'train_x.npy': np.concatenate(datasets['train_x']),
+        'train_y.npy': np.concatenate(datasets['train_y']),
+        'test_x.npy': np.concatenate(datasets['test_x']),
+        'test_y.npy': np.concatenate(datasets['test_y'])
     }
-    if val is not None:
-        results['val_x.npy'] = datasets['val_x']
-        results['val_y.npy'] = datasets['val_y']
+    if val[0] != '':
+        results['val_x.npy'] = np.concatenate(datasets['val_x'])
+        results['val_y.npy'] = np.concatenate(datasets['val_y'])
     
     return results
     

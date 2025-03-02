@@ -19,7 +19,7 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 # ===============================================================================================================================================
 merra=(0 0 0)  # Control execution for MERRA2 related scripts
 wrf=0          # Control execution for WRF related scripts
-build=(1 0 0)  # Control execution for Builder related scripts
+build=(1 1 1)  # Control execution for Builder related scripts
 # ===============================================================================================================================================
 # COMMON SETTINGS
 # These settings are common across different parts of the script and provide basic configuration.
