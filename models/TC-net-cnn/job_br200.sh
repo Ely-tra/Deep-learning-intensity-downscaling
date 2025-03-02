@@ -20,7 +20,7 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 # ------------------------------------------------------------------------------
 # Control Sequence: Toggle Execution of Different Script Sections
 # ------------------------------------------------------------------------------
-merra=(0 0 0)          # Array to control execution of MERRA2 data processing scripts (0 = off, 1 = on)
+merra=(0 1 1)          # Array to control execution of MERRA2 data processing scripts (0 = off, 1 = on)
 wrf=0                  # Flag to control execution of WRF data processing scripts (0 = off, 1 = on)
 build=(1 1 1)          # Array to control execution of builder scripts (0 = off, 1 = on)
 
@@ -46,7 +46,7 @@ plot_unit='m/s'                        # Unit for plotting results (e.g., wind s
 # Common Settings: Basic Configuration Options Used Across Scripts
 # ------------------------------------------------------------------------------
 mode='VMAX'          # Operation mode: VMAX (max sustained wind speed), PMIN (min pressure), or RMW (radius of max winds)
-data_source='WRF'    # Data source selection: options include 'MERRA2' or 'WRF'
+data_source='MERRA2'    # Data source selection: options include 'MERRA2' or 'WRF'
 val_pc=20            # Percentage of training data reserved for validation (used if no explicit validation set is provided)
 
 # Adjust control flags based on selected data source:
@@ -137,7 +137,7 @@ if [ "${merra[1]}" -eq 1 ]; then
     python TC-extract_data_TSU.py \
         --workdir "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
-        --list_vars $list_vars \
+        --list_vars ${list_vars[@]} \
         --force_rewrite $force_rewrite
 fi
 
@@ -146,7 +146,7 @@ if [ "${merra[2]}" -eq 1 ]; then
         --workdir "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
         --var_num "$var_num" \
-        --channel_map =$nan_fill_map
+        --channel_map $nan_fill_map
 fi
 
 # ===============================================================================================================================================
