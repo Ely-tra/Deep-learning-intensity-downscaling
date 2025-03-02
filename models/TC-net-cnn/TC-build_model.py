@@ -93,7 +93,15 @@ temp_dir = os.path.join(work_folder, 'temp')
 def load_json_config(path):
     with open(path, 'r') as file:
         return json.load(file)
-
+        
+def replace_var_num_in_shape(shape, var_num):
+    """Replace the last element 'var_num' in the shape with the actual var_num value."""
+    # If shape is empty or var_num is None, return as is.
+    if not shape or var_num is None:
+        return shape
+    # Replace if the last element is the string "var_num"
+    return shape[:-1] + [var_num] if shape[-1] == "var_num" else shape
+    
 def apply_operation(x, op, inputs, flows, st_embed = False):
     # Handle 'slice' operation
     if op['type'] == 'slice':
@@ -177,14 +185,16 @@ def apply_operation(x, op, inputs, flows, st_embed = False):
     else:
         raise ValueError(f"Unsupported operation type: {op['type']}")
 
-def build_model_from_json(config, st_embed=False):
+def build_model_from_json(config, st_embed=False, var_num=13):
     # Collect the initial inputs
     inputs = {
-        inp['name']: keras.Input(shape=inp['shape'], name=inp['name'])
+        inp['name']: keras.Input(
+            shape=replace_var_num_in_shape(inp['shape'], var_num),
+            name=inp['name']
+        )
         for inp in config['inputs']
         if not inp.get('optional', False) or (inp.get('optional') and inp.get('use_if') == 'st_embed' and st_embed)
     }
-
     # Dictionary to store intermediate flow outputs
     flows = {}
 
@@ -341,10 +351,10 @@ def normalize_Z(Z):
 #==============================================================================================
 # Model
 #==============================================================================================
-def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, epoch=100):
+def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, epoch=100, var_num=13):
     # Load model configuration and build the model
     config = load_json_config(config_path)
-    model = build_model_from_json(config, st_embed=st_embed)
+    model = build_model_from_json(config, st_embed=st_embed, var_num=var_num)
     
     model.compile(
         optimizer='adam',
@@ -419,4 +429,4 @@ print('Input shape of the X features data: ',train_x.shape)
 print('Input shape of the y label data: ',train_y.shape)
 print('Number of input channel extracted from X is: ',number_channels)
 
-history = main(X=train_x, Y=train_y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, epoch=num_epochs)
+history = main(X=train_x, Y=train_y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, epoch=num_epochs, var_num=var_num)
