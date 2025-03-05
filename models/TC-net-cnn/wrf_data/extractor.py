@@ -25,10 +25,14 @@ def parse_args():
                                  "PSFC"],
                         help="List of variable levels to extract. Example usage: ('U01' 'U02' 'V01')")
     parser.add_argument('-xew', '--train_experiment_wrf', type=str, nargs='+', 
-                        default=["exp_02km_m01", "exp_02km_m02", "exp_02km_m04", "exp_02km_m05"],
+                        default=["exp_02km_m01:exp_02km_m01", "exp_02km_m02:exp_02km_m02", 
+                                 "exp_02km_m04:exp_02km_m04", "exp_02km_m05:exp_02km_m05",
+                                 "exp_02km_m06:exp_02km_m06", "exp_02km_m07:exp_02km_m07", 
+                                 "exp_02km_m08:exp_02km_m08", "exp_02km_m09:exp_02km_m09",
+                                 "exp_02km_m10:exp_02km_m10", help = 'Directories to extract data, form x:y'],
                         help='WRF experiment folders for training (inputs)')
     parser.add_argument('-tew', '--test_experiment_wrf', type=str, nargs='+', 
-                        default=["exp_02km_m03"],
+                        default=["exp_02km_m03:exp_02km_m03"],
                         help='WRF experiment folders for testing (targets)')
     parser.add_argument('-vew', '--val_experiment_wrf', type=str, nargs='*', default=[], 
                         help='WRF experiment folders for validation (default: empty list)')
@@ -113,6 +117,18 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
     y = np.array([[max_wind_speed, min_psfc, distance_km]])
     return final_result, y
 
+def parse_experiment_pairs(experiment_list):
+    """
+    Converts a list of strings in the format "exp_xx:exp_xx" into a list of tuples (exp_xx, exp_xx).
+    If the input is [''], it returns [''] unchanged.
+
+    :param experiment_list: List of strings in "exp_xx:exp_xx" format.
+    :return: List of tuples (exp_xx, exp_xx) or [''] if input is [''].
+    """
+    if experiment_list == ['']:
+        return experiment_list  # Return unchanged if input is ['']
+    
+    return [tuple(exp.split(":")) for exp in experiment_list]
 
 def natural_sort_key(s):
     """
@@ -121,18 +137,18 @@ def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower() for text in re.split('([0-9]+)', s)]
 
 
-def collect_file_pairs(exp_folder, x_res, y_res):
+def collect_file_pairs(exp_folder1, exp_folder2, x_res, y_res):
     """
     Given an experiment folder, collect all files whose names contain the X resolution substring.
     For each such file, generate the corresponding Y file by replacing the X resolution with the Y resolution.
     Returns a list of (x_file, y_file) tuples sorted naturally by the X file's basename.
     """
-    all_files = glob.glob(os.path.join(exp_folder, "*"))
+    all_files = glob.glob(os.path.join(exp_folder1, "*"))
     pairs = []
     for f in all_files:
         basename = os.path.basename(f)
         if x_res in basename:
-            y_file = f.replace(x_res, y_res)
+            y_file = f.replace(x_res, y_res).replace(exp_folder1, exp_folder2)
             if os.path.exists(y_file):
                 pairs.append((f, y_file))
             else:
@@ -149,8 +165,9 @@ def process_experiments(exp_list, base_path, imsize_x, imsize_y, root, x_res, y_
     Process each file pair and save the concatenated results using the original folder name.
     """
     for exp in exp_list:
-        exp_folder = os.path.join(base_path, exp)
-        file_pairs = collect_file_pairs(exp_folder, x_res, y_res)
+        exp_folder1 = os.path.join(base_path, exp[0])
+        exp_folder2 = os.path.join(base_path, exp[0])
+        file_pairs = collect_file_pairs(exp_folder1, exp_folder2, x_res, y_res)
         if not file_pairs:
             print(f"No file pairs found in {exp} for X resolution '{x_res}' and Y resolution '{y_res}'.")
             continue
@@ -199,20 +216,23 @@ if __name__ == '__main__':
 
     os.makedirs(root, exist_ok=True)
     
-    if args.train_experiment_wrf:
+    if args.train_experiment_wrf[0]:
         print("Processing training experiments:")
-        process_experiments(args.train_experiment_wrf, base_path, imsize_x, imsize_y, root,
+        train_experiment_wrf = parse_experiment_pairs(args.train_experiment_wrf)
+        process_experiments(train_experiment_wrf, base_path, imsize_x, imsize_y, root,
                             x_res=args.X_resolution, y_res=args.Y_resolution,
                             var_levels=var_levels, output_resolution=args.output_resolution)
     
-    if args.test_experiment_wrf:
+    if args.test_experiment_wrf[0]:
+        test_experiment_wrf = parse_experiment_pairs(args.test_experiment_wrf)
         print("Processing testing experiments:")
-        process_experiments(args.test_experiment_wrf, base_path, imsize_x, imsize_y, root,
+        process_experiments(test_experiment_wrf, base_path, imsize_x, imsize_y, root,
                             x_res=args.X_resolution, y_res=args.Y_resolution,
                             var_levels=var_levels, output_resolution=args.output_resolution)
     
-    if args.val_experiment_wrf:
+    if args.val_experiment_wrf[0]:
+        val_experiment_wrf = parse_experiment_pairs(args.val_experiment_wrf)
         print("Processing validation experiments:")
-        process_experiments(args.val_experiment_wrf, base_path, imsize_x, imsize_y, root,
+        process_experiments(val_experiment_wrf, base_path, imsize_x, imsize_y, root,
                             x_res=args.X_resolution, y_res=args.Y_resolution,
                             var_levels=var_levels, output_resolution=args.output_resolution)
