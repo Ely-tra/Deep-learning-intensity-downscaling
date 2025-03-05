@@ -72,6 +72,8 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
                 selected_data = ds1[var].isel(bottom_top=lev)
             elif lev is not None and 'lev' in ds1[var].coords:
                 selected_data = ds1[var].sel(lev=lev)
+            elif lev is not None and 'bottom_top_stag' in ds1[var].dims:
+                selected_data = ds1[var].isel(bottom_top_stag=lev)
             else:
                 selected_data = ds1[var]
         except Exception:
