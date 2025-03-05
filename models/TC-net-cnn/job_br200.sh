@@ -65,7 +65,6 @@ test_pc=10  # Percentage of training data reserved for testing (applies to rando
 # MERRA2 Configuration: Parameters for Processing MERRA2 Data
 # ------------------------------------------------------------------------------
 regions="EP NA WP"      # Basins to analyze (e.g., Eastern Pacific, North Atlantic, Western Pacific)
-var_num=13              # Number of meteorological variables to process (affects dynamic naming)
 st_embed=0              # Toggle for space-time embedding (0 = disabled, 1 = enabled)
 force_rewrite=0     # Flag to force re-creation of files, even if they already exist, use int
 
@@ -95,8 +94,19 @@ imsize_labels="64 64"     # Dimensions (width height) for label images
 VAR_LEVELS_WRF=("U01" "U02" "U03" "V01" "V02" "V03" "T01" "T02" "T03" "QVAPOR01" "QVAPOR02" "QVAPOR03" "PSFC")
 
 # Specify experiment names for training and testing in WRF data
-train_experiment_wrf=("exp_02km_m01" "exp_02km_m02" "exp_02km_m04" "exp_02km_m05")
-test_experiment_wrf=("exp_02km_m03")
+train_experiment_wrf=(
+    "exp_02km_m01:exp_02km_m01"                  # experiment for x: experiment for y
+    "exp_02km_m02:exp_02km_m02"
+    "exp_02km_m04:exp_02km_m04"
+    "exp_02km_m05:exp_02km_m05"
+    "exp_02km_m06:exp_02km_m06"
+    "exp_02km_m07:exp_02km_m07"
+    "exp_02km_m08:exp_02km_m08"
+    "exp_02km_m09:exp_02km_m09"
+    "exp_02km_m10:exp_02km_m10"
+)
+
+test_experiment_wrf=("exp_02km_m03:exp_02km_m03")
 val_experiment_wrf=''     # Placeholder for WRF validation experiment (if needed)
 X_resolution_wrf='d01'    # Horizontal resolution identifier for X-axis
 Y_resolution_wrf='d01'    # Horizontal resolution identifier for Y-axis
@@ -112,6 +122,11 @@ image_size=64           # Size of the input images for the model
 # ------------------------------------------------------------------------------
 # Final Setup: Display the Configuration Settings
 # ------------------------------------------------------------------------------
+if [[ "$data_source" == "WRF" ]]; then
+    var_num=${#VAR_LEVELS_WRF[@]}  # Count elements in VAR_LEVELS_WRF array
+elif [[ "$data_source" == "MERRA2" ]]; then
+    var_num=${#list_vars[@]}  # Count elements in list_vars array
+fi
 echo "Data source is set to $data_source"
 echo "Working directory is $workdir"
 
