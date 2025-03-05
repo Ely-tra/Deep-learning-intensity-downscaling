@@ -14,10 +14,14 @@ def parse_args():
     parser.add_argument('-vym', '--validation_year_merra', nargs='+', type=int, default=[2014], help='Year(s) taken for validation (MERRA2 dataset)')
     parser.add_argument('-tym', '--test_year_merra', nargs='+', type=int, default=[2017], help='Year(s) taken for test (MERRA2 dataset)')
     parser.add_argument('-xew', '--train_experiment_wrf', type=str, nargs='+', 
-                        default=["exp_02km_m01", "exp_02km_m02", "exp_02km_m04", "exp_02km_m05"],
+                        default=["exp_02km_m01:exp_02km_m01", "exp_02km_m02:exp_02km_m02", 
+                                 "exp_02km_m04:exp_02km_m04", "exp_02km_m05:exp_02km_m05",
+                                 "exp_02km_m06:exp_02km_m06", "exp_02km_m07:exp_02km_m07", 
+                                 "exp_02km_m08:exp_02km_m08", "exp_02km_m09:exp_02km_m09",
+                                 "exp_02km_m10:exp_02km_m10", help = 'Directories to extract data, form x:y'],
                         help='WRF experiment folders for training (inputs)')
     parser.add_argument('-tew', '--test_experiment_wrf', type=str, nargs='+', 
-                        default=["exp_02km_m03"],
+                        default=["exp_02km_m03:exp_02km_m03"],
                         help='WRF experiment folders for testing (targets)')
     parser.add_argument('-vew', '--val_experiment_wrf', type=str, nargs='*', default=[], 
                         help='WRF experiment folders for validation (default: empty list)')
