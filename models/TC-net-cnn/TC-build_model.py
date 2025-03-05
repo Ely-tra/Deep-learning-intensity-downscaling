@@ -84,6 +84,8 @@ data_source=args.data_source
 work_folder=args.work_folder
 temp_id=args.temp_id
 model_dir = os.path.join(root, 'model')
+if not os.path.exists(model_dir):
+    os.makedirs(model_dir)
 model_name = args.model_name
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
 temp_dir = os.path.join(work_folder, 'temp')
