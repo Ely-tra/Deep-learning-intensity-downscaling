@@ -29,8 +29,8 @@ def parse_args():
                                  "exp_02km_m04:exp_02km_m04", "exp_02km_m05:exp_02km_m05",
                                  "exp_02km_m06:exp_02km_m06", "exp_02km_m07:exp_02km_m07", 
                                  "exp_02km_m08:exp_02km_m08", "exp_02km_m09:exp_02km_m09",
-                                 "exp_02km_m10:exp_02km_m10", help = 'Directories to extract data, form x:y'],
-                        help='WRF experiment folders for training (inputs)')
+                                 "exp_02km_m10:exp_02km_m10"],
+                        help='WRF experiment folders for training (inputs), form x:y')
     parser.add_argument('-tew', '--test_experiment_wrf', type=str, nargs='+', 
                         default=["exp_02km_m03:exp_02km_m03"],
                         help='WRF experiment folders for testing (targets)')
@@ -196,8 +196,8 @@ def process_experiments(exp_list, base_path, imsize_x, imsize_y, root, x_res, y_
         if results:
             concatenated_result = np.concatenate(results, axis=0)
             concatenated_y = np.concatenate(ys, axis=0)
-            x_filename = f"x_{x_res}_{imsize_x[0]}x{imsize_x[1]}_{exp}.npy"
-            y_filename = f"y_{y_res}_{imsize_y[0]}x{imsize_y[1]}_{exp}.npy"
+            x_filename = f"x_{x_res}_{imsize_x[0]}x{imsize_x[1]}_{exp[0]}.npy"
+            y_filename = f"y_{y_res}_{imsize_y[0]}x{imsize_y[1]}_{exp[1]}.npy"
             
             np.save(os.path.join(root, x_filename), concatenated_result)
             np.save(os.path.join(root, y_filename), concatenated_y)

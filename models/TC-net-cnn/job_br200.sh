@@ -21,8 +21,8 @@ cd /N/u/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/
 # Control Sequence: Toggle Execution of Different Script Sections
 # ------------------------------------------------------------------------------
 merra=(0 1 1)          # Array to control execution of MERRA2 data processing scripts (0 = off, 1 = on)
-wrf=0                  # Flag to control execution of WRF data processing scripts (0 = off, 1 = on)
-build=(1 1 1)          # Array to control execution of builder scripts (0 = off, 1 = on)
+wrf=1                  # Flag to control execution of WRF data processing scripts (0 = off, 1 = on)
+build=(1 0 0)          # Array to control execution of builder scripts (0 = off, 1 = on)
 
 # ------------------------------------------------------------------------------
 # File and Directory Paths: Define Locations for Data, Output, and Intermediate Files
@@ -46,7 +46,7 @@ plot_unit='m/s'                        # Unit for plotting results (e.g., wind s
 # Common Settings: Basic Configuration Options Used Across Scripts
 # ------------------------------------------------------------------------------
 mode='VMAX'          # Operation mode: VMAX (max sustained wind speed), PMIN (min pressure), or RMW (radius of max winds)
-data_source='MERRA2'    # Data source selection: options include 'MERRA2' or 'WRF'
+data_source='WRF'    # Data source selection: options include 'MERRA2' or 'WRF'
 val_pc=20            # Percentage of training data reserved for validation (used if no explicit validation set is provided)
 
 # Adjust control flags based on selected data source:

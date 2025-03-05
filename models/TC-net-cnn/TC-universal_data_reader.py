@@ -18,8 +18,8 @@ def parse_args():
                                  "exp_02km_m04:exp_02km_m04", "exp_02km_m05:exp_02km_m05",
                                  "exp_02km_m06:exp_02km_m06", "exp_02km_m07:exp_02km_m07", 
                                  "exp_02km_m08:exp_02km_m08", "exp_02km_m09:exp_02km_m09",
-                                 "exp_02km_m10:exp_02km_m10", help = 'Directories to extract data, form x:y'],
-                        help='WRF experiment folders for training (inputs)')
+                                 "exp_02km_m10:exp_02km_m10"],
+                        help='WRF experiment folders for training (inputs), form x:y')
     parser.add_argument('-tew', '--test_experiment_wrf', type=str, nargs='+', 
                         default=["exp_02km_m03:exp_02km_m03"],
                         help='WRF experiment folders for testing (targets)')
