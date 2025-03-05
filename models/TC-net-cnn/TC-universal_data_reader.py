@@ -271,6 +271,18 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
     }
     
     return results
+def parse_experiment_pairs(experiment_list):
+    """
+    Converts a list of strings in the format "exp_xx:exp_xx" into a list of tuples (exp_xx, exp_xx).
+    If the input is [''], it returns [''] unchanged.
+
+    :param experiment_list: List of strings in "exp_xx:exp_xx" format.
+    :return: List of tuples (exp_xx, exp_xx) or [''] if input is [''].
+    """
+    if experiment_list == ['']:
+        return experiment_list  # Return unchanged if input is ['']
+    
+    return [tuple(exp.split(":")) for exp in experiment_list]
 def load_wrf_data(workdir, xd, td, ix, iy, train=None, test=None, val=None):
     """
     Load and split paired x and y .npy files from the given working directory.
@@ -288,7 +300,7 @@ def load_wrf_data(workdir, xd, td, ix, iy, train=None, test=None, val=None):
     is added to the test split; if in the validation collection (if provided), it is
     added to the validation split; otherwise, it is added to the training split.
     
-    Parameters:
+    Parameters:e
         workdir (str or Path): The base directory containing the "wrf_data" folder.
         xd (str): The x resolution used in the file names.
         td (str): The y resolution used in the file names.
@@ -325,44 +337,57 @@ def load_wrf_data(workdir, xd, td, ix, iy, train=None, test=None, val=None):
         datasets['val_x'] = []
         datasets['val_y'] = []
     
-    # Define the pattern for x files using the provided resolution and image size.
-    pattern_x = f"x_{xd}_{ix[0]}x{ix[1]}_*.npy"
-    x_files = sorted(data_dir.glob(pattern_x))
-    
-    # Regular expression to extract the experiment id (exp) from the filename.
-    # This assumes the filename ends with _<exp>.npy
-    exp_regex = re.compile(rf'_([^_]+)\.npy$')
-     
-    # Process each x file.
-    for x_file in x_files:
-        prefix = f"x_{xd}_{ix[0]}x{ix[1]}_"
-        if x_file.name.startswith(prefix) and x_file.name.endswith(".npy"):
-            exp = x_file.name[len(prefix):-4]  # Remove the prefix and the '.npy'
-        y_filename = f"y_{td}_{iy[0]}x{iy[1]}_{exp}.npy"
-        y_file = data_dir / y_filename
-    
-        if not y_file.exists():
-            print(f"Warning: y file '{y_filename}' does not exist for x file '{x_file.name}'. Skipping this pair.")
-            continue
-    
-        # Load the numpy arrays.
-        try:
-            x_data = np.load(x_file)
-            y_data = np.load(y_file)
-        except Exception as e:
-            print(f"Error loading files '{x_file.name}' and/or '{y_filename}': {e}")
-            continue
-    
-        # Assign to the appropriate split.
-        if exp in test_set:
-            datasets['test_x'].append(x_data)
-            datasets['test_y'].append(y_data)
-        elif exp in val_set:
-            datasets['val_x'].append(x_data)
-            datasets['val_y'].append(y_data)
-        else:
-            datasets['train_x'].append(x_data)
-            datasets['train_y'].append(y_data)
+    # Load train data
+    if train[0]:
+        for expx, expy in train:
+            try:
+                x_file = os.path.join(workdir, f"x_{xd}_{ix[0]}x{ix[1]}_{expx}.npy")
+                y_file = os.path.join(workdir, f"y_{td}_{iy[0]}x{iy[1]}_{expy}.npy")
+
+                x_data = np.load(x_file)
+                y_data = np.load(y_file)
+
+                datasets['train_x'].append(x_data)
+                datasets['train_y'].append(y_data)
+
+            except Exception as e:
+                print(f"Error loading files '{x_file}' and/or '{y_file}': {e}")
+                continue
+
+    # Load test data
+    if test[0]:
+        for expx, expy in test:
+            try:
+                x_file = os.path.join(workdir, f"x_{xd}_{ix[0]}x{ix[1]}_{expx}.npy")
+                y_file = os.path.join(workdir, f"y_{td}_{iy[0]}x{iy[1]}_{expy}.npy")
+
+                x_data = np.load(x_file)
+                y_data = np.load(y_file)
+
+                datasets['test_x'].append(x_data)
+                datasets['test_y'].append(y_data)
+
+            except Exception as e:
+                print(f"Error loading files '{x_file}' and/or '{y_file}': {e}")
+                continue
+
+    # Load validation data
+    if val[0]:
+        for expx, expy in val:
+            try:
+                x_file = os.path.join(workdir, f"x_{xd}_{ix[0]}x{ix[1]}_{expx}.npy")
+                y_file = os.path.join(workdir, f"y_{td}_{iy[0]}x{iy[1]}_{expy}.npy")
+
+                x_data = np.load(x_file)
+                y_data = np.load(y_file)
+
+                datasets['val_x'].append(x_data)
+                datasets['val_y'].append(y_data)
+
+            except Exception as e:
+                print(f"Error loading files '{x_file}' and/or '{y_file}': {e}")
+                continue
+
     
     # Prepare the results dictionary.
     results = {
@@ -432,5 +457,8 @@ if data_source == 'MERRA2':
         results = load_merra_data(data_dir,windowsize, validation_year=validation_year_merra, test_year=test_year_merra)
 if data_source == 'WRF':
     data_dir = os.path.join(root, 'wrf_data')
+    train_experiment_wrf = parse_experiment_pairs(train_experiment_wrf)
+    test_experiment_wrf = parse_experiment_pairs(test_experiment_wrf)
+    val_experiment_wrf = parse_experiment_pairs(val_experiment_wrf)
     results = load_wrf_data(data_dir, X_resolution, Y_resolution,wrf_variables_imsize, wrf_labels_imsize,train = train_experiment_wrf, test = test_experiment_wrf, val=val_experiment_wrf)
 write_data(results, work_folder, val_pc = validation_percentage)
