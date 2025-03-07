@@ -110,7 +110,7 @@ test_experiment_wrf=("exp_02km_m03:exp_02km_m03")
 val_experiment_wrf=''     # Placeholder for WRF validation experiment (if needed)
 X_resolution_wrf='d01'    # Horizontal resolution identifier for X-axis
 Y_resolution_wrf='d01'    # Horizontal resolution identifier for Y-axis
-
+output_resolution=18      # Resolution, used to calculate the RMW for Y-axis
 # ------------------------------------------------------------------------------
 # Model Configuration: Settings for the Neural Network Model Training
 # ------------------------------------------------------------------------------
@@ -178,7 +178,8 @@ if [ "$wrf" -eq 1 ]; then
         -tew "${test_experiment_wrf[@]}" \
         -vew "${val_experiment_wrf[@]}" \
         -xd $X_resolution_wrf \
-        -td $Y_resolution_wrf
+        -td $Y_resolution_wrf \
+        -or $output_resolution
 fi
 
 # ===============================================================================================================================================
