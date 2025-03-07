@@ -10,171 +10,160 @@
 # This is designed for a specific purpose, not for general use                    #
 ###################################################################################
 #!/bin/bash
-# run_configs.sh
-# This script loops over a set of configurations. For each config it:
-#  1. Creates a temporary copy of job_br200.sh.
-#  2. Updates the identifier lines (lines 40–42) with the first token.
-#  3. Replaces line 90 and 91 using the “next 2” and “last 2” numeric tokens.
-#  4. Parses the id (in the form Axxbyy) and, based on xx and yy, modifies:
-#       - Lines 111 and 112: the experiment strings (using different km prefixes if A or b are H/h vs L/l).
-#       - Line 113: output_resolution (set to the numeric value of yy).
-#  5. For the “VMAX” run (default) no extra changes are needed.
-#  6. Then, after processing the first loop, line 24 (wrf flag) is changed from 1 to 0.
-#  7. The loop is repeated twice more: first setting mode to PMIN and plot_unit to Pa, then mode RMW and plot_unit to km.
-#  8. Each job file is submitted (sbatch), logged (appended to log.txt), and then deleted.
-#
-# IMPORTANT:
-# - The sed commands below assume the original job_br200.sh file’s line numbers match those given.
-# - You may need to adjust the sed line numbers if your file differs.
-# - The mapping from id to “m_code” is as follows:
-#     if xx=="18" then m01, if xx=="06" then m02, if xx=="02" then m03;
-#     similarly for yy.
-# - For the experiment string (train_experiment_wrf), the prefix is chosen by:
-#       * for the x-part, if the first letter A is H then "exp_02km_" else (if L) "exp_18km_"
-#       * for the y-part, if the fourth character (b) is h (or H) then "exp_02km_" else "exp_18km_"
-#
-# Set up the list of configs.
+# run_experiments.sh
+# This script loops through a set of configurations, modifies job_br200.sh accordingly,
+# submits the job via sbatch, and logs the changes.
+
+# Configurations: Each entry is: ID imsize_var_w imsize_var_h imsize_lab_w imsize_lab_h
 configs=(
-  "H18h18 64 64 64 64"
-  "H18l18 64 64 64 64"
-  "H18h02 25 25 200 200"
-  "H02h02 180 180 180 180"
-  "L18l18 64 64 64 64"
-  "L18h18 64 64 64 64"
-  "L18h02 25 25 180 180"
-  "H02l18 180 180 25 25"
-  "H02h18 180 180 25 25"
+    "H18h18 64 64 64 64"
+    "H18l18 64 64 64 64"
+    "H18h02 25 25 180 180"
+    "H02h02 180 180 180 180"
+    "L18l18 64 64 64 64"
+    "L18h18 64 64 64 64"
+    "L18h02 25 25 200 200"
+    "H02l18 200 200 25 25"
+    "H02h18 200 200 25 25"
 )
 
+# Mode variants: each entry is "mode_value plot_unit_value"
+modes=(
+  "VMAX m/s"
+  "PMIN Pa"
+  "RMW km"
+)
+
+# Template file (should be the original job_br200.sh)
+template="job_br200.sh"
+
+# Log file to record what was done
 logfile="log.txt"
-> "$logfile"  # reset logfile
 
-# Function to process one configuration.
-# Parameters:
-#   $1: the configuration string (e.g. "H18h18 64 64 64 64")
-#   $2: mode value (VMAX, PMIN, or RMW)
-#   $3: unit value (m/s, Pa, or km)
-process_config() {
-  local config_line="$1"
-  local mode_value="$2"
-  local unit_value="$3"
-
-  # Parse tokens
-  local id token2 token3 token4 token5
-  read -r id token2 token3 token4 token5 <<< "$config_line"
-
-  # Lines 40-42: update identifier-based values.
-  # text_report_name gets id+".txt", experiment_identification and model_name get id.
-  # (Assumes these are exactly on lines 40, 41, and 42.)
+# Function to run a sed substitution with debugging prints
+run_sed_debug() {
+  local pattern="$1"
+  local replacement="$2"
+  local file="$3"
+  local description="$4"
   
-  # Parse the id: expected format Axxbyy (e.g. H18h18)
-  local A="${id:0:1}"
-  local xx="${id:1:2}"
-  local b="${id:3:1}"
-  local yy="${id:4:2}"
-
-  # Map xx and yy to m-codes.
-  local m_code_x m_code_y
-  if [[ "$xx" == "18" ]]; then
-    m_code_x="m01"
-  elif [[ "$xx" == "06" ]]; then
-    m_code_x="m02"
-  elif [[ "$xx" == "02" ]]; then
-    m_code_x="m03"
-  else
-    m_code_x="m00"
-  fi
-
-  if [[ "$yy" == "18" ]]; then
-    m_code_y="m01"
-  elif [[ "$yy" == "06" ]]; then
-    m_code_y="m02"
-  elif [[ "$yy" == "02" ]]; then
-    m_code_y="m03"
-  else
-    m_code_y="m00"
-  fi
-
-  # Determine experiment prefixes.
-  local prefix_x prefix_y
-  if [[ "$A" == "H" ]]; then
-    prefix_x="exp_02km_"
-  else
-    prefix_x="exp_18km_"
-  fi
-
-  # For the y-part, decide based on letter b (assume lowercase for l means L-type).
-  if [[ "$b" == "h" || "$b" == "H" ]]; then
-    prefix_y="exp_02km_"
-  else
-    prefix_y="exp_18km_"
-  fi
-
-  local exp_x="${prefix_x}${m_code_x}"
-  local exp_y="${prefix_y}${m_code_y}"
-
-  # For output_resolution, use the numeric value of yy (strip leading zero if any)
-  local output_res
-  output_res=$(echo "$yy" | sed 's/^0*//')
-
-  # Create a temporary file from the original job file.
-  local tmp_file="job_${id}_${mode_value}.sh"
-  cp job_br200.sh "$tmp_file"
-
-  # Replace lines based on our configuration.
-  # Lines 40-42: update id values.
-  sed -i "40s/.*/text_report_name='${id}.txt'/" "$tmp_file"
-  sed -i "41s/.*/experiment_identification='${id}'/" "$tmp_file"
-  sed -i "42s/.*/model_name='${id}'/" "$tmp_file"
-
-  # Lines 90 and 91: update using the “next 2” and “last 2” numbers.
-  # (Assuming here that the two numbers for line 90 come from tokens 2 and 3,
-  # and for line 91 from tokens 4 and 5. Since the original format is like 'd01',
-  # we use just token2 and token4.)
-  sed -i "90s/.*/X_resolution_wrf='d${token2}'/" "$tmp_file"
-  sed -i "91s/.*/Y_resolution_wrf='d${token4}'/" "$tmp_file"
-
-  # Lines 111-113: update the train_experiment_wrf array and output_resolution.
-  # Here we assume that line 111 is for the x-part, 112 for the y-part, and 113 for output_resolution.
-  sed -i "111s/.*/train_experiment_wrf_x='${exp_x}'/" "$tmp_file"
-  sed -i "112s/.*/train_experiment_wrf_y='${exp_y}'/" "$tmp_file"
-  sed -i "113s/.*/output_resolution=${output_res}/" "$tmp_file"
-
-  # For the VMAX run, we assume the file already has mode='VMAX' and plot_unit='m/s'.
-  # For the PMIN and RMW runs we change:
-  if [[ "$mode_value" != "VMAX" ]]; then
-    # Change the mode on line 48 (assumed to be where mode is defined)
-    sed -i "48s/.*/mode='${mode_value}'/" "$tmp_file"
-    # Change the plot unit on line 43.
-    sed -i "43s/.*/plot_unit='${unit_value}'/" "$tmp_file"
-  fi
-
-  # Submit the job and log the submission.
-  sbatch "$tmp_file"
-  echo "Submitted job for config: [$config_line] with id: ${id}, mode: ${mode_value}, unit: ${unit_value}, X_resolution: d${token2}, Y_resolution: d${token4}, exp_x: ${exp_x}, exp_y: ${exp_y}, output_resolution: ${output_res}" >> "$logfile"
-
-  # Delete the temporary file.
-  rm "$tmp_file"
+  echo "----- Debug: $description -----"
+  echo "Before:"
+  grep -E "$pattern" "$file"
+  sed -i "s/$pattern/$replacement/" "$file"
+  echo "After:"
+  grep -E "$replacement" "$file"
+  echo "---------------------------------"
 }
 
-# --- First loop: VMAX run (default mode, unit m/s, with wrf flag still = 1) ---
+# Loop over each configuration
 for config in "${configs[@]}"; do
-  process_config "$config" "VMAX" "m/s"
+    # Split the config string into variables
+    read -r id imsize_var1 imsize_var2 imsize_lab1 imsize_lab2 <<< "$config"
+    
+    # The id is in the form Axxbyy, e.g. "H18h18"
+    A="${id:0:1}"      # First character (e.g., H or L) for left side
+    xx="${id:1:2}"     # Characters 2-3 (e.g., "18")
+    b="${id:3:1}"      # Fourth character (e.g., h or l) for right side
+    yy="${id:4:2}"     # Characters 5-6 (e.g., "18")
+    
+    # Determine experiment prefix based on the letters:
+    # For left side: if A is L or l, use "exp_18km_", otherwise "exp_02km_"
+    if [[ "$A" =~ [Ll] ]]; then
+      left_prefix="exp_18km_"
+    else
+      left_prefix="exp_02km_"
+    fi
+    
+    # For right side: if the 4th character is L or l, use "exp_18km_", else "exp_02km_"
+    if [[ "$b" =~ [Ll] ]]; then
+      right_prefix="exp_18km_"
+    else
+      right_prefix="exp_02km_"
+    fi
+    
+    # For output_resolution (line 113) we take the last two digits as a number (remove leading zeros if any)
+    output_res=$(echo "$yy" | sed 's/^0*//')
+    
+    # Loop over the three mode variants
+    for mode_variant in "${modes[@]}"; do
+      # Split the variant into mode and unit
+      read -r mode_val unit_val <<< "$mode_variant"
+      
+      # Create a temporary job file from the template
+      tmpfile="job_br200_${id}_${mode_val}.sh"
+      cp "$template" "$tmpfile"
+      
+      echo "====== Processing config: ${id}, mode: ${mode_val} ======"
+      
+      # 1. Update text_report_name (line 40)
+      run_sed_debug "^text_report_name=" "text_report_name='${id}.txt'" "$tmpfile" "Update text_report_name"
+      
+      # 2. Update experiment_identification (line 41)
+      run_sed_debug "^experiment_identification=" "experiment_identification='${id}'" "$tmpfile" "Update experiment_identification"
+      
+      # 3. Update model_name (line 42)
+      run_sed_debug "^model_name=" "model_name='${id}'" "$tmpfile" "Update model_name"
+      
+      # 4. Update mode (line 48 or similar)
+      run_sed_debug "^mode=" "mode='${mode_val}'" "$tmpfile" "Update mode"
+      
+      # 5. Update plot_unit
+      run_sed_debug "^plot_unit=" "plot_unit='${unit_val}'" "$tmpfile" "Update plot_unit"
+      
+      # 6. Update imsize_variables
+      run_sed_debug "^imsize_variables=" "imsize_variables=\"${imsize_var1} ${imsize_var2}\"" "$tmpfile" "Update imsize_variables"
+      
+      # 7. Update imsize_labels
+      run_sed_debug "^imsize_labels=" "imsize_labels=\"${imsize_lab1} ${imsize_lab2}\"" "$tmpfile" "Update imsize_labels"
+      
+      # 8. Determine X and Y resolutions based on xx and yy
+      if [ "$xx" == "18" ]; then
+        x_res="d01"
+      elif [ "$xx" == "06" ]; then
+        x_res="d02"
+      elif [ "$xx" == "02" ]; then
+        x_res="d03"
+      else
+        x_res="d01"
+      fi
+      
+      if [ "$yy" == "18" ]; then
+        y_res="d01"
+      elif [ "$yy" == "06" ]; then
+        y_res="d02"
+      elif [ "$yy" == "02" ]; then
+        y_res="d03"
+      else
+        y_res="d01"
+      fi
+      
+      # 9. Update X_resolution_wrf (line 90)
+      run_sed_debug "^X_resolution_wrf=" "X_resolution_wrf='${x_res}'" "$tmpfile" "Update X_resolution_wrf"
+      
+      # 10. Update Y_resolution_wrf (line 91)
+      run_sed_debug "^Y_resolution_wrf=" "Y_resolution_wrf='${y_res}'" "$tmpfile" "Update Y_resolution_wrf"
+      
+      # 11. Update output_resolution (line 113)
+      run_sed_debug "^output_resolution=" "output_resolution=${output_res}" "$tmpfile" "Update output_resolution"
+      
+      # 12. Update train_experiment_wrf and test_experiment_wrf arrays (lines 97-109 etc.)
+      run_sed_debug "\"exp_02km_\\(m[0-9][0-9]\\):exp_02km_\\(m[0-9][0-9]\\)\"" "\"${left_prefix}\\1:${right_prefix}\\2\"" "$tmpfile" "Update experiment arrays"
+      
+      # 13. Change the WRF flag from 1 to 0 (line 24)
+      run_sed_debug "^wrf=1" "wrf=0" "$tmpfile" "Update WRF flag"
+      
+      # Log what was done for this configuration and mode variant
+      echo "Processed config: ${id}, imsize_variables: ${imsize_var1} ${imsize_var2}, imsize_labels: ${imsize_lab1} ${imsize_lab2}, X_resolution: ${x_res}, Y_resolution: ${y_res}, output_resolution: ${output_res}, train_experiment: [prefixes: left=${left_prefix} , right=${right_prefix}], mode: ${mode_val}, plot_unit: ${unit_val}" >> "$logfile"
+      
+      # Submit the job
+      echo "Submitting job: $tmpfile"
+      #sbatch "$tmpfile"
+      
+      # Remove the temporary job file
+      rm "$tmpfile"
+      
+      echo "====== Finished processing ${id} for mode ${mode_val} ======"
+      echo ""
+    done
 done
-
-# --- Turn off WRF processing ---
-# Change line 24 in the original file from wrf=1 to wrf=0.
-sed -i "24s/.*/wrf=0/" job_br200.sh
-echo "Changed wrf flag to 0 in job_br200.sh" >> "$logfile"
-
-# --- Second loop: PMIN run (mode PMIN and plot unit Pa) ---
-for config in "${configs[@]}"; do
-  process_config "$config" "PMIN" "Pa"
-done
-
-# --- Third loop: RMW run (mode RMW and plot unit km) ---
-for config in "${configs[@]}"; do
-  process_config "$config" "RMW" "km"
-done
-
-echo "All jobs submitted. See $logfile for details."
