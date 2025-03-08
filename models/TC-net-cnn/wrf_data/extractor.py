@@ -112,8 +112,8 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
 
     max_wind_loc = np.unravel_index(np.argmax(wind_speed.values, axis=None), wind_speed.shape)
     min_psfc_loc = np.unravel_index(np.argmin(psfc_ds2.values, axis=None), psfc_ds2.shape)
-    dist_x = np.abs(max_wind_loc[1] - min_psfc_loc[1])
-    dist_y = np.abs(max_wind_loc[0] - min_psfc_loc[0])
+    dist_x = np.abs(max_wind_loc[2] - min_psfc_loc[2])
+    dist_y = np.abs(max_wind_loc[1] - min_psfc_loc[1])
     distance_km = np.sqrt(dist_x**2 + dist_y**2) * output_resolution
 
     y = np.array([[max_wind_speed, min_psfc, distance_km]])
