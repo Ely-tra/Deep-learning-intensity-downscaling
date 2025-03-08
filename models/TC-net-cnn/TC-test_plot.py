@@ -272,5 +272,5 @@ with open(text_report_path, 'w') as file:
     file.write(output_str + '\n')
     file.write('Predictions vs Actual Values:\n')
     for pred, true in zip(predict, test_y):
-        file.write(f"{pred:.6f}, {true:.6f}\n")
+        file.write(f"{float(pred):.6f}, {float(true):.6f}\n")
 print('Completed!')
