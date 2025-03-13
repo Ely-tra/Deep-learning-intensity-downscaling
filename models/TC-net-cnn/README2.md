@@ -123,13 +123,35 @@ Main directory for workflow outputs. Automatically generates these subfolders:
 1. Converts preprocessed MERRA2/WRF data into a standardized format.  
 2. Ensures cross-source compatibility before model ingestion.  
 
-**NOTE**: Files here are **automatically deleted** after workflow execution.  
+**NOTE**: Files here are **automatically deleted** after workflow execution.    
+
+---
+# Experiment Naming Configuration  
+**Location**: Line 38 of the job script  
+
+Configure experiment-specific naming conventions for outputs and models.  
 
 ---
 
-## Key Workflow Notes  
-- **Multi-Source Support**: Handles MERRA2 and WRF data via dedicated pipelines.  
-- **Model Compatibility**: The `temporary_folder` guarantees consistent input formatting.  
+## Parameters  
+
+| Parameter                   | Description                                                                                  |
+|-----------------------------|----------------------------------------------------------------------------------------------|
+| `text_report_name`          | Name of the CSV report comparing predictions and labels. Saved to `workdir/text_report/[name].csv`. Example: `vmax_validation` creates `vmax_validation.csv`. |
+| `experiment_identification` | Placeholder for human-readable experiment notes (no functional impact). Example: `merra2_vmax_test1`. |
+| `model_name`                | Base name for saved models. Final name includes:<br> - This base name<br> _ Data source (`MERRA2`, `WRF`)<br> _ Target label (`VMAX`, `PMIN`, `RMW`)<br> - Spatiotemporal enabled. <br> Example: `baseline` → `baseline_MERRA2_VMAX`. |
+| `plot_unit`                 | Explicit unit for evaluation plots (no auto-detection). Match to label source:<br> - IBTrACS: `knots` (VMAX), `millibars` (PMIN)<be>, `nmile` (RMW) - WRF: `m/s` (VMAX), `Pa` (PMIN), `km` (RMW). |
 
 ---
 
+## Usage Examples  
+1. **Basic Configuration**:  
+   ```bash
+   text_report_name="pmain_predictions.txt"  
+   model_name="hurricane_intensity"  
+   plot_unit="millibars"
+   ```
+Generates: `workdir/text_report/pmin_predictions.txt`
+
+Model saved as: `hurricane_intensity_MERRA2_PMIN`
+Or `hurricane_intensity_MERRA2_PMIN_st` if `st_embed` is set to 1 (line 68)
