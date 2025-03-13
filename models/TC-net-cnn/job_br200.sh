@@ -140,7 +140,7 @@ if [ "${merra[0]}" -eq 1 ]; then
         --datapath "$datapath" \
         --outputpath "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
-        --regions "$regions" \
+        --regions $regions \
         --minlat -90.0 --maxlat 90.0 \
         --minlon -180.0 --maxlon 180.0 \
         --maxwind 10000 --minwind 0 \
