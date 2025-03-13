@@ -33,8 +33,58 @@ This workflow preprocesses MERRA2 datasets and WRF idealized storm simulations t
 This script enables pairing variables from one experiment with labels from another. Cross-experimenting allows users to investigate complex nested-grid feedback mechanism from the WRF model.
 **Example**:  
 - **Input Variables**: Extracted from a WRF 18km × 18km resolution simulation.  
-- **Output Labels**: Derived from a nested WRF experiment (18km outer grid with 6km/2km nested grids).  
+- **Output Labels**: Derived from a nested WRF experiment (18km outer grid with 6km/2km nested grids).
 
+---
+
+# How to Run the Workflow  
+
+To run the entire workflow, execute the workflow using the `job_br200.sh` script, which centralizes configuration parameters. Advanced users may adjust additional parameters within individual Python scripts, though this is generally not required.  
+
+---
+
+## Execution Steps  
+1. **Job Script**: `job_br200.sh` defines configurable workflow parameters.  
+2. **Preprocessing Stages**:  
+   - **MERRA2**: 3 sequential preprocessing steps.  
+   - **WRF**: 1 preprocessing step.  
+3. **Model Pipeline**:
+   - Load preprocessed data.   
+   - Build model.   
+   - Save results.  
+
+---
+
+## Workflow Control  
+### Execution Sequence (Line 21 of `job_br200.sh`)  
+```bash
+# Example control sequence  
+merra=(1 1 1)  # MERRA2 preprocessing steps (1=enabled, 0=disabled)  
+wrf=1           # WRF preprocessing (1=enabled)  
+model_steps=(1 1 1)  # Model building, data loading, result saving
+```
+## Key Rules  
+
+### **Mutually Exclusive Execution**  
+- MERRA2 and WRF preprocessing cannot run concurrently.  
+- Submit separate jobs for each dataset.  
+
+### **WRF Default Behavior**  
+- MERRA2 preprocessing is automatically disabled when the data source is set to `WRF`, and vice versa (handled at line 49).  
+
+---
+
+## Modifying Workflow Steps  
+
+### **Example: Run Only the Final MERRA2 Step**  
+Edit line 23 in `job_br200.sh`:  
+```bash
+merra=(0 0 1)  # Skips MERRA2 Steps 1 and 2
+```
+---
+## NOTE
+	•	Output Conflicts: Ensure no overlapping jobs are running to prevent file corruption.
+	•	WRF-MERRA2 toggle: Line 49
 ---
 
 # Data & Output Configuration  
