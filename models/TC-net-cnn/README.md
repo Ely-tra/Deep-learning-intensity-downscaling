@@ -1,10 +1,11 @@
+
 # Workflow Description  
 
+## Introduction
 This workflow preprocesses MERRA2 datasets and WRF idealized storm simulations to generate **multi-channel NumPy arrays** and **corresponding cyclone labels**. Outputs are structured for direct use in machine learning pipelines.  
 
----
 
-## MERRA2 Data Preprocessing  
+### MERRA2 Data Preprocessing  
 - **Input**:  
   - MERRA2 atmospheric reanalysis data.  
   - IBTrACS historical cyclone tracks (CSV format).  
@@ -15,9 +16,9 @@ This workflow preprocesses MERRA2 datasets and WRF idealized storm simulations t
     - `PMIN`: Minimum sea level pressure (**millibars**)  
     - `RMW`: Radius of maximum wind (**nautical miles**)  
 
----
 
-## WRF Idealized Data Preprocessing  
+
+### WRF Idealized Data Preprocessing  
 - **Input**:  
   - WRF simulation outputs (e.g., idealized tropical cyclones).  
 - **Output**:  
@@ -27,15 +28,15 @@ This workflow preprocesses MERRA2 datasets and WRF idealized storm simulations t
     - `PMIN`: Minimum sea level pressure (**Pa**)  
     - `RMW`: Radius of maximum wind (**km**)  
 
----
 
-## WRF Cross-Experiment Variable-Label Mapping  
+
+### WRF Cross-Experiment Variable-Label Mapping  
 This script enables pairing variables from one experiment with labels from another. Cross-experimenting allows users to investigate complex nested-grid feedback mechanism from the WRF model.
 **Example**:  
 - **Input Variables**: Extracted from a WRF 18km × 18km resolution simulation.  
 - **Output Labels**: Derived from a nested WRF experiment (18km outer grid with 6km/2km nested grids).
 
----
+
 
 
 ## HISTORY:
@@ -48,64 +49,17 @@ This script enables pairing variables from one experiment with labels from anoth
 + Chanh Kieu: IU Earth and Atmospheric Sciences (ckieu@iu.edu)
 
 
-# How to Run the Workflow  
+# Model parameters (job_br200.sh) 
 
-To run the entire workflow, execute the workflow using the `job_br200.sh` script, which centralizes configuration parameters. Advanced users may adjust additional parameters within individual Python scripts, though this is generally not required.  
 
----
-
-## Execution Steps  
-1. **Job Script**: `job_br200.sh` defines configurable workflow parameters.  
-2. **Preprocessing Stages**:  
-   - **MERRA2**: 3 sequential preprocessing steps.  
-   - **WRF**: 1 preprocessing step.  
-3. **Model Pipeline**:
-   - Load preprocessed data.   
-   - Build model.   
-   - Save results.  
-
----
-
-## Workflow Control  
-### Execution Sequence (Line 21 of `job_br200.sh`)  
-```bash
-# Example control sequence  
-merra=(1 1 1)  # MERRA2 preprocessing steps (1=enabled, 0=disabled)  
-wrf=1           # WRF preprocessing (1=enabled)  
-build=(1 1 1)  # Model building, data loading, result saving
-```
-## Key Rules  
-
-### **Mutually Exclusive Execution**  
-- MERRA2 and WRF preprocessing cannot run concurrently.  
-- Submit separate jobs for each dataset.  
-
-### **WRF Default Behavior**  
-- MERRA2 preprocessing is automatically disabled when the data source is set to `WRF`, and vice versa (handled at line 49).  
-
----
-
-## Modifying Workflow Steps  
-
-### **Example: Run Only the Final MERRA2 Step**  
-Edit line 23 in `job_br200.sh`:  
-```bash
-merra=(0 0 1)  # Skips MERRA2 Steps 1 and 2
-```
----
-## NOTE
-	•	Output Conflicts: Ensure no overlapping jobs are running to prevent file corruption.
-	•	WRF-MERRA2 toggle: Line 49
----
-
-# File and Directory Paths Configuration  
+## Common input files/data path
 **Location**: Line 28 of the job script  
 
 Configure input data paths, preprocessing outputs, and model results for tropical cyclone prediction workflows.  
 
 ---
 
-## Input Data Paths  
+### Input Data Paths  
 | Parameter       | Description                                                                 |
 |-----------------|-----------------------------------------------------------------------------|
 | `besttrack`     | Path to IBTrACS dataset (CSV format) containing ground truth labels (e.g., storm intensity, location). |
@@ -113,10 +67,10 @@ Configure input data paths, preprocessing outputs, and model results for tropica
 | `wrf_base`      | Root folder for WRF model output files (alternative data source to MERRA2). |
 | `config`        | Path to CNN configuration file (defines model architecture/hyperparameters). |
 
+
 ---
 
-
-## Working Directory (`workdir`)  
+### Working Directory (`workdir`)  
 Main directory for workflow outputs. Automatically generates these subfolders:  
 
 | Subdirectory         | Purpose                                                                                   |
@@ -129,24 +83,24 @@ Main directory for workflow outputs. Automatically generates these subfolders:
 
 ---
 
-## Temporary Folder (`temporary_folder`)  
+### Temporary Folder (`temporary_folder`)  
 **Purpose**: Intermediate storage for unified model input files.  
 
-### Workflow Integration  
+#### Workflow Integration  
 1. Converts preprocessed MERRA2/WRF data into a standardized format.  
 2. Ensures cross-source compatibility before model ingestion.  
 
 **NOTE**: Files here are **automatically deleted** after workflow execution. To toggle it off, comment the last line in the job script.   
 
 ---
-# Experiment Naming Configuration  
+## Experiment Naming Configuration  
 **Location**: Line 38 of the job script  
 
 Configure experiment-specific naming conventions for outputs and models.  
 
 ---
 
-## Parameters  
+### Parameters  
 
 | Parameter                   | Description                                                                                  |
 |-----------------------------|----------------------------------------------------------------------------------------------|
@@ -157,7 +111,7 @@ Configure experiment-specific naming conventions for outputs and models.
 
 ---
 
-## Usage Examples  
+### Usage Examples  
 1. **Basic Configuration**:  
    ```bash
    text_report_name="pmin_predictions.txt"  
@@ -170,14 +124,14 @@ Model saved as: `hurricane_intensity_MERRA2_PMIN`
 Or `hurricane_intensity_MERRA2_PMIN_st` if `st_embed` is set to 1 (line 68)
 
 ---
-# Common Settings Configuration  
+## Common Parameters
 **Location**: Line 46 of the job script  
 
 Configure core experiment parameters and data source handling.  
 
 ---
 
-## Core Parameters  
+### Core Parameters  
 
 | Parameter       | Options                          | Description                                                                 |
 |-----------------|----------------------------------|-----------------------------------------------------------------------------|
@@ -189,14 +143,14 @@ Configure core experiment parameters and data source handling.
 **`temp_id`**: Unique identifier generated for each run to prevent file conflicts, will affect files inside  **`temporary_folder`** (line 34). This parameter should not be changed.
 
 ---
-# MERRA2 Configuration  
+## MERRA2 Parameters
 **Location**: Line 65 of the job script  
 
 Configure MERRA2-specific processing parameters for storm-centered data extraction and preprocessing.  
 
 ---
 
-## Core Parameters  
+### Core Parameters  
 
 | Parameter              | Type/Format              | Description                                                                 |
 |------------------------|--------------------------|-----------------------------------------------------------------------------|
@@ -206,25 +160,27 @@ Configure MERRA2-specific processing parameters for storm-centered data extracti
 | `list_vars`            | Array of variables       | MERRA2 meteorological variables to extract. Retains original units.<br>**Example**: `("U850" "V850" "SLP750")` = zonal wind, meridional wind (850 hPa), sea-level pressure (750 hPa). |
 | `windowsize_x`<br>`windowsize_y` | Degrees (integer) | Spatial extraction window size around storm center. Default: `18°×18°`. |
 
+
 ---
+### Data Splitting Configuration  
 
-## Data Splitting Configuration  
-
-### Year-Based Splitting (Default)  
+#### Year-Based Splitting (Default)  
 ```bash
 validation_years=(2014)  # Reserved for validation  
 test_years=(2017)        # Reserved for testing  
 random_split=0           # Disable percentage-based splitting  
 ```
 -   Training data: All years  **not**  in  `validation_years`  or  `test_years`.
-### Random Percentage Splitting
+#### Random Percentage Splitting
 ```bash
 random_split=1           # Enable percentage-based splits  
 val_pc=20                # Line 50, 20% of training data for validation  
 test_pc=10               # Line 62, 10% for testing  
 ```
 **Warning**: Random splitting may introduce time-series autocorrelation artifacts.
-## NaN Value Handling
+
+---
+### NaN Value Handling
 ```bash
 nan_fill_map="0,1:0,1,2,3;4,5:4,5,6,7;8,9:8,9,10,11"  
 ```
@@ -237,10 +193,11 @@ Due to the nature of the system used to generate MERRA2 data, extrapolation is n
     -   `0,1:0,1,2,3`  → If wind fields (indices 0,1) have NaNs, impute them and fields 2,3.
         
     -   Indices correspond to  `list_vars`  order (e.g.,  `U850=0`,  `V850=1`,  `T850=2`, etc.).
+ ---
 
-## Usage Examples
+### Usage Examples
 
-### Example 1: North Atlantic Basin Analysis
+#### Example 1: North Atlantic Basin Analysis
 ```bash
 regions="NA"  
 list_vars=("U850" "V850" "SLP750")  
@@ -248,21 +205,22 @@ validation_years=(2015)
 test_years=(2018)  
 ```
 
-### Example 2: Multi-Basin with Random Splitting
+#### Example 2: Multi-Basin with Random Splitting
 ```bash
 regions="EP NA"  
 random_split=1  
 val_pc=30  
 test_pc=15  
 ```
-# WRF (Weather Research and Forecasting) Configuration  
+---
+## WRF (Weather Research and Forecasting) Parameters  
 **Location**: Line 88 of the job script  
 
 Configure parameters for processing idealized storm simulations from WRF outputs.  
 
 ---
 
-## Core Parameters  
+### Core Parameters  
 
 
 | Parameter                  | Description                                                                 |
@@ -274,9 +232,9 @@ Configure parameters for processing idealized storm simulations from WRF outputs
 | `output_resolution`        | Resolution (km) for RMW calculation. Matches `Y_resolution_wrf` (e.g., 18 for d01). |
 
 
-
-## Experiment Mapping  
-### Training/Testing Setup  
+---
+### Experiment Mapping  
+#### Training/Testing Setup  
 
 | Parameter                  | Format & Purpose                                                                 | Example                                                                 |
 |----------------------------|----------------------------------------------------------------------------------|-------------------------------------------------------------------------|
@@ -307,8 +265,8 @@ d03 = 2km     # Second nested grid
 ```
 ---
 
-## Usage Examples  
-### 1. Basic Training Configuration  
+### Usage Examples  
+#### 1. Basic Training Configuration  
 ```bash
 # Train on 18km experiments m01-m10, nested grids (in this example, is characterized by the flag _02km_), test on m03  
 train_experiment_wrf=("exp_02km_m01:exp_02km_m01" "exp_02km_m02:exp_02km_m02" ...)  
@@ -317,7 +275,7 @@ X_resolution_wrf='d01'
 Y_resolution_wrf='d01'  
 output_resolution=18  
 ```
-### 2. Cross-Resolution Mapping
+#### 2. Cross-Resolution Mapping
 Use 18km input (d01), non-nested grid (in our setup, _18km means non-nested grid, and _02km means nested grid), to estimate 6km labels (d02) , nested grid.
 ```bash
 train_experiment_wrf=("exp_18km_m01:exp_02km_m01")  
@@ -325,14 +283,14 @@ X_resolution_wrf='d01'
 Y_resolution_wrf='d02'  
 ```
 ---
-# Model Configuration  
+## CNN Model Parameters
 **Location**: Line 115 of the job script  
 
 Configure training hyperparameters and model architecture settings.  
 
 ---
 
-## Core Training Parameters  
+### Training Parameters  
 
 | Parameter          | Description                                                                 | Default Value | Example        |
 |--------------------|-----------------------------------------------------------------------------|---------------|----------------|
@@ -342,18 +300,59 @@ Configure training hyperparameters and model architecture settings.
 | `image_size`       | Spatial dimensions of input images. Input images will be resized to fit the CNN architecture (height × width in pixels).              | 64            | 128            |
 
 ---
+# How to run the workflow?
+To run the entire workflow, execute the workflow using the `job_br200.sh` script, which centralizes configuration parameters. Advanced users may adjust additional parameters within individual Python scripts, though this is generally not required.  
 
-# MERRA2 Preprocessing Workflow  
+
+
+## Execution Steps  
+1. **Job Script**: `job_br200.sh` defines configurable workflow parameters.  
+2. **Preprocessing Stages**:  
+   - **MERRA2**: 3 sequential preprocessing steps.  
+   - **WRF**: 1 preprocessing step.  
+3. **Model Pipeline**:
+   - Load preprocessed data.   
+   - Build model.   
+   - Save results.  
+---
+### Workflow Control  
+#### Execution Sequence (Line 21 of `job_br200.sh`)  
+```bash
+# Example control sequence  
+merra=(1 1 1)  # MERRA2 preprocessing steps (1=enabled, 0=disabled)  
+wrf=1           # WRF preprocessing (1=enabled)  
+build=(1 1 1)  # Model building, data loading, result saving
+```
+---
+### Key Rules  
+
+#### **Mutually Exclusive Execution**  
+- MERRA2 and WRF preprocessing cannot run concurrently.  
+- Submit separate jobs for each dataset.  
+
+#### **WRF Default Behavior**  
+- MERRA2 preprocessing is automatically disabled when the data source is set to `WRF`, and vice versa (handled at line 49).  
+---
+
+### Modifying Workflow Steps  
+
+#### **Example: Run Only the Final MERRA2 Step**  
+Edit line 23 in `job_br200.sh`:  
+```bash
+merra=(0 0 1)  # Skips MERRA2 Steps 1 and 2
+```
+---
+## MERRA2 Preprocessing Scripts  
 **Location**: Line 135 of the job script  
 **Control Flags**: `merra=(1 1 1)` at line 23 (1=enabled, 0=disabled)  
 
 ---
 
-## Stage 1: Storm-Centered Domain Extraction  
+### Stage 1: Storm-Centered Domain Extraction  
 **Script**: `MERRA2tc_domain.py` 
 **Trigger Condition**: `merra[0]=1`  
 
-### What It Does  
+#### What It Does  
 1. **IBTrACS Processing**:  
    - Reads IBTrACS CSV to extract:  
      - Tropical cyclone timing  
@@ -366,13 +365,13 @@ Configure training hyperparameters and model architecture settings.
    - Preserves **all** MERRA2 variables/levels at native resolution  
    - Saves as NetCDF files with TC metadata  
 
-### Key Parameters  
+#### Key Parameters  
 ```bash
 --windowsize 18 18          # Spatial domain size (degrees)
 --regions "EP NA WP"        # Basins to process
 --outputpath "$workdir"     # Output directory: workdir/TC_domain/
 ```
-### Output Structure
+#### Output Structure
 ```
 workdir/TC_domain/
 └── [basin]/[year]/         # e.g., EP/2017/
@@ -384,19 +383,20 @@ Governed by these parameters:
 -   `besttrack`,  `datapath`,  `workdir`
     
 -   `windowsize_x`,  `windowsize_y`,  `regions`
-## Stage 2: Variable-Label Pair Generation
+---
+### Stage 2: Variable-Label Pair Generation
 
 **Script**:  `TC-extract_data_TSU.py`  
 **Trigger**:  `merra[1]=1`
 
-### What It Does
+#### What It Does
 
 -   From Stage 1 NetCDFs, extracts user-specified  `list_vars`  (e.g., U850, SLP750) and IBTrACS labels to form pairs of variables-labels NumPy savefiles.
     
 -   Organizes data into monthly/yearly TensorFlow-ready NumPy arrays.
     
 
-### Output Structure
+#### Output Structure
 ```
 workdir/Domain_data/[experiment_name]/data/[year]/{variables[month].npy,labels[month].npy}  
 ```
@@ -405,20 +405,20 @@ Governed by these parameters:
 -   `list_vars`,  `force_rewrite`
     
 -   `workdir`,  `windowsize_x`,  `windowsize_y`
-
-## Stage 3: NaN Value Imputation
+---
+### Stage 3: NaN Value Imputation
 
 **Script**:  `TC-CA_NaN_filling.py`  
 **Trigger**:  `merra[2]=1`
 
-### What It Does
+#### What It Does
 
 -   Fills missing values using wind field relationships defined in  `nan_fill_map`.
     
 -   Propagates fixes to dependent variables (e.g., T850 if linked to U850/V850).
     
 
-### Output
+#### Output
 
 -   Modified arrays in  `Domain_data/[experiment_name]/[year]/[Original_variables_filename]fixed.npy`  (NaN-free).  
     Governed by these parameters:
@@ -428,16 +428,16 @@ Governed by these parameters:
 -   `workdir`,  `windowsize_x`,  `windowsize_y`
 
 ---
-# WRF Preprocessing Workflow  
+## WRF Preprocessing Scripts  
 **Location**: Line 168 of the job script  
 **Control Flag**: `wrf=1` , at line 24 (1=enabled, 0=disabled)  
 
 ---
 
-## WRF Data Extraction  
+### WRF Data Extraction  
 **Script**: `wrf_data/extractor.py`
 
-### What It Does  
+#### What It Does  
 - Processes idealized storm simulations from WRF outputs into TensorFlow-ready datasets.  
 - Creates paired input-output files:  
   - **Inputs (x)**: Atmospheric variables from user-defined `VAR_LEVELS_WRF`  
@@ -452,7 +452,7 @@ workdir/wrf_data/
 - `x_{X_resolution}_{imsize_variables}_{x_experiment_name}.npy`  
 - `y_{Y_resolution}_{imsize_labels}_{y_experiment_name}.npy`  
 
-### Governed by Parameters  
+#### Governed by Parameters  
 - `imsize_variables`, `imsize_labels` (input/label dimensions)  
 - `X_resolution_wrf`, `Y_resolution_wrf` (grid resolutions: d01=18km, d02=6km, d03=2km)  
 - `train_experiment_wrf`, `test_experiment_wrf`, `val_experiment_wrf` (experiment pairs)  
@@ -460,22 +460,22 @@ workdir/wrf_data/
 
 ---
 
-## Key Notes  
+### Key Notes  
 - **Resolution Mapping**: Folder names (e.g., `exp_02km_m01`) are arbitrary - actual resolutions are controlled by `X/Y_resolution_wrf`.  
 - **Nested Grid Support**: Enables cross-resolution experiments (e.g., 18km inputs → 2km labels).  
 -  **Set separation**: Although the script is governed by `train_experiment_wrf`, `test_experiment_wrf`, and `val_experiment_wrf`, it does not explicitly separate data into those sets. The separation, both for MERRA2 and WRF, is carried out in the first Builder (next section) step.
 
 ---
-# Model Building & Evaluation Workflow  
+## Building Model and Plot Scripts
 **Location**: Line 186 of the job script  
 **Control Flags**: `build=(1 1 1)` (1=enabled, 0=disabled)  
 
 ---
 
-## Stage 1: Data Preparation (`TC-universal_data_reader.py`)  
+### Stage 1: Data Preparation (`TC-universal_data_reader.py`)  
 **Trigger**: `build[0]=1`  
 
-### What It Does  
+#### What It Does  
 - Organizes preprocessed MERRA2/WRF data into standardized TensorFlow datasets:  
   - `train_x`, `train_y` (training inputs/labels)  
   - `test_x`, `test_y` (testing inputs/labels)  
@@ -487,17 +487,17 @@ temporary_folder/train_x_[temp_id].npy
 temporary_folder/train_y_[temp_id].npy
 ```
 
-### Governed by Parameters  
+#### Governed by Parameters  
 - `data_source`, `var_num`, `st_embed`  
 - `validation_years`, `test_years`, `random_split`  
 - `X/Y_resolution_wrf`, `imsize_variables`, `imsize_labels`  
 
 ---
 
-## Stage 2: Model Training (`TC-build_model.py`)  
+### Stage 2: Model Training (`TC-build_model.py`)  
 **Trigger**: `build[1]=1`  
 
-### What It Does  
+#### What It Does  
 - Constructs CNN model from `config` file specifications  
 - Trains using prepared datasets with specified hyperparameters:  
 - Optimizer: Adam (`learning_rate`)  
@@ -508,17 +508,17 @@ temporary_folder/train_y_[temp_id].npy
 workdir/model/{model_name}_{mode}_{data_source}_{st_flag}
 ```
 
-### Governed by Parameters  
+#### Governed by Parameters  
 - `model_name`, `learning_rate`, `batch_size`, `num_epochs`  
 - `image_size` (must match preprocessing dimensions)  
 - `config` (CNN architecture definition)  
 
 ---
 
-## Stage 3: Evaluation & Reporting (`TC-test_plot.py`)  
+### Stage 3: Evaluation & Reporting (`TC-test_plot.py`)  
 **Trigger**: `build[2]=1`  
 
-### What It Does  
+#### What It Does  
 1. **Model Testing**:  
  - Evaluates on test set using final trained model  
  - Calculates RMSE, MAE between predictions and labels  
@@ -533,11 +533,14 @@ workdir/model/{model_name}_{mode}_{data_source}_{st_flag}
    workdir/text_report/{text_report_name}  
    ```  
 
-### Governed by Parameters  
+#### Governed by Parameters  
 - `text_report_name`, `plot_unit` (axis labels)  
 - `model_name`, `image_size`  
 
 ---
+# Acknowledgment  
+
+This project is funded by the U.S. National Science Foundation (NSF) under the principal investigator **Chanh Kieu**. Any dissemination of information, code, or data associated with this project must comply with NSF guidelines and regulations.  
 
 ***THE END***
 [^1]: [MERRA-2 FAQ](https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/)
