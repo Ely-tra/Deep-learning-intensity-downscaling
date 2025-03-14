@@ -72,7 +72,7 @@ To run the entire workflow, execute the workflow using the `job_br200.sh` script
 # Example control sequence  
 merra=(1 1 1)  # MERRA2 preprocessing steps (1=enabled, 0=disabled)  
 wrf=1           # WRF preprocessing (1=enabled)  
-model_steps=(1 1 1)  # Model building, data loading, result saving
+build=(1 1 1)  # Model building, data loading, result saving
 ```
 ## Key Rules  
 
@@ -345,7 +345,7 @@ Configure training hyperparameters and model architecture settings.
 
 # MERRA2 Preprocessing Workflow  
 **Location**: Line 135 of the job script  
-**Control Flags**: `merra=(1 1 1)` at line 21 (1=enabled, 0=disabled)  
+**Control Flags**: `merra=(1 1 1)` at line 23 (1=enabled, 0=disabled)  
 
 ---
 
@@ -430,7 +430,7 @@ Governed by these parameters:
 ---
 # WRF Preprocessing Workflow  
 **Location**: Line 168 of the job script  
-**Control Flag**: `wrf=1` , at line 22 (1=enabled, 0=disabled)  
+**Control Flag**: `wrf=1` , at line 24 (1=enabled, 0=disabled)  
 
 ---
 
