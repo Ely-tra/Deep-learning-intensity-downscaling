@@ -38,12 +38,12 @@ This script enables pairing variables from one experiment with labels from anoth
 
 
 
-
+---
 ## HISTORY:
 + Jan 26, 2024: created by Khanh Luong from the CNN workflow in CK's previous TCG model
 + May 14, 2024: cross-checked and cleaned up by CK
 + Oct 19, 2024: added a job script, further test, and cleaned up by CK to be consistent with VIT model
-
+---
 ## CONTRIBUTION:
 + Khanh Luong: IU Earth and Atmospheric Sciences (kmluong@iu.edu or mk223338@gmail.com)
 + Chanh Kieu: IU Earth and Atmospheric Sciences (ckieu@iu.edu)
