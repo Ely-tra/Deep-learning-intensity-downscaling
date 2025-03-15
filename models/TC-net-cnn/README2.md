@@ -232,9 +232,39 @@ build=(1 1 1)  # Model building, data loading, result saving
 merra=(0 0 0)  # Skips MERRA2 Steps 1-3
 wrf=1          # Activate WRF preprocessing (1=enabled)  
 build=(1 1 1)  # Model building, data loading, result saving
-```  
+```
+
+With this workflow control, the job script will call the following Python scripts:
+
+- `MERRA2TC_domain.py`: to generate TC domains from IBTracts CSV data and MERRA2 data, given a specific basin, years, and TC names. Note that:
+    * Input: MERRA2 model outputs and IbTrACs data. Output: NETCDF files containing  MERRA2 data centered on each TC center, with a given dimension.
+    * Domain files are organized by basin, year, and storm name in the following structure: BASIN/YEAR/NAME.
+    * Files are named using the convention: MERRA_TC{domain size}YYYYMMDDHH_{suffix}, where the domain size is denoted as SSxSS degrees, YYYYMMDDHH represents the timestamp, and the suffix is a unique identifier to distinguish multiple active storms recorded at the same time. For example, the file NA/2001/MERRA_TC18x182001010112_4 corresponds to one  (the fourth recorded one) of many TCs active at 12Z on January 1, 2001, in the North American basin, with a domain size of 18x18 degrees.
+    * If any pathway-related problem arises, it is from MERRA2TC_domain.py.
+
+- `TC-extract_data.py`: to extract some meteorological fields such as wind, temp, or RH for a small domain from Step 1. A related script `TC-extract_data_TSU.py` will produce other files containing additional TC intensity information such as the location of TC center, the day of the year in the form of sines and cosines (embedding position) that indicate when the frame is taken. Files are separated into months. Save as NumPy files. Note that
+    * Input: data from Step 1 outputs.
+    * Output: NumPy files with the same dimensions as Step 1 outputs but containing only specific variables and levels.
+    * Naming convention: CNNfeatures{number of channel used}{basin}.{domain size}{month}.npy
+    * If users want to run without additional information, use `TC-extract_data.py`. Need to revise this
+    * This script is currently hard-wired to some specific variable/levels. Need to revise this.
+    * There is some warning related to cfgrib, but it should be ok
+
+- `TC-CA_NaN_filling.py`: to eliminate NaN values from Step 2 outputs. Note that:
+    * Input: Step 2 outputs; 
+    * Output: NaN-free datasets.
+    * Naming convention: Step 2 names with suffix "fixed" before .npy, but with the same CNNfeatures{number of channel used}{basin}.{domain size}{month}fixed.npy
+
+- `TC-Split.py`: to separate data into two training/test datasets. Users need to set all path/sizes within the script. Note that
+    * Input: Features and labels files; 
+    * Output: Training and testing sets in .npy format.
+    * For this step 5, if one wants to check for each season, use the script `TC-Split_seasonal.py` to generate (x,y) test data for each season (month). This seasonal mode is however not fully tested.
+
+- `TC-model-build.py:` to train a VIT model for VMAX/PMIN/RMW with Step 5 output. Note there are separate script for Vmax, Pmin, and RMW. All model parameters are given inside the scripts. Need to manually edit these parameter and data paths for now.
+
+- `TC-test_plot.py`: VMAX/PMIN/RMW to evaluate model performance on a test set for Vmax.  Note that all test sets are named according to the convention test{number_of_channel}x/y.{domain_size}.npy.
 
 ---
 
 ## ACKNOWLEDGEMENT
-This project is funded by the U.S. National Science Foundation (NSF, Chanh Kieu, PI). Any dissemination of information, code, or data associated with this project must comply with open source terms, NSF guidelines and regulations.
+This project is funded by the U.S. National Science Foundation (NSF, Chanh Kieu, PI). Any dissemination of information, code, or data associated with this project must comply with open source terms, NSF guidelines, and regulations.
