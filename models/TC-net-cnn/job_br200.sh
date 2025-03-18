@@ -8,7 +8,7 @@
 # ==============================================================================
 #SBATCH -N 1
 #SBATCH -t 7:59:00
-#SBATCH -J TCNN-3vars
+#SBATCH -J TCNN-ctl
 #SBATCH -p gpu --gpus 1
 #SBATCH -A r00043
 #SBATCH --mem=128G
@@ -17,7 +17,7 @@ cd /N/slate/ckieu/deep-learning/TC-net-cnn/
 set -x
 
 # File/Directory for input data, output, and intermediate files
-workdir='/N/project/Typhoon-deep-learning/output/'   # Working directory for saving output files
+workdir='/N/project/Typhoon-deep-learning/output/ctl/'   # Working directory for saving output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to TC best track 
 merra2data='/N/project/Typhoon-deep-learning/data/nasa-merra2/'  # Directory containing raw MERRA2 data
 wrfdata="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base directory for WRF simulation data
@@ -100,6 +100,7 @@ echo "Working directory is $workdir"
 if [ "$data_source" = "MERRA2" ]; then
     text_report_name="${mode}TCNN_${var_num}c.txt"        # text report (saved under workdir/text_report)
     model_name="TCNN_${windowsize_x}w_${var_num}c"        # Model name assigned to each experiemnts
+    expName=""
 elif [ "$data_source" = "WRF" ]; then
     text_report_name="${mode}${expName}_${var_num}c.txt"  # text report (saved under workdir/text_report)
     model_name="${expName}_${var_num}c"                   # Model name assigned to each experiemnts
