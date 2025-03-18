@@ -249,6 +249,7 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
     train_indices = indices[test_samples + val_samples:]
     
     # Partition the data using the computed indices
+    print(f"Shape check {all_features.shape,all_labels.shape,all_space_times.shape}")
     train_x = all_features[train_indices]
     train_y = all_labels[train_indices]
     train_z = all_space_times[train_indices]

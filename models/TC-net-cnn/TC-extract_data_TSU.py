@@ -260,6 +260,7 @@ if __name__ == "__main__":
     print('Initiation completed.', flush=True)
 
     outputpath = os.path.join(workdir, 'Domain_data', f'exp_{var_num}features_{windowsize[0]}x{windowsize[1]}', 'data')
+    os.makedirs(outputpath, exist_ok=True)
 
     if not os.path.exists(inputpath):
         print(f"Must have the input data from Step 1 by now....exit {inputpath}")

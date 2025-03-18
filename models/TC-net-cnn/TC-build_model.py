@@ -405,7 +405,11 @@ load_data(temp_dir)
 
 # Normalize train data, which is always present
 train_x = np.transpose(train_x, (0, 2, 3, 1))
-train_x, train_y = normalize_channels(train_x, train_y[:,b])
+if mode == "ALL":
+    train_x, train_y = normalize_channels(train_x, train_y[:,0:3])
+else:
+    train_x, train_y = normalize_channels(train_x, train_y[:,b])
+
 # Check if train_z exists and should be normalized
 if 'train_z' in globals() and train_z is not None and st_embed:
     train_z = normalize_Z(train_z)
@@ -413,7 +417,10 @@ if 'train_z' in globals() and train_z is not None and st_embed:
 # Check if validation data exists before normalization and transposition
 if 'val_x' in globals() and 'val_y' in globals():
     val_x = np.transpose(val_x, (0, 2, 3, 1))
-    val_x, val_y = normalize_channels(val_x, val_y[:,b])
+    if mode == "ALL":
+        val_x, val_y = normalize_channels(val_x, val_y[:,0:3])
+    else:
+        val_x, val_y = normalize_channels(val_x, val_y[:,b])
 
 # Normalize val_z if it exists and st_embed is true
 if 'val_z' in globals() and val_z is not None and st_embed:
@@ -425,6 +432,7 @@ train_x = resize_preprocess(train_x, image_size, image_size, 'lanczos5')
 # Resize and preprocess val_x if it exists
 if 'val_x' in globals():
     val_x = resize_preprocess(val_x, image_size, image_size, 'lanczos5')
+
 # Assuming train_x is defined and checking the number of channels
 number_channels = train_x.shape[3]
 print('Input shape of the X features data: ',train_x.shape)

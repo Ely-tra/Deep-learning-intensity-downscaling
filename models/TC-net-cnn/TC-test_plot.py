@@ -202,6 +202,77 @@ custom_objects = {
     'rmse_1': rmse_for_output(0)
 }
 
+def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
+    if mode == "ALL":
+        test_y = truth[:,pc]
+        if pc == 0:
+            myUnit = "knot"
+            myMode = "VMAX"
+        elif pc == 1:
+            myUnit = "hPa"
+            myMode = "PMIN"
+        elif pc == 2:
+            myUnit = "nm"
+            myMode = "RMW"
+    else:
+        test_y = truth
+        myMode = mode
+        myUnit = unit
+
+    # Calculate metrics and store results
+    datadict[name + 'rmse'] = root_mean_squared_error(predict[:,pc], test_y)
+    datadict[name + 'MAE'] = MAE(predict[:,pc], test_y)
+    datadict[name] = predict[:,pc]
+
+    # Visualization
+    fig, axs = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={'width_ratios': [1.2, 1]})
+    axs[0].boxplot([datadict[name].reshape(-1), test_y])
+    axs[0].grid(True)
+    axs[0].set_ylabel(myUnit, fontsize=20)
+    axs[0].text(0.95, 0.05, '(a)', transform=axs[0].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
+                bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
+    axs[0].tick_params(axis='both', which='major', labelsize=14)
+    axs[0].set_xticklabels(['Predicted', 'Truth'], fontsize=20)
+
+    # Second subplot
+    axs[1].scatter(test_y, datadict[name].reshape(-1))
+    axs[1].grid()
+    axs[1].set_xlabel('Truth', fontsize=20)
+    axs[1].set_ylabel('Prediction', fontsize=20)
+    axs[1].text(0.95, 0.05, '(b)', transform=axs[1].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
+                bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
+    axs[1].plot(np.arange(min(test_y), max(test_y)), np.arange(min(test_y), max(test_y)), 'r-', alpha=0.8)
+    mae = datadict[name+'MAE']
+    rmse = datadict[name+'rmse']
+    axs[1].fill_between(np.arange(min(test_y), max(test_y)), 
+                        np.arange(min(test_y), max(test_y)) + mae, 
+                        np.arange(min(test_y), max(test_y)) - mae, 
+                        color='red', alpha=0.3)
+    axs[1].tick_params(axis='both', which='major', labelsize=14)
+    
+    # Legends with RMSE and MAE without markers
+    custom_lines = [
+                    Line2D([0], [0], color='red', lw=4, alpha=0.3),
+                    Line2D([0], [0], color='none', marker='', label=f'RMSE: {rmse:.2f}'),
+                    Line2D([0], [0], color='none', marker='', label=f'MAE: {mae:.2f}')]
+
+    axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
+
+    figPath = f"{report_directory}/fig_{myMode}{name}.png" 
+    textPath = f"{report_directory}/{myMode}{name}.txt" 
+    plt.savefig(figPath)
+    print(f"Saving result to: {figPath}")
+    print('RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE'])))
+    output_str = 'RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE']))
+    if not os.path.exists(report_directory):
+        os.makedirs(report_directory)
+    with open(textPath, 'w') as file:
+        file.write(f"Saving result to: {figPath}\n")
+        file.write(output_str + '\n')
+        file.write('Predictions vs Actual Values:\n')
+        for i in range(len(predict)):
+            file.write(f"{predict[i][pc]}, {test_y[i]} \n")
+
 #==============================================================================================
 # Main call
 #==============================================================================================
@@ -211,11 +282,15 @@ load_data(temp_dir)
 
 # Normalize the data before encoding
 test_x=np.transpose(test_x, (0, 2, 3, 1))
-test_x, test_y = normalize_channels(test_x, test_y[:,b])
+if mode == "ALL":
+    test_x, test_y = normalize_channels(test_x, test_y[:,0:3])
+else:
+    test_x, test_y = normalize_channels(test_x, test_y[:,b])
 test_x = resize_preprocess(test_x, image_size, image_size, 'lanczos5')
 if st_embed:
     test_z = normalize_Z(test_z)
 number_channels=test_x.shape[3]
+
 # Load model and perform predictions
 model = tf.keras.models.load_model(model_dir, custom_objects=custom_objects)
 name = model_name
@@ -223,54 +298,12 @@ if st_embed:
     predict = model.predict([test_x, test_z])
 else:
     predict = model.predict(test_x)
-
-# Calculate metrics and store results
-datadict[name + 'rmse'] = root_mean_squared_error(predict, test_y)
-datadict[name + 'MAE'] = MAE(predict, test_y)
-datadict[name] = predict
-
-# Visualization
-fig, axs = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={'width_ratios': [1.2, 1]})
-axs[0].boxplot([datadict[name].reshape(-1), test_y])
-axs[0].grid(True)
-axs[0].set_ylabel(unit, fontsize=20)
-axs[0].text(0.95, 0.05, '(a)', transform=axs[0].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
-            bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
-axs[0].tick_params(axis='both', which='major', labelsize=14)
-axs[0].set_xticklabels(['Predicted', 'Truth'], fontsize=20)
+print(f"Prediction output shape is {predict.shape}")
+if mode == "ALL":
+    for pc in range(3):
+        plotPrediction(datadict,predict,test_y,pc,mode,name,unit,report_directory)
+else:
+    plotPrediction(datadict,predict,test_y,0,mode,name,unit,report_directory)
 
 
-# Second subplot
-axs[1].scatter(test_y, datadict[name].reshape(-1))
-axs[1].grid()
-axs[1].set_xlabel('Truth', fontsize=20)
-axs[1].set_ylabel('Prediction', fontsize=20)
-axs[1].text(0.95, 0.05, '(b)', transform=axs[1].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
-            bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
-axs[1].plot(np.arange(min(test_y), max(test_y)), np.arange(min(test_y), max(test_y)), 'r-', alpha=0.8)
-mae = datadict[name+'MAE']
-rmse = datadict[name+'rmse']
-axs[1].fill_between(np.arange(min(test_y), max(test_y)), np.arange(min(test_y), max(test_y)) + mae, np.arange(min(test_y), max(test_y)) - mae, color='red', alpha=0.3)
-axs[1].tick_params(axis='both', which='major', labelsize=14)
-
-# Legends with RMSE and MAE without markers
-custom_lines = [
-                Line2D([0], [0], color='red', lw=4, alpha=0.3),
-                Line2D([0], [0], color='none', marker='', label=f'RMSE: {rmse:.2f}'),
-                Line2D([0], [0], color='none', marker='', label=f'MAE: {mae:.2f}')]
-
-axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
-
-plt.savefig(report_directory + '/fig_' + str(name) + '.png')
-print(f"Saving result to: {report_directory + '/fig_' + str(name) + '.png'}")
-print('RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE'])))
-output_str = 'RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE']))
-if not os.path.exists(report_directory):
-    os.makedirs(report_directory)
-with open(text_report_path, 'w') as file:
-    file.write(f"Saving result to: {report_directory + '/fig_' + str(name) + '.png'}\n")
-    file.write(output_str + '\n')
-    file.write('Predictions vs Actual Values:\n')
-    for pred, true in zip(predict, test_y):
-        file.write(f"{float(pred):.6f}, {float(true):.6f}\n")
 print('Completed!')

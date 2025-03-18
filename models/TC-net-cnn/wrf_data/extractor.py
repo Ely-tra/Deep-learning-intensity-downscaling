@@ -70,10 +70,10 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
         try:
             if lev is not None and 'bottom_top' in ds1[var].dims:
                 selected_data = ds1[var].isel(bottom_top=lev)
-            elif lev is not None and 'lev' in ds1[var].coords:
-                selected_data = ds1[var].sel(lev=lev)
             elif lev is not None and 'bottom_top_stag' in ds1[var].dims:
                 selected_data = ds1[var].isel(bottom_top_stag=lev)
+            elif lev is not None and 'lev' in ds1[var].coords:
+                selected_data = ds1[var].sel(lev=lev)
             else:
                 selected_data = ds1[var]
         except Exception:
@@ -108,13 +108,15 @@ def extract_core_variables(ds1, ds2, imsize1=(64, 64), imsize2=(64, 64),
     max_wind_speed = np.max(wind_speed.values)
 
     psfc_ds2 = ds2.PSFC.isel(south_north=slice(start_y2, end_y2), west_east=slice(start_x2, end_x2))
-    min_psfc = np.min(psfc_ds2.values)
+    min_psfc = np.min(psfc_ds2.values)/100.
 
     max_wind_loc = np.unravel_index(np.argmax(wind_speed.values, axis=None), wind_speed.shape)
     min_psfc_loc = np.unravel_index(np.argmin(psfc_ds2.values, axis=None), psfc_ds2.shape)
-    dist_x = np.abs(max_wind_loc[2] - min_psfc_loc[2])
-    dist_y = np.abs(max_wind_loc[1] - min_psfc_loc[1])
+    dist_x = np.abs(max_wind_loc[1] - min_psfc_loc[1])
+    dist_y = np.abs(max_wind_loc[2] - min_psfc_loc[2])
     distance_km = np.sqrt(dist_x**2 + dist_y**2) * output_resolution
+    #print(f"shape of wind and psfc are {max_wind_loc,min_psfc_loc}")
+    #print(f"output_resolution = {output_resolution}, distance_km = {distance_km},{dist_x,dist_y}")
 
     y = np.array([[max_wind_speed, min_psfc, distance_km]])
     return final_result, y
