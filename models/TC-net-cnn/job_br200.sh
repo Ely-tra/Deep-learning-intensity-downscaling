@@ -13,11 +13,11 @@
 #SBATCH -A r00043
 #SBATCH --mem=128G
 module load python/gpu/3.10.10
-cd /N/u/ckieu/BigRed200/model/TC-retrieval/TC-net-cnn-V1.0
+cd /N/slate/ckieu/deep-learning/TC-net-cnn/
 set -x
 
 # File/Directory for input data, output, and intermediate files
-workdir='/N/project/Typhoon-deep-learning/output/TCNN/'   # Working directory for saving output files
+workdir='/N/project/Typhoon-deep-learning/output/'   # Working directory for saving output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to TC best track 
 merra2data='/N/project/Typhoon-deep-learning/data/nasa-merra2/'  # Directory containing raw MERRA2 data
 wrfdata="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base directory for WRF simulation data
