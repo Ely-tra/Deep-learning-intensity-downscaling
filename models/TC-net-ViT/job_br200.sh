@@ -1,42 +1,35 @@
 #!/bin/bash -l
 #SBATCH -N 1
-#SBATCH -t 36:00:00
-#SBATCH -J TC-ViT
+#SBATCH -t 09:59:00
+#SBATCH -J ViT-ctl
 #SBATCH -p gpu --gpus 1
 #SBATCH -A r00043
 #SBATCH --mem=128G
 set -x
 module load PrgEnv-gnu
 module load python/gpu/3.10.10
-#cd /N/u/ckieu/BigRed200/model/Deep-learning-intensity-downscaling/models/TC-net-ViT
-cd /N/slate/trihnguy/Deep-learning-intensity-downscaling/models/TC-net-ViT
+cd /N/u/ckieu/BigRed200/model/TC-net-ViT/
 
-datapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'
-#workdir='/N/project/Typhoon-deep-learning/output/'
-workdir='/N/slate/trihnguy/output'
+# set up data input/output paths
+workdir='/N/project/Typhoon-deep-learning/output/ViTC/'
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'
-#
+wrfdata="/N/project/Typhoon-deep-learning/data/tc-wrf/"
+merrapath='/N/project/Typhoon-deep-learning/data/nasa-merra2/'
+
 # Set up experiment parameters, which will be used to generate Python scripts.
-#
-windowsize_x=19                # winddow size in x dim around the TC center 
-windowsize_y=19                # winddow size in y dim around the TC center
-x_size=64                      # resized of the x-dim
-y_size=64                      # resized of the y-dim
-kernel_size=7                  # kernel size for CNN architecture
-seasonal='NO'                  # option to do TC intensity retrieval for each month
-mode='VMAX'                    # mode of training for VMAX PMIN RMW
-st_embed=1                     # extra information for training, otherwise leave empty
-learning_rate=0.001            # learning rate for VIT model
-weight_decay=0.0001            # learning rate decay weight
-batch_size=256                 # batch size
-num_epochs=500                 # number of epochs
-patch_size=9                  # patch size for splitting images with VIT
-image_size=72                  # re-sized dimension before feeding into VIT
-projection_dim=64              # embedding dimension for VIT
-num_heads=4                    # number of parallel heads     
-transformer_layers=8           # number of enconder layers for VIT
-mlp_head_units="2048 1024"     # number of feed forward layers for each encoder block
-model_name='VIT_patchsize_9'  # model name
+mode='VMAX'                    # VMAX/PMIN/RMW/ALL
+data_source='MERRA2'           # WRF or MERRA2
+
+# workflow control
+merra=(1 1 1)                  # Array to control execution of MERRA2 processing (0 = off, 1 = on)
+wrf=0                          # Flag to control execution of WRF processing (0 = off, 1 = on)
+build=(1 1 1)                  # Array to control execution of builder scripts (0 = off, 1 = on)
+random_split=0                 # 0: split by year, 1: split randomly
+test_pc=10                     # fraction for test (only when random_split=1)
+val_pc=5                       # fraction for val (only when random_split=1)
+
+# MERRA2 configurations
+regions="EP NA WP"             # Basins to analyze (e.g., Eastern Pacific, North Atlantic, Western Pacific)
 validation_years=(2014)        # validation years to monitor/save best model, e.g. (2015 2016 ...)
 test_years=(2017)              # test years to verify... this is IMPORTANT for TC intensity
 xfold=10                       # NO NEED: number of folds for statistical robustness check
@@ -44,114 +37,134 @@ kfold='NO'                     # NO NEED: option to do k-fold statistical testin
 list_vars=("U850" "V850" "T850" "RH850" \
            "U950" "V950" "T950" "RH950" \
            "U750" "V750" "T750" "RH750" \
-           "SLP750")
-var_num=${#list_vars[@]}
-list_vars="${list_vars[@]}"
-tcDomainPath="${workdir}/TC_domain_${model_name}/"
-data_source='MERRA2' # WRF MERRA2
-work_folder='/N/slate/trihnguy/output'
-test_experiment_wrf=(5)  # Define test experiments (modify as needed)
-validation_experiment_wrf=() # Add section number in if needed 
-validation_percentage=10
-report_name='report_patchsize_9_19x19.txt'
-temp_id=$(echo "$(date +%s%N)$$$BASHPID$RANDOM$(uuidgen)" | sha256sum | tr -dc 'A-Za-z0-9' | head -c10)
-test_pc=10
-val_pc=20
-test_exp_wrf=5
-random_split=1
+           "U200" "V200" "T200" "SLP750")
 
-#================
-#WRF
-#================
-experiment_identification='H18l18'
-imsize_variables="72 72"  # Image size for variables
-imsize_labels="72 72"  # Image size for labels
-wrf_base="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base path for WRF data
-VAR_LEVELS_WRF=("U01" "U02" "U03" "V01" "V02" "V03" "T01" "T02" "T03" "QVAPOR01" "QVAPOR02" "QVAPOR03" "PSFC")
-test_exp_wrf=5
-#====================
-
-# Running the full workflow
-step1=0
-step2=0
-step3=0
-step4=0
-step5=0
-step6=0
-step7=0
-
-if [ "$data_source" == "MERRA2" ]; then
-    step1=1
-    step2=1
-    step3=1
-    step5=1
-    step6=1
-    step7=1
-elif [ "$data_source" == "WRF" ]; then
-    step4=1
-    step5=1
-    step6=1
-    step7=1
+# WRF configurations
+expName='H02h02'
+imsize_variables="189 189"     # Image size for x data
+imsize_labels="189 189"        # Image size for y data
+X_resolution_wrf='d03'         # Horizontal resolution identifier for X-axis
+Y_resolution_wrf='d03'         # Horizontal resolution identifier for Y-axis
+wrf_vars=("U01" "U02" "U03" "U10" "V01" "V02" \
+          "V03" "V10" "T01" "T02" "T03" "T08" \
+          "QVAPOR01" "QVAPOR02" "QVAPOR03" "PSFC")
+val_experiment_wrf=''          # Placeholder for WRF validation experiment (if needed)
+train_experiment_wrf=(         # experiment for x: experiment for y
+                            "exp_02km_m01:exp_02km_m01"
+                            "exp_02km_m02:exp_02km_m02"
+                            "exp_02km_m04:exp_02km_m04"
+                            "exp_02km_m05:exp_02km_m05"
+                            "exp_02km_m06:exp_02km_m06"
+                            "exp_02km_m07:exp_02km_m07"
+                            "exp_02km_m08:exp_02km_m08"
+                            "exp_02km_m09:exp_02km_m09"
+                            "exp_02km_m10:exp_02km_m10"
+)
+test_experiment_wrf=("exp_02km_m03:exp_02km_m03")
+if [ $Y_resolution_wrf == "d01"  ]; then
+    dx=18
+elif [ $Y_resolution_wrf == "d02"  ]; then
+    dx=6
+elif [ $Y_resolution_wrf == "d03"  ]; then
+    dx=2
 fi
 
-if [ "$step1" == "1" ]; then
+# VIT model settings
+st_embed=0                     # space-time embedding
+windowsize_x=19                # winddow size in x dim around the TC center
+windowsize_y=19                # winddow size in y dim around the TC center
+x_size=72                      # resized of the x-dim
+y_size=72                      # resized of the y-dim
+seasonal='NO'                  # option to do TC intensity retrieval for each month
+learning_rate=0.001            # learning rate for VIT model
+weight_decay=0.0001            # learning rate decay weight
+batch_size=256                 # batch size
+num_epochs=500                 # number of epochs
+patch_size=12                  # patch size for splitting images with VIT
+image_size=72                  # re-sized dimension before feeding into VIT
+projection_dim=64              # embedding dimension for VIT
+num_heads=4                    # number of parallel heads
+transformer_layers=8           # number of enconder layers for VIT
+mlp_head_units="2048 1024"     # number of feed forward layers for each encoder block
+
+# cross check workflow and parameters
+if [ "$data_source" == "MERRA2" ]; then
+    wrf=0
+    var_num=${#list_vars[@]}
+    expName="ViTC"
+    echo "Running $var_num variables ${list_vars[@]}"
+elif [ "$data_source" == "WRF" ]; then
+    merra=(0 0 0)
+    var_num=${#wrf_vars[@]}
+    echo "Running $var_num variables ${wrf_vars[@]}"
+    st_embed=0
+fi
+model_name="VIT_${mode}${expName}_${var_num}c_${windowsize_x}w"
+report_name="${model_name}.txt"
+temp_id=$(echo "$(date +%s%N)$$$BASHPID$RANDOM$(uuidgen)" | sha256sum | tr -dc 'A-Za-z0-9' | head -c10)
+workdir="${workdir}/${model_name}/"
+
+# MERRA 2 pre-processing
+if [ "${merra[0]}" -eq 1 ]; then
     echo "Running step 1: MERRA2tc_domain.py ..."
     python MERRA2tc_domain.py \
         --csvdataset "$besttrack" \
-        --datapath "$datapath" \
+        --datapath "$merrapath" \
         --outputpath "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
-        --regions EP NA WP \
+        --regions $regions \
         --minlat -90.0 --maxlat 90.0 \
         --minlon -180.0 --maxlon 180.0 \
         --maxwind 10000 --minwind 0 \
         --maxpres 10000 --minpres 0 \
         --maxrmw 10000 --minrmw 0
 else
-    echo "Step 1: MERRA2tc_domain.py will be skipped"
+    echo "MERRA step 1: MERRA2tc_domain.py will be skipped"
 fi
 
-if [ "$step2" == "1" ]; then
+if [ "${merra[1]}" -eq 1 ]; then
     echo "Running step 2: TC-extract_data_TSU.py ..."
     python TC-extract_data_TSU.py \
         --workdir "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
-        --list_vars $list_vars \
+        --list_vars ${list_vars[@]} \
         --force_rewrite True
 else
-    echo "Step 2 TC-extract_data_TSU.py will be skipped"
+    echo "MERRA step 2: TC-extract_data_TSU.py will be skipped"
 fi
 
-if [ "$step3" == "1" ]; then
+if [ "${merra[2]}" -eq 1 ]; then
     echo "Running step 3: TC-CA_NaN_filling_kfold.py ..."
     python TC-CA_NaN_filling_kfold.py \
         --workdir "$workdir" \
         --windowsize "$windowsize_x" "$windowsize_y" \
         --var_num "$var_num"
 else 
-    echo "Step 3 TC-CA_NaN_filling_kfold.py will be skipped"
+    echo "MERRA step 3: TC-CA_NaN_filling_kfold.py will be skipped"
 fi
 
-#This step is to randomize data for all years... no longer needed
-#because it produces a wrong sampling for TC intensity retrieval
-#python TC-Split_KFold.py --workdir $workdir --windowsize \
-#$windowsize_x $windowsize_y --kfold $xfold --var_num $var_num
-
-if [ "$step4" == "1" ]; then
+# WRF preprocessing
+if [ "$wrf" -eq 1 ]; then
     echo "Running step 4: extractor.py ..."
     python wrf_data/extractor.py \
-        -exp_id $experiment_identification\
         -ix $imsize_variables\
         -iy $imsize_labels\
         -r $workdir \
-        -b $wrf_base \
-        -vl "${VAR_LEVELS_WRF[@]}"
+        -b $wrfdata \
+        -vl "${wrf_vars[@]}" \
+        -xew "${train_experiment_wrf[@]}" \
+        -tew "${test_experiment_wrf[@]}" \
+        -vew "${val_experiment_wrf[@]}" \
+        -xd $X_resolution_wrf \
+        -td $Y_resolution_wrf \
+        -or $dx
 else
-    echo "Step 4 extractor.py will be skipped"
+    echo "WRF step extractor.py will be skipped"
 fi
 
-if [ "$step5" == "1" ]; then
-    echo "Running step 4: readdata ..."
+# VIT model build
+if [ "${build[0]}" -eq 1 ]; then
+    echo "Running step 5: readdata ..."
     python TC-universal_data_reader.py \
         --root $workdir \
         --windowsize $windowsize_x $windowsize_y \
@@ -162,16 +175,22 @@ if [ "$step5" == "1" ]; then
         -temp "${workdir}" \
         -ss ${data_source} \
         -tid "$temp_id" \
-        -tew $test_exp_wrf \
         -r_split $random_split \
         -test_pc $test_pc \
-        -val_pc $val_pc
+        -val_pc $val_pc \
+        -wrf_ix $imsize_variables \
+        -wrf_iy $imsize_labels \
+        -xew "${train_experiment_wrf[@]}" \
+        -tew "${test_experiment_wrf[@]}" \
+        -vew "${val_experiment_wrf[@]}" \
+        -xd $X_resolution_wrf \
+        -td $Y_resolution_wrf
 else
-    echo "Step 5 TC-universal_data_reader.py will be skipped"
+    echo "Build step 1: TC-universal_data_reader.py will be skipped"
 fi
 
-if [ "$step6" == "1" ]; then
-    echo "Running step 4: TC-build_model.py ..."
+if [ "${build[1]}" -eq 1 ]; then
+    echo "Running step 6: TC-build_model.py ..."
     python TC-build_model.py \
         --mode $mode \
         --root $workdir \
@@ -194,13 +213,13 @@ if [ "$step6" == "1" ]; then
         --validation_year "${validation_years[@]}" \
         --test_year "${test_years[@]}" \
         --data_source $data_source \
-        --work_folder $work_folder \
+        --work_folder $workdir \
         -tid "$temp_id"
 else
-    echo "Step 6 TC-build_model.py will be skipped"    
+    echo "Build step 2: TC-build_model.py will be skipped"    
 fi
 
-if [ "$step7" == "1" ]; then
+if [ "${build[2]}" -eq 1 ]; then
     echo "Running step 7: TC-test_plot.py ..."
     python TC-test_plot.py \
         --mode $mode \
@@ -212,9 +231,10 @@ if [ "$step7" == "1" ]; then
         --model_name $model_name \
         --work_folder $workdir \
         --data_source $data_source \
+        --text_report_name $report_name \
         -tid "$temp_id"
 else
-    echo "Step 7 TC-test_plot.py will be skipped"
+    echo "Build step 3: TC-test_plot.py will be skipped"
 fi
 
 #find "$workdir/temp/" -type f -name "*$temp_id*" -delete

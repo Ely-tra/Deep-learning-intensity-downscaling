@@ -13,16 +13,28 @@ def parse_args():
     parser.add_argument('-st', '--st_embed', type=int, default=0, help='Including space-time embedded')
     parser.add_argument('-vym', '--validation_year_merra', nargs='+', type=int, default=[2014], help='Year(s) taken for validation (MERRA2 dataset)')
     parser.add_argument('-tym', '--test_year_merra', nargs='+', type=int, default=[2017], help='Year(s) taken for test (MERRA2 dataset)')
-    parser.add_argument('-tew', '--test_experiment_wrf', nargs='+', type=int, default=[5], help='Experiment taken for test (WRF dataset)')
-    parser.add_argument('-vew', '--validation_experiment_wrf', nargs='+', type=int, default=None, help='Experiment taken for validation (WRF dataset)')
+    parser.add_argument('-xew', '--train_experiment_wrf', type=str, nargs='+', 
+                        default=["exp_02km_m01:exp_02km_m01", "exp_02km_m02:exp_02km_m02", 
+                                 "exp_02km_m04:exp_02km_m04", "exp_02km_m05:exp_02km_m05",
+                                 "exp_02km_m06:exp_02km_m06", "exp_02km_m07:exp_02km_m07", 
+                                 "exp_02km_m08:exp_02km_m08", "exp_02km_m09:exp_02km_m09",
+                                 "exp_02km_m10:exp_02km_m10"],
+                        help='WRF experiment folders for training (inputs), form x:y')
+    parser.add_argument('-tew', '--test_experiment_wrf', type=str, nargs='+', 
+                        default=["exp_02km_m03:exp_02km_m03"],
+                        help='WRF experiment folders for testing (targets)')
+    parser.add_argument('-vew', '--val_experiment_wrf', type=str, nargs='*', default=[], 
+                        help='WRF experiment folders for validation (default: empty list)')
+    parser.add_argument('-xd', '--X_resolution', type=str, default='d01', 
+                        help='X resolution string in filename (e.g. d01)')
+    parser.add_argument('-td', '--Y_resolution', type=str, default='d01', 
+                        help='Y resolution string in filename (e.g. d01)')
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source to conduct experiment on')
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
     parser.add_argument('-val_pc', '--validation_percentage', type=int, default=10, 
                         help='Validation set split percentage (based on train set), if a specific validation set is not provided.')
     parser.add_argument('-test_pc', '--test_percentage', type=int, default=10, 
                         help='Test set split percentage (based on train set), if a specific test set is not provided.')
-    parser.add_argument('-wrf_eid', '--wrf_experiment_identification', type = str, default = 'H18h18', 
-                        help =  'WRF experiment identification, H/L 18/06/02 h/l 18/06/02, please read wrf/extractor.py for a better understanding.')
     parser.add_argument('-wrf_ix', '--wrf_variables_imsize', type = int, nargs=2, default = [64,64], 
                         help = 'Image size for wrf variable data, for data identification only')
     parser.add_argument('-wrf_iy', '--wrf_labels_imsize', type = int, nargs=2, default = [64,64], 
@@ -237,6 +249,7 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
     train_indices = indices[test_samples + val_samples:]
     
     # Partition the data using the computed indices
+    print(f"Shape check {all_features.shape,all_labels.shape,all_space_times.shape}")
     train_x = all_features[train_indices]
     train_y = all_labels[train_indices]
     train_z = all_space_times[train_indices]
@@ -263,29 +276,45 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
     }
     
     return results
-def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
+def parse_experiment_pairs(experiment_list):
+    """
+    Converts a list of strings in the format "exp_xx:exp_xx" into a list of tuples (exp_xx, exp_xx).
+    If the input is [''], it returns [''] unchanged.
+
+    :param experiment_list: List of strings in "exp_xx:exp_xx" format.
+    :return: List of tuples (exp_xx, exp_xx) or [''] if input is [''].
+    """
+    if experiment_list == ['']:
+        return experiment_list  # Return unchanged if input is ['']
+    
+    return [tuple(exp.split(":")) for exp in experiment_list]
+def load_wrf_data(workdir, xd, td, ix, iy, train=None, test=None, val=None):
     """
     Load and split paired x and y .npy files from the given working directory.
     
     Files are assumed to be in the subfolder: workdir / "wrf_data"
     
     The x-files must follow the pattern:
-        x_{eid}_{ix[0]}_{ix[1]}_m<digits>.npy
+        x_{xd}_{ix[0]}x{ix[1]}_{exp}.npy
     and the y-files must follow the pattern:
-        y_{eid}_{iy[0]}_{iy[1]}_m<digits>.npy
+        y_{td}_{iy[0]}x{iy[1]}_{exp}.npy
 
-    The <digits> part (extracted from after '_m' and before '.npy') is converted
-    to an integer. If this integer is in the provided 'test' collection, the pair
-    is added to the test split. If in the 'val' collection (if provided), it is
-    added to the validation split. Otherwise, the pair is added to the training split.
+    Here, xd and td denote the x and y resolutions, ix and iy the image sizes,
+    and exp represents the experiment id. The exp value is used to assign each pair
+    to the appropriate split: if exp is in the provided test collection, the pair
+    is added to the test split; if in the validation collection (if provided), it is
+    added to the validation split; otherwise, it is added to the training split.
     
-    Parameters:
+    Parameters:e
         workdir (str or Path): The base directory containing the "wrf_data" folder.
-        eid (str or int): The experiment ID used in the file names.
-        ix (list or tuple): Two elements for the x file indices.
-        iy (list or tuple): Two elements for the y file indices.
-        test (iterable of int, optional): m-numbers to assign to the test set.
-        val (iterable of int, optional): m-numbers to assign to the validation set.
+        xd (str): The x resolution used in the file names.
+        td (str): The y resolution used in the file names.
+        ix (list or tuple): Two elements for the x file image size.
+        iy (list or tuple): Two elements for the y file image size.
+        test (iterable, optional): Experiment ids to assign to the test set.
+        val (iterable, optional): Experiment ids to assign to the validation set.
+        train (iterable, optional): Experiment ids to assign to the training set (unused –
+                                      any exp not in test or val goes to train).
     
     Returns:
         dict: A dictionary with keys:
@@ -296,13 +325,12 @@ def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
     """
     # Ensure workdir is a Path object and point to the "wrf_data" subfolder.
     workdir = Path(workdir)
-    data_dir = workdir
-
+    data_dir = workdir  # adjust if your "wrf_data" folder is in a subfolder, e.g., workdir / "wrf_data"
+    
     # Prepare the test and validation sets.
     test_set = set(test) if test is not None else set()
-    if val is not None:
-        val_set = set(val)
-
+    val_set = set(val) if val is not None else set()
+    
     # Initialize dataset containers.
     datasets = {
         'train_x': [],
@@ -310,68 +338,75 @@ def load_wrf_data(workdir, eid, ix, iy, test=None, val=None):
         'test_x': [],
         'test_y': []
     }
-    if val is not None:
+    if val[0] != '':
         datasets['val_x'] = []
         datasets['val_y'] = []
+    
+    # Load train data
+    if train[0]:
+        for expx, expy in train:
+            try:
+                x_file = os.path.join(workdir, f"x_{xd}_{ix[0]}x{ix[1]}_{expx}.npy")
+                y_file = os.path.join(workdir, f"y_{td}_{iy[0]}x{iy[1]}_{expy}.npy")
 
-    # Define the pattern for x files using the ix indices.
-    pattern_x = f"x_{eid}_{ix[0]}x{ix[1]}_m*.npy"
-    x_files = sorted(data_dir.glob(pattern_x))
-    # Regular expression to extract the m-number from the filename.
-    m_regex = re.compile(r'_m(\d+)\.npy$')
+                x_data = np.load(x_file)
+                y_data = np.load(y_file)
 
-    # Process each x file.
-    for x_file in x_files:
-        match = m_regex.search(x_file.name)
-        if not match:
-            # Skip any file that doesn't match the expected pattern.
-            continue
-        m_str = match.group(1)
-        try:
-            m_number = int(m_str)
-        except ValueError:
-            continue  # skip if conversion fails
+                datasets['train_x'].append(x_data)
+                datasets['train_y'].append(y_data)
 
-        # Construct the corresponding y file name using the iy indices.
-        y_filename = f"y_{eid}_{iy[0]}x{iy[1]}_m{m_str}.npy"
-        y_file = data_dir / y_filename
+            except Exception as e:
+                print(f"Error loading files '{x_file}' and/or '{y_file}': {e}")
+                continue
 
-        if not y_file.exists():
-            print(f"Warning: y file '{y_filename}' does not exist for x file '{x_file.name}'. Skipping this pair.")
-            continue
+    # Load test data
+    if test[0]:
+        for expx, expy in test:
+            try:
+                x_file = os.path.join(workdir, f"x_{xd}_{ix[0]}x{ix[1]}_{expx}.npy")
+                y_file = os.path.join(workdir, f"y_{td}_{iy[0]}x{iy[1]}_{expy}.npy")
 
-        # Load the numpy arrays.
-        try:
-            x_data = np.load(x_file)
-            y_data = np.load(y_file)
-        except Exception as e:
-            print(f"Error loading files '{x_file.name}' and/or '{y_filename}': {e}")
-            continue
+                x_data = np.load(x_file)
+                y_data = np.load(y_file)
 
-        # Assign to the appropriate split.
-        if m_number in test_set:
-            datasets['test_x'].append(x_data)
-            datasets['test_y'].append(y_data)
-        elif val is not None and m_number in val_set:
-            datasets['val_x'].append(x_data)
-            datasets['val_y'].append(y_data)
-        else:
-            datasets['train_x'].append(x_data)
-            datasets['train_y'].append(y_data)
+                datasets['test_x'].append(x_data)
+                datasets['test_y'].append(y_data)
 
+            except Exception as e:
+                print(f"Error loading files '{x_file}' and/or '{y_file}': {e}")
+                continue
+
+    # Load validation data
+    if val[0]:
+        for expx, expy in val:
+            try:
+                x_file = os.path.join(workdir, f"x_{xd}_{ix[0]}x{ix[1]}_{expx}.npy")
+                y_file = os.path.join(workdir, f"y_{td}_{iy[0]}x{iy[1]}_{expy}.npy")
+
+                x_data = np.load(x_file)
+                y_data = np.load(y_file)
+
+                datasets['val_x'].append(x_data)
+                datasets['val_y'].append(y_data)
+
+            except Exception as e:
+                print(f"Error loading files '{x_file}' and/or '{y_file}': {e}")
+                continue
+
+    
     # Prepare the results dictionary.
     results = {
-        'train_x.npy': f_r(datasets['train_x']),
-        'train_y.npy': f_r(datasets['train_y']),
-        'test_x.npy': f_r(datasets['test_x']),
-        'test_y.npy': f_r(datasets['test_y'])
+        'train_x.npy': np.concatenate(datasets['train_x']),
+        'train_y.npy': np.concatenate(datasets['train_y']),
+        'test_x.npy': np.concatenate(datasets['test_x']),
+        'test_y.npy': np.concatenate(datasets['test_y'])
     }
-    if val is not None:
-        results['val_x.npy'] = datasets['val_x']
-        results['val_y.npy'] = datasets['val_y']
-
+    if val[0] != '':
+        results['val_x.npy'] = np.concatenate(datasets['val_x'])
+        results['val_y.npy'] = np.concatenate(datasets['val_y'])
+    
     return results
-
+    
 def f_r(ilist):
     ''' A quick reshaper'''
     return np.concatenate(ilist, axis=0)
@@ -427,5 +462,8 @@ if data_source == 'MERRA2':
         results = load_merra_data(data_dir,windowsize, validation_year=validation_year_merra, test_year=test_year_merra)
 if data_source == 'WRF':
     data_dir = os.path.join(root, 'wrf_data')
-    results = load_wrf_data(data_dir, wrf_experiment_identification, wrf_variables_imsize, wrf_labels_imsize, test = test_experiment_wrf, val=validation_experiment_wrf)
+    train_experiment_wrf = parse_experiment_pairs(train_experiment_wrf)
+    test_experiment_wrf = parse_experiment_pairs(test_experiment_wrf)
+    val_experiment_wrf = parse_experiment_pairs(val_experiment_wrf)
+    results = load_wrf_data(data_dir, X_resolution, Y_resolution,wrf_variables_imsize, wrf_labels_imsize,train = train_experiment_wrf, test = test_experiment_wrf, val=val_experiment_wrf)
 write_data(results, work_folder, val_pc = validation_percentage)

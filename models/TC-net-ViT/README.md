@@ -23,6 +23,8 @@ with Python/GPU/3.10.10 on the IU's native BigRed200 HPC environment.
 + Oct 17, 2024: sanity checked and noted by CK  
 + Nov 17, 2024: revised workflow by TN and KL.
 + Nov 19, 2024: sanity checked by CK
++ Mar 22, 2025: added support for ALL in a single workflow and support for WRF output
+                similar to the TCNN version by CK.
 
 ## CONTRIBUTION:
 + Khanh Luong: IU Earth and Atmospheric Sciences (kmluong@iu.edu or mk223338@gmail.com)

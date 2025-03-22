@@ -84,7 +84,8 @@ def parse_args():
     parser.add_argument('--test_year', nargs='+', type=int, default=[2017],
                         help='Year(s) taken for test')
     parser.add_argument('-ss', '--data_source', type=str, default = 'MERRA2')
-    parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
+    parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', 
+                        help='Temporary working folder')
     parser.add_argument('-tid', '--temp_id', type=str)
     return parser.parse_args()
 
@@ -98,7 +99,6 @@ image_size = args.image_size
 patch_size = args.patch_size		
 projection_dim = args.projection_dim             
 num_heads = args.num_heads			
-num_classes = 1			
 validation_year = args.validation_year
 test_year = args.test_year
 transformer_units = [projection_dim*2,projection_dim]  		
@@ -115,7 +115,6 @@ st_embed = args.st_embed
 data_source = args.data_source
 work_folder = args.work_folder
 temp_id=args.temp_id
-    
 windows = f'{windowsize[0]}x{windowsize[1]}'
 work_dir = root +'/exp_'+str(var_num)+'features_'+windows+'/'
 data_dir = work_dir + 'data/'
@@ -123,6 +122,10 @@ model_dir = work_dir + 'model/'
 temp_dir = os.path.join(work_folder, 'temp')
 model_name = args.model_name
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed == 1 else ""}'
+if mode == "ALL":
+    num_classes = 3
+else:
+    num_classes = 1
 
 def mode_switch(mode):
     switcher = {
@@ -390,6 +393,7 @@ def create_vit_classifier(st_embed, input_shape = (30,30,12)):
     else:
         model = keras.Model(inputs=inputs, outputs=logits)
     return model
+
 """
 def main(X=[],Y=[],Z=[], X_val=[], Y_val = [], Z_val = [], size=[18,18], st_embed = st_embed):
     histories = []
@@ -447,11 +451,11 @@ def main(X, Y, st_embed = st_embed):
         val_data = None
 
     # Fit the model using the (possibly split) training labels
-    history = model.fit(train_inputs, train_Y, batch_size=batch_size, epochs= num_epochs,validation_data=val_data, verbose=2, callbacks=callbacks, shuffle=True)
+    history = model.fit(train_inputs, train_Y, batch_size=batch_size, 
+              epochs= num_epochs,validation_data=val_data, verbose=2, 
+              callbacks=callbacks, shuffle=True)
     return history    
     
-
-
 """
 def normalize_channels(X,y):
     
@@ -474,7 +478,6 @@ def normalize_channels(X,y):
     print("Finish normalization...")
     return X,y
 """
-
 
 def normalize_channels(X, y):
     """
@@ -515,8 +518,6 @@ def normalize_channels(X, y):
 
     return X, y
 
-
-
 def normalize_Z(Z):
     Z[:,2] = (Z[:,2]+90) / 180
     Z[:,3] = (Z[:,3]+180) / 360
@@ -527,46 +528,29 @@ def resize_preprocess(image, HEIGHT, WIDTH, method):
     return image
 
 # Main call
-"""
-if __name__ == "__main__":
-    # Read arguments
-    print(f"Validation here is: {validation_year}")
-    print(f"Test year is: {test_year}")
-    X, Y, Z, X_val, Y_val, Z_val = load_data_excluding_year(data_dir, mode, validation_year, test_year) 
-    X=np.transpose(X, (0, 2, 3, 1))
-    
-    # Normalize the data before encoding
-    X,Y = normalize_channels(X, Y)
-    Z = normalize_Z(Z)
-    X_val,Y_val = normalize_channels(X_val, Y_val)
-    X_val = np.transpose(X_val, (0, 2, 3, 1))
-    Z_val = normalize_Z(Z_val)
-    number_channels=X.shape[3]
-    print('Input shape of the X features data: ',X.shape)
-    print('Input shape of the y label data: ',Y.shape)
-    print('Number of input channel extracted from X is: ',number_channels)
-
-    print ("number of input examples = " + str(X.shape[0]))
-    print ("X shape: " + str(X.shape))
-    print ("Y shape: " + str(Y.shape))
-
-    main(X=X,Y=Y,Z = Z, X_val = X_val, Y_val = Y_val, Z_val = Z_val, size=windowsize, st_embed=st_embed)"""
-
 if __name__ == "__main__":
     b = mode_switch(mode)
     load_data(temp_dir)
     train_x = np.transpose(train_x, (0, 2, 3, 1))
     train_x = resize_preprocess(train_x, image_size, image_size, 'lanczos5')
+
     # Normalize train data, which is always present
-    train_x, train_y = normalize_channels(train_x, train_y[:,b])
+    if mode == "ALL":
+        train_x, train_y = normalize_channels(train_x, train_y[:,0:3])
+    else:
+       train_x, train_y = normalize_channels(train_x, train_y[:,b])
     if 'train_z' in globals() and train_z is not None and st_embed:
        train_z = normalize_Z(train_z)
 
     # Check if validation data exists before normalization and transposition
     if 'val_x' in globals() and 'val_y' in globals():
-       val_x, val_y = normalize_channels(val_x, val_y[:,b])
+       if mode == "ALL":
+           val_x, val_y = normalize_channels(val_x, val_y[:,0:3])
+       else:
+           val_x, val_y = normalize_channels(val_x, val_y[:,b])
        val_x = np.transpose(val_x, (0, 2, 3, 1))
        val_x = resize_preprocess(val_x, image_size, image_size, 'lanczos5')
+
     # Normalize val_z if it exists and st_embed is true
     if 'val_z' in globals() and val_z is not None and st_embed:
        val_z = normalize_Z(val_z)

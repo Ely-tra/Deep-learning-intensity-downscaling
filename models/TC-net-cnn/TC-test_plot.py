@@ -27,19 +27,22 @@ import re
 def parse_args():
     parser = argparse.ArgumentParser(description="Test and Plot Model Predictions for TC Intensity")
     parser.add_argument("--mode", default="VMAX", type=str, help="Mode of operation (e.g., VMAX, PMIN, RMW)")
-    parser.add_argument('-r', "--root", default="/N/project/Typhoon-deep-learning/output/", type=str, help="Directory to save output data")
+    parser.add_argument('-r', "--root", default="/N/project/Typhoon-deep-learning/output/", type=str, 
+                        help="Directory to save output data")
     parser.add_argument('-imsize', '--image_size', type=int, default=64, help='Size to resize the image to')
     parser.add_argument('--st_embed', type=int, default=0, help='Including space-time embedded')
     parser.add_argument("--model_name", default='CNNmodel', type=str, help="Base of the model name")
-    parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
-    parser.add_argument("--text_report_name", default= 'report.txt', type=str, help="Filename to write text report to, will be inside text_report dir")
+    parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', 
+                        help='Temporary working folder')
+    parser.add_argument("--text_report_name", default= 'report.txt', type=str, 
+                        help="Filename to write text report to, will be inside text_report dir")
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source')
     parser.add_argument('-tid', '--temp_id', type=str)
     parser.add_argument('-u', '--unit', type=str, default='Knots', help = 'Displayed unit')
 
     return parser.parse_args()
+
 args = parse_args()
-# Set parameters based on parsed arguments
 mode = args.mode
 workdir = args.root
 image_size = args.image_size
@@ -56,6 +59,7 @@ os.makedirs(report_directory, exist_ok=True)
 text_report_path=os.path.join(report_directory, text_report_name)
 model_dir = workdir + '/model/' + model_name
 temp_dir = os.path.join(work_folder, 'temp')
+
 ######################################################################################
 # All fucntions below
 ######################################################################################
@@ -67,6 +71,7 @@ def mode_switch(mode):
     }
     # Return the corresponding value if mode is found, otherwise return None as default
     return switcher.get(mode, None)
+
 def get_year_directories(data_directory):
     """
     List all directory names within a given directory that are formatted as four-digit years.
@@ -157,7 +162,8 @@ class Patches(layers.Layer):
         num_patches_h = height // self.patch_size
         num_patches_w = width // self.patch_size
 
-        patches = tf.image.extract_patches(images, sizes=[1, self.patch_size, self.patch_size, 1], strides=[1, self.patch_size, self.patch_size, 1], rates=[1, 1, 1, 1], padding='VALID')
+        patches = tf.image.extract_patches(images, sizes=[1, self.patch_size, self.patch_size, 1], 
+                  strides=[1, self.patch_size, self.patch_size, 1], rates=[1, 1, 1, 1], padding='VALID')
 
         patches = tf.reshape(
             patches,
@@ -169,6 +175,7 @@ class Patches(layers.Layer):
         config = super().get_config()
         config.update({"patch_size": self.patch_size})
         return config
+
 class PatchEncoder(layers.Layer):
     def __init__(self, num_patches, projection_dim, **kwargs):
         super().__init__(**kwargs)
@@ -229,7 +236,8 @@ def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
     axs[0].boxplot([datadict[name].reshape(-1), test_y])
     axs[0].grid(True)
     axs[0].set_ylabel(myUnit, fontsize=20)
-    axs[0].text(0.95, 0.05, '(a)', transform=axs[0].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
+    axs[0].text(0.95, 0.05, '(a)', transform=axs[0].transAxes, fontsize=20, 
+                verticalalignment='bottom', horizontalalignment='right',
                 bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
     axs[0].tick_params(axis='both', which='major', labelsize=14)
     axs[0].set_xticklabels(['Predicted', 'Truth'], fontsize=20)
@@ -239,7 +247,8 @@ def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
     axs[1].grid()
     axs[1].set_xlabel('Truth', fontsize=20)
     axs[1].set_ylabel('Prediction', fontsize=20)
-    axs[1].text(0.95, 0.05, '(b)', transform=axs[1].transAxes, fontsize=20, verticalalignment='bottom', horizontalalignment='right',
+    axs[1].text(0.95, 0.05, '(b)', transform=axs[1].transAxes, fontsize=20, 
+                verticalalignment='bottom', horizontalalignment='right',
                 bbox=dict(facecolor='white', alpha=0.9, edgecolor='none'))
     axs[1].plot(np.arange(min(test_y), max(test_y)), np.arange(min(test_y), max(test_y)), 'r-', alpha=0.8)
     mae = datadict[name+'MAE']
