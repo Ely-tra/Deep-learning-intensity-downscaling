@@ -69,6 +69,7 @@ def parse_args():
     parser.add_argument('-ss', '--data_source', type=str, default = 'MERRA2')
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', help='Temporary working folder')
     parser.add_argument('-tid', '--temp_id', type=str)
+    parser.add_argument('-cs', '--channels_skipped', nargs='+', type=int, default=[0], help ='Channels to remove from the test')
     return parser.parse_args()
 args = parse_args()
 learning_rate = args.learning_rate
@@ -83,6 +84,7 @@ config_path = args.config
 data_source=args.data_source
 work_folder=args.work_folder
 temp_id=args.temp_id
+channels_skipped=args.channels_skipped
 model_dir = os.path.join(root, 'model')
 if not os.path.exists(model_dir):
     os.makedirs(model_dir)
@@ -405,6 +407,7 @@ load_data(temp_dir)
 
 # Normalize train data, which is always present
 train_x = np.transpose(train_x, (0, 2, 3, 1))
+train_x = np.delete(train_x, channels_skipped, axis=-1)
 if mode == "ALL":
     train_x, train_y = normalize_channels(train_x, train_y[:,0:3])
 else:
@@ -424,7 +427,7 @@ if 'val_x' in globals() and 'val_y' in globals():
 
 # Normalize val_z if it exists and st_embed is true
 if 'val_z' in globals() and val_z is not None and st_embed:
-    Z_val = normalize_Z(val_z)
+    val_z = normalize_Z(val_z)
 
 # Resize train_x since it is always present
 train_x = resize_preprocess(train_x, image_size, image_size, 'lanczos5')
