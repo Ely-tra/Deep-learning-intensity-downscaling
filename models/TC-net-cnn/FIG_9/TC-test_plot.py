@@ -41,6 +41,7 @@ def parse_args():
     parser.add_argument('-u', '--unit', type=str, default='Knots', help = 'Displayed unit')
     parser.add_argument('-sf', '--save_fig', type=int, default=0, help ='Save figure or not')
     parser.add_argument('-ts', '--test_suffix', type=str, default='dec_apr_', help ='Test suffix')
+    parser.add_argument('-cs', '--channels_skipped', nargs='+', type=int, default=[0], help ='Channels to remove from the test')
     return parser.parse_args()
 
 args = parse_args()
@@ -56,6 +57,7 @@ temp_id=args.temp_id
 unit=args.unit
 save_fig=args.save_fig
 test_suffix=args.test_suffix
+channels_skipped=args.channels_skipped
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
 report_directory = os.path.join(workdir, 'text_report')
 os.makedirs(report_directory, exist_ok=True)
@@ -100,8 +102,8 @@ def load_data(temp_dir, temp_id=temp_id, test_suffix=test_suffix):
     test_y = np.load(os.path.join(temp_dir, f'test_{test_suffix}y_{temp_id}.npy'))
 
     # Optionally load test_z if it exists
-    if f'test_z_{temp_id}.npy' in os.listdir(temp_dir):
-        test_z = np.load(os.path.join(temp_dir, f'test_z_{temp_id}.npy'))
+    if f'test_{test_suffix}z_{temp_id}.npy' in os.listdir(temp_dir):
+        test_z = np.load(os.path.join(temp_dir, f'test_{test_suffix}z_{temp_id}.npy'))
     else:
         test_z = None  # Ensure test_z is defined even if it does not exist
 
@@ -276,15 +278,16 @@ def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory, sa
         plt.savefig(figPath)
         print(f"Saving result to: {figPath}")
     print('RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE'])))
-    output_str = 'RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE']))
-    if not os.path.exists(report_directory):
-        os.makedirs(report_directory)
-    with open(textPath, 'w') as file:
-        file.write(f"Saving result to: {figPath}\n")
-        file.write(output_str + '\n')
-        file.write('Predictions vs Actual Values:\n')
-        for i in range(len(predict)):
-            file.write(f"{predict[i][pc]}, {test_y[i]} \n")
+    if save_fig:
+        output_str = 'RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE']))
+        if not os.path.exists(report_directory):
+            os.makedirs(report_directory)
+        with open(textPath, 'w') as file:
+            file.write(f"Saving result to: {figPath}\n")
+            file.write(output_str + '\n')
+            file.write('Predictions vs Actual Values:\n')
+            for i in range(len(predict)):
+                file.write(f"{predict[i][pc]}, {test_y[i]} \n")
 
 #==============================================================================================
 # Main call
@@ -295,6 +298,7 @@ load_data(temp_dir)
 
 # Normalize the data before encoding
 test_x=np.transpose(test_x, (0, 2, 3, 1))
+test_x = np.delete(test_x, channels_skipped, axis=-1)
 if mode == "ALL":
     test_x, test_y = normalize_channels(test_x, test_y[:,0:3])
 else:
