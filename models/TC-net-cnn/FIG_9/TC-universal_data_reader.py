@@ -103,7 +103,7 @@ def load_merra_data(data_directory, windowsize, validation_year=None, test_year=
     train_features, train_labels, train_space_times = [], [], []
     test_features, test_labels, test_space_times = [], [], []
     val_features, val_labels, val_space_times = [], [], []
-    
+
     # Loop over each year directory
     for year in years:
         is_val = (year in validation_year)
@@ -424,8 +424,9 @@ def load_merra_data_by_period(data_directory, windowsize,
       - test_may_nov  (months 5–11)
     """
     windows = f'{windowsize[0]}x{windowsize[1]}'
+    #print(data_directory)
     years = get_year_directories(data_directory)
-
+    #print(data_directory)
     # accumulators
     tr_x, tr_y, tr_z = [], [], []
     vl_x, vl_y, vl_z = [], [], []
@@ -435,14 +436,24 @@ def load_merra_data_by_period(data_directory, windowsize,
     dec_apr = {12,1,2,3,4}
     may_nov = set(range(5,12))
 
+
+    carry_test = 0.0
+    carry_val  = 0.0
+
     for year in years:
-        for month in range(1,13):
-            feat = os.path.join(data_directory, str(year),
-                                f'features{var_num}_{windows}{month:02d}fixed.npy')
-            lab  = os.path.join(data_directory, str(year),
-                                f'labels{var_num}_{windows}{month:02d}.npy')
-            st   = os.path.join(data_directory, str(year),
-                                f'space_time_info{var_num}_{windows}{month:02d}.npy')
+        for month in range(1, 13):
+            feat = os.path.join(
+                data_directory, str(year),
+                f'features{var_num}_{windows}{month:02d}fixed.npy'
+            )
+            lab = os.path.join(
+                data_directory, str(year),
+                f'labels{var_num}_{windows}{month:02d}.npy'
+            )
+            st = os.path.join(
+                data_directory, str(year),
+                f'space_time_info{var_num}_{windows}{month:02d}.npy'
+            )
             if not (os.path.exists(feat) and os.path.exists(lab) and os.path.exists(st)):
                 print(f"Warning: missing files for {year}-{month:02d}")
                 continue
@@ -451,16 +462,26 @@ def load_merra_data_by_period(data_directory, windowsize,
             Y = np.load(lab)
             Z = np.load(st)
 
-            # monthly split
+            # monthly split with carry‐over to avoid rounding drift
             n = X.shape[0]
             idx = np.random.permutation(n)
-            n_test = int(n * test_pc/100)
-            n_val  = int(n * val_pc/100)
-            i_test = idx[:n_test]
-            i_val  = idx[n_test:n_test+n_val]
-            i_tr   = idx[n_test+n_val:]
 
-            # assign
+            # compute test size + carry
+            raw_test = n * test_pc/100 + carry_test
+            n_test   = int(np.floor(raw_test))
+            carry_test = raw_test - n_test
+
+            # compute val size + carry
+            raw_val  = n * val_pc/100 + carry_val
+            n_val    = int(np.floor(raw_val))
+            carry_val = raw_val - n_val
+
+            # slice indices
+            i_test = idx[:n_test]
+            i_val  = idx[n_test:n_test + n_val]
+            i_tr   = idx[n_test + n_val:]
+
+            # assign to accumulators
             tr_x.append(X[i_tr]);    tr_y.append(Y[i_tr]);    tr_z.append(Z[i_tr])
             vl_x.append(X[i_val]);   vl_y.append(Y[i_val]);   vl_z.append(Z[i_val])
 
@@ -469,7 +490,7 @@ def load_merra_data_by_period(data_directory, windowsize,
             else:
                 tm_x.append(X[i_test]); tm_y.append(Y[i_test]); tm_z.append(Z[i_test])
 
-    # concat splits
+    # concatenate all splits
     train_x = np.concatenate(tr_x, axis=0)
     train_y = np.concatenate(tr_y, axis=0)
     train_z = np.concatenate(tr_z, axis=0)
@@ -487,21 +508,21 @@ def load_merra_data_by_period(data_directory, windowsize,
     test_may_z = np.concatenate(tm_z, axis=0)
 
     return {
-      'train_x.npy': train_x,
-      'train_y.npy': train_y,
-      'train_z.npy': train_z,
-      'val_x.npy':   val_x,
-      'val_y.npy':   val_y,
-      'val_z.npy':   val_z,
-      'test_dec_apr_x.npy': test_dec_x,
-      'test_dec_apr_y.npy': test_dec_y,
-      'test_dec_apr_z.npy': test_dec_z,
-      'test_may_nov_x.npy': test_may_x,
-      'test_may_nov_y.npy': test_may_y,
-      'test_may_nov_z.npy': test_may_z,
+        'train_x.npy':       train_x,
+        'train_y.npy':       train_y,
+        'train_z.npy':       train_z,
+        'val_x.npy':         val_x,
+        'val_y.npy':         val_y,
+        'val_z.npy':         val_z,
+        'test_dec_apr_x.npy': test_dec_x,
+        'test_dec_apr_y.npy': test_dec_y,
+        'test_dec_apr_z.npy': test_dec_z,
+        'test_may_nov_x.npy': test_may_x,
+        'test_may_nov_y.npy': test_may_y,
+        'test_may_nov_z.npy': test_may_z,
     }
-
 def write_data(data_dict, work_folder, val_pc=20):
+
     """
     Saves all arrays contained in data_dict as .npy files in a 'temp' subdirectory within work_folder.
     If necessary validation files are missing, it shuffles and splits the training data to create them.
@@ -549,6 +570,7 @@ if data_source == 'MERRA2':
     if random_split==1:
         results = load_merra_data_by_percentage(data_dir,windowsize, val_pc=validation_percentage, test_pc=test_percentage)
     elif random_split==2:
+        #print(data_dir, root)
         results = load_merra_data_by_period(data_dir,windowsize, val_pc=validation_percentage, test_pc=test_percentage)
     else:
         results = load_merra_data(data_dir,windowsize, validation_year=validation_year_merra, test_year=test_year_merra)

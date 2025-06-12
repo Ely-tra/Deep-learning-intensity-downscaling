@@ -13,7 +13,7 @@
 #SBATCH -A r00043
 #SBATCH --mem=128G
 module load python/gpu/3.10.10
-set -x
+#set -x
 
 # File/Directory for input data, output, and intermediate files
 workdir='/N/slate/kmluong/TC-net-cnn_workdir'   # Working directory for saving output files
@@ -105,7 +105,7 @@ elif [ "$data_source" = "WRF" ]; then
     model_name="${expName}_${var_num}c"                   # Model name assigned to each experiemnts
     st_embed=0                                            # no extra space time information for WRF data 
 fi
-workdir="${workdir}/${data_source}_${expName}${windowsize_x}w"
+#workdir="${workdir}/${data_source}_${expName}${windowsize_x}w"
 temporary_folder="${workdir}/"
 
 # MERRA2 preprocess
