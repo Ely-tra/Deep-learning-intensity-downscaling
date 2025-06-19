@@ -253,10 +253,10 @@ def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
     axs[1].plot(np.arange(min(test_y), max(test_y)), np.arange(min(test_y), max(test_y)), 'r-', alpha=0.8)
     mae = datadict[name+'MAE']
     rmse = datadict[name+'rmse']
-    axs[1].fill_between(np.arange(min(test_y), max(test_y)), 
-                        np.arange(min(test_y), max(test_y)) + mae, 
-                        np.arange(min(test_y), max(test_y)) - mae, 
-                        color='red', alpha=0.3)
+    #axs[1].fill_between(np.arange(min(test_y), max(test_y)), 
+    #                    np.arange(min(test_y), max(test_y)) + mae, 
+    #                    np.arange(min(test_y), max(test_y)) - mae, 
+    #                    color='red', alpha=0.3)
     axs[1].tick_params(axis='both', which='major', labelsize=14)
     
     # Legends with RMSE and MAE without markers
@@ -265,7 +265,7 @@ def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
                     Line2D([0], [0], color='none', marker='', label=f'RMSE: {rmse:.2f}'),
                     Line2D([0], [0], color='none', marker='', label=f'MAE: {mae:.2f}')]
 
-    axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
+    #axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
 
     figPath = f"{report_directory}/fig_{myMode}{name}.png" 
     textPath = f"{report_directory}/{myMode}{name}.txt" 
