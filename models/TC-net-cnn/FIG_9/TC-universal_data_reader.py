@@ -461,7 +461,6 @@ def load_merra_data_by_period(data_directory, windowsize,
             X = np.load(feat)
             Y = np.load(lab)
             Z = np.load(st)
-
             # monthly split with carry‐over to avoid rounding drift
             n = X.shape[0]
             idx = np.random.permutation(n)
@@ -480,7 +479,6 @@ def load_merra_data_by_period(data_directory, windowsize,
             i_test = idx[:n_test]
             i_val  = idx[n_test:n_test + n_val]
             i_tr   = idx[n_test + n_val:]
-
             # assign to accumulators
             tr_x.append(X[i_tr]);    tr_y.append(Y[i_tr]);    tr_z.append(Z[i_tr])
             vl_x.append(X[i_val]);   vl_y.append(Y[i_val]);   vl_z.append(Z[i_val])

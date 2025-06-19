@@ -14,7 +14,40 @@
 #SBATCH --mem=128G
 module load python/gpu/3.10.10
 #set -x
-
+declare -a skipped_channels=(
+  "0 1"           # UV 850
+#  "4 5"           # UV 950
+#  "8 9"           # UV 750
+#  "0 1 4 5 8 9"   # All wind
+#  "2"             # T 850
+#  "6"             # T 950
+#  "10"            # T 750
+#  "2 6 10"        # All T
+#  "3"             # RH 850
+#  "7"             # RH 850
+#  "11"            # RH 850
+#  "3 7 11"        # RH 850
+#  "12"            # SLP
+)
+declare -a suffixes=(
+#  "dec_apr_"   # December–April
+  "may_nov_"   # May–November
+)
+declare -a descriptions=(
+  "UV 850"     # for channels 0 1
+#  "UV 950"     # for channels 4 5
+#  "UV 750"     # for channels 8 9
+#  "All wind"   # for channels 0 1 4 5 8 9
+#  "T 850"      # for channel 2
+#  "T 950"      # for channel 6
+#  "T 750"      # for channel 10
+#  "All T"      # for channels 2 6 10
+#  "RH 850"     # for channel 3
+#  "RH 950"     # for channel 7
+#  "RH 750"     # for channel 11
+#  "All RH"     # for channels 3 7 11
+#  "SLP"        # for channel 12
+)
 # File/Directory for input data, output, and intermediate files
 workdir='/N/slate/kmluong/TC-net-cnn_workdir'   # Working directory for saving output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to TC best track 
@@ -92,7 +125,7 @@ test_pc=10                  # Percent of training data for testing (applies to r
 val_pc=5                    # Percent of training data for validation (used if no explicit validation )
 learning_rate=0.0001        # Learning rate for the optimizer
 batch_size=256              # Number of samples per training batch
-num_epochs=300              # Total number of training epochs
+num_epochs=500              # Total number of training epochs
 image_size=64               # Size of the input images for the model
 echo "Data source is set to $data_source for experiment ${expName} and mode ${mode}"
 echo "Working directory is $workdir"
@@ -184,7 +217,7 @@ if [ "${build[1]}" -eq 1 ]; then
     channels="${skipped_channels[$idx]}"
     desc="${descriptions[$idx]}"
     for suffix in "${suffixes[@]}"; do
-      echo "Cutting ${channels} for ${desc} for ${suffix}"
+      echo "Cutting ${channels} for ${desc} for ${suffix}" >> output_fig9.txt 2>&1
       python TC-build_model.py \
         --mode $mode \
         --root $workdir \
@@ -215,7 +248,8 @@ if [ "${build[1]}" -eq 1 ]; then
           --text_report_name $text_report_name \
           -u $plot_unit \
           -cs $channels \
-          -ts $suffix
+          -ts $suffix \
+          >> output_fig9.txt 2>&1
       fi
 
     done

@@ -298,7 +298,7 @@ load_data(temp_dir)
 
 # Normalize the data before encoding
 test_x=np.transpose(test_x, (0, 2, 3, 1))
-test_x = np.delete(test_x, channels_skipped, axis=-1)
+#test_x = np.delete(test_x, channels_skipped, axis=-1)
 if mode == "ALL":
     test_x, test_y = normalize_channels(test_x, test_y[:,0:3])
 else:

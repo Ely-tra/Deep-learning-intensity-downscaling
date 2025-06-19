@@ -407,7 +407,7 @@ load_data(temp_dir)
 
 # Normalize train data, which is always present
 train_x = np.transpose(train_x, (0, 2, 3, 1))
-train_x = np.delete(train_x, channels_skipped, axis=-1)
+#train_x = np.delete(train_x, channels_skipped, axis=-1)
 if mode == "ALL":
     train_x, train_y = normalize_channels(train_x, train_y[:,0:3])
 else:
@@ -435,11 +435,11 @@ train_x = resize_preprocess(train_x, image_size, image_size, 'lanczos5')
 # Resize and preprocess val_x if it exists
 if 'val_x' in globals():
     val_x = resize_preprocess(val_x, image_size, image_size, 'lanczos5')
-
+#val_x = np.delete(val_x, channels_skipped, axis=-1)
 # Assuming train_x is defined and checking the number of channels
 number_channels = train_x.shape[3]
 print('Input shape of the X features data: ',train_x.shape)
 print('Input shape of the y label data: ',train_y.shape)
 print('Number of input channel extracted from X is: ',number_channels)
-
-history = main(X=train_x, Y=train_y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, epoch=num_epochs, var_num=var_num)
+var_num = number_channels
+history_ = main(X=train_x, Y=train_y, NAME = os.path.join(model_dir, model_name), st_embed=st_embed, epoch=num_epochs, var_num=var_num)
