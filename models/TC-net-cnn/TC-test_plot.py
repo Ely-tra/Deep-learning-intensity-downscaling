@@ -261,11 +261,10 @@ def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
     
     # Legends with RMSE and MAE without markers
     custom_lines = [
-                    Line2D([0], [0], color='red', lw=4, alpha=0.3),
                     Line2D([0], [0], color='none', marker='', label=f'RMSE: {rmse:.2f}'),
                     Line2D([0], [0], color='none', marker='', label=f'MAE: {mae:.2f}')]
 
-    #axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
+    #axs[1].legend(custom_lines, [f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12, handlelength=0)
 
     figPath = f"{report_directory}/fig_{myMode}{name}.png" 
     textPath = f"{report_directory}/{myMode}{name}.txt" 
