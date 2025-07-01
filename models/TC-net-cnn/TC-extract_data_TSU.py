@@ -54,6 +54,8 @@ def get_args():
     parser.add_argument('--force_rewrite', type=int, default=0, help='Overwrite previous dataset if this flag is set')
     parser.add_argument('--list_vars', type=str, nargs='+', default=['U850', 'V850', 'T850', 'RH850', 'U950', 'V950', 'T950', 'RH950', 'U750', 'V750', 'T750', 'RH750', 'SLP750'],
                         help='List of variables with levels, formatted as VarLevel (e.g., "V950")')
+    parser.add_argument('--ref_vars',   '-rv',  type=str, nargs='+', default=[],
+                       help='List of reference variables with levels (e.g., "U1000")')
     return parser.parse_args()
 args = get_args()
 workdir = args.workdir  # Take working directory from command-line argument
@@ -61,6 +63,7 @@ inputpath = os.path.join(workdir,'TC_domain')  # Take input path from command-li
 windowsize = args.windowsize  # Take window size from command-line argument
 force_rewrite = args.force_rewrite  # Overwrite previous dataset option
 list_vars = args.list_vars
+ref_vars = args.ref_vars
 def split_var_level(list_vars):
     """
     Splits each element in a list of combined variable-level strings into separate components.
@@ -97,6 +100,8 @@ def split_var_level(list_vars):
 
 list_vars = split_var_level(list_vars)
 var_num = len(list_vars)
+ref_vars = split_var_level(ref_vars)
+ref_num  = len(ref_vars)
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
@@ -178,7 +183,7 @@ def check_date_within_range(date_str):
     return start_date <= date <= end_date
 
 def dumping_data(root='', outdir='', outname=['features', 'labels'],
-                 regionize=True, omit_percent=5, windowsize=[18,18], cold_start=False):
+                 regionize=True, ref_vars=None, omit_percent=5, windowsize=[18,18], cold_start=False):
     """
     Select and convert data from NetCDF files to NumPy arrays organized by year and months.
 
@@ -234,6 +239,14 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
         data_array_y = np.array([data.VMAX, data.PMIN, data.RMW])  # knots, mb, nmile
         data_array_z = data_array_z.reshape([1, data_array_z.shape[0]])
         data_array_y = data_array_y.reshape([1, data_array_y.shape[0]])
+        if ref_vars:
+            data_array_ref = build_data_array(data, ref_vars)
+            data_array_ref = data_array_ref.reshape([1,
+                                                     data_array_ref.shape[0],
+                                                     data_array_ref.shape[1],
+                                                     data_array_ref.shape[2]])
+        else:
+            data_array_ref = None
         # Further implementation as needed...
 
         # Reshape and store the data arrays
@@ -243,6 +256,12 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
             npaay.append(data_array_y)
         with NpyAppendArray(os.path.join(year_dir, outname[2] + month + '.npy')) as npaay:
             npaay.append(data_array_z)
+            # write out reference channels to their own file
+        if data_array_ref is not None:
+            ref_fname = os.path.join(year_dir, 'ref_' + outname[0] + month + '.npy')
+            with NpyAppendArray(ref_fname) as npa_ref:
+                npa_ref.append(data_array_ref)
+
 
         i += 1
         if i % 1000 == 0:
@@ -292,4 +311,4 @@ if __name__ == "__main__":
     ]
 
     # Function to dump data - Placeholder for your actual function call
-    dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, outname=outname, cold_start=force_rewrite)
+    dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, ref_vars=ref_vars, outname=outname, cold_start=force_rewrite)
