@@ -16,37 +16,38 @@ module load python/gpu/3.10.10
 #set -x
 declare -a skipped_channels=(
   "0 1"           # UV 850
-#  "4 5"           # UV 950
-#  "8 9"           # UV 750
-#  "0 1 4 5 8 9"   # All wind
-#  "2"             # T 850
-#  "6"             # T 950
-#  "10"            # T 750
-#  "2 6 10"        # All T
-#  "3"             # RH 850
-#  "7"             # RH 850
-#  "11"            # RH 850
-#  "3 7 11"        # RH 850
-#  "12"            # SLP
+  "4 5"           # UV 950
+  "8 9"           # UV 750
+  "0 1 4 5 8 9"   # All wind
+  "2"             # T 850
+  "6"             # T 950
+  "10"            # T 750
+  "2 6 10"        # All T
+  "3"             # RH 850
+  "7"             # RH 850
+  "11"            # RH 850
+  "3 7 11"        # RH 850
+  "12"            # SLP
 )
 declare -a suffixes=(
-#  "dec_apr_"   # December–April
+  "dec_apr_"   # December–April
   "may_nov_"   # May–November
+  "all_"
 )
 declare -a descriptions=(
   "UV 850"     # for channels 0 1
-#  "UV 950"     # for channels 4 5
-#  "UV 750"     # for channels 8 9
-#  "All wind"   # for channels 0 1 4 5 8 9
-#  "T 850"      # for channel 2
-#  "T 950"      # for channel 6
-#  "T 750"      # for channel 10
-#  "All T"      # for channels 2 6 10
-#  "RH 850"     # for channel 3
-#  "RH 950"     # for channel 7
-#  "RH 750"     # for channel 11
-#  "All RH"     # for channels 3 7 11
-#  "SLP"        # for channel 12
+  "UV 950"     # for channels 4 5
+  "UV 750"     # for channels 8 9
+  "All wind"   # for channels 0 1 4 5 8 9
+  "T 850"      # for channel 2
+  "T 950"      # for channel 6
+  "T 750"      # for channel 10
+  "All T"      # for channels 2 6 10
+  "RH 850"     # for channel 3
+  "RH 950"     # for channel 7
+  "RH 750"     # for channel 11
+  "All RH"     # for channels 3 7 11
+  "SLP"        # for channel 12
 )
 # File/Directory for input data, output, and intermediate files
 workdir='/N/slate/kmluong/TC-net-cnn_workdir'   # Working directory for saving output files
@@ -210,7 +211,7 @@ if [ "${build[0]}" -eq 1 ]; then
         -vew "${val_experiment_wrf[@]}" \
         -xd $X_resolution_wrf \
         -td $Y_resolution_wrf
-        
+      
 fi
 if [ "${build[1]}" -eq 1 ]; then
   for idx in "${!skipped_channels[@]}"; do

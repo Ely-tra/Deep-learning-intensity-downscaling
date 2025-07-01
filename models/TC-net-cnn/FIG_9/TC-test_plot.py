@@ -312,9 +312,9 @@ number_channels=test_x.shape[3]
 model = tf.keras.models.load_model(model_dir, custom_objects=custom_objects)
 name = model_name
 if st_embed:
-    predict = model.predict([test_x, test_z])
+    predict = model.predict([test_x, test_z]);
 else:
-    predict = model.predict(test_x)
+    predict = model.predict(test_x);
 print(f"Prediction output shape is {predict.shape}")
 if mode == "ALL":
     for pc in range(3):

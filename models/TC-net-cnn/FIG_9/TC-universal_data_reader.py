@@ -505,6 +505,9 @@ def load_merra_data_by_period(data_directory, windowsize,
     test_may_y = np.concatenate(tm_y, axis=0)
     test_may_z = np.concatenate(tm_z, axis=0)
 
+    test_all_x = np.concatenate(tm_x+td_x, axis=0)
+    test_all_y = np.concatenate(tm_y+td_y, axis=0)
+    test_all_z = np.concatenate(tm_z+td_z, axis=0)
     return {
         'train_x.npy':       train_x,
         'train_y.npy':       train_y,
@@ -518,6 +521,9 @@ def load_merra_data_by_period(data_directory, windowsize,
         'test_may_nov_x.npy': test_may_x,
         'test_may_nov_y.npy': test_may_y,
         'test_may_nov_z.npy': test_may_z,
+        'test_all_x.npy': test_all_x,
+        'test_all_y.npy': test_all_y,
+        'test_all_z.npy': test_all_z,
     }
 def write_data(data_dict, work_folder, val_pc=20):
 

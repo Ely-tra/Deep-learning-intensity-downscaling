@@ -1,0 +1,165 @@
+13 number of vars to process: U850 V850 T850 RH850 U950 V950 T950 RH950 U750 V750 T750 RH750 SLP750
+Data source is set to MERRA2 for experiment H02h02 and mode VMAX
+Working directory is /N/slate/kmluong/TC-net-cnn_workdir
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-universal_data_reader.py", line 578, in <module>
+    results = load_merra_data_by_period(data_dir,windowsize, val_pc=validation_percentage, test_pc=test_percentage)
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-universal_data_reader.py", line 476, in load_merra_data_by_period
+    carry_val = raw_val - n_val+td_+td_
+NameError: name 'td_' is not defined. Did you mean: 'td_x'?
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
+Traceback (most recent call last):
+  File "/geode2/home/u050/kmluong/BigRed200/Deep-learning-intensity-downscaling/models/TC-net-cnn/FIG_9/TC-build_model.py", line 409, in <module>
+    train_x = np.transpose(train_x, (0, 2, 3, 1))
+NameError: name 'train_x' is not defined
