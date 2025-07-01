@@ -103,7 +103,7 @@ def load_merra_data(data_directory, windowsize, validation_year=None, test_year=
     train_features, train_labels, train_space_times = [], [], []
     test_features, test_labels, test_space_times = [], [], []
     val_features, val_labels, val_space_times = [], [], []
-    
+    test_refs = []
     # Loop over each year directory
     for year in years:
         is_val = (year in validation_year)
@@ -125,7 +125,11 @@ def load_merra_data(data_directory, windowsize, validation_year=None, test_year=
             feature_path = os.path.join(data_directory, str(year), feature_filename)
             label_path = os.path.join(data_directory, str(year), label_filename)
             space_time_path = os.path.join(data_directory, str(year), space_time_filename)
-            
+            ref_path = os.path.join(
+                data_directory,
+                str(year),
+                f'ref_{feature_filename}'
+            )
             # Check that all files exist before loading
             if os.path.exists(feature_path) and os.path.exists(label_path) and os.path.exists(space_time_path):
                 features = np.load(feature_path)
@@ -141,12 +145,18 @@ def load_merra_data(data_directory, windowsize, validation_year=None, test_year=
                     test_features.append(features)
                     test_labels.append(labels)
                     test_space_times.append(space_time)
+                    if os.path.exists(ref_path):
+                        test_refs.append(np.load(ref_path))
+                    else:
+                        print(f"Warning: Ref file not found for {year}-{month:02d}")
                 else:
                     train_features.append(features)
                     train_labels.append(labels)
                     train_space_times.append(space_time)
+                
             else:
                 print(f"Warning: Files not found for year {year} and month {month}")
+            
     
     # Concatenate each list along the first dimension if any data was loaded
     if train_features:
@@ -174,6 +184,8 @@ def load_merra_data(data_directory, windowsize, validation_year=None, test_year=
         results['val_x.npy'] = val_features
         results['val_y.npy'] = val_labels
         results['val_z.npy'] = val_space_times
+    if test_refs:
+        results['ref_x.npy'] = np.concatenate(test_refs, axis=0)
     
     return results
 
@@ -202,7 +214,7 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
     
     # Containers for all data
     all_features, all_labels, all_space_times = [], [], []
-    
+    all_ref = []
     # Loop over each year and month to load available data files
     for year in years:
         for month in months:
@@ -219,7 +231,13 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
                 features = np.load(feature_path)
                 labels = np.load(label_path)
                 space_time = np.load(space_time_path)
-                
+                # load matching ref file
+                ref_path = os.path.join(data_directory, str(year),
+                                        f'ref_{os.path.basename(feature_path)}')
+                if os.path.exists(ref_path):
+                    all_ref.append(np.load(ref_path))
+                else:
+                    print(f"Warning: Ref file not found for {year}-{month:02d}")
                 all_features.append(features)
                 all_labels.append(labels)
                 all_space_times.append(space_time)
@@ -230,7 +248,9 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
     if not all_features:
         print("No data loaded!")
         return {}
-    
+    # concat ref
+    if all_ref:
+        all_ref = np.concatenate(all_ref, axis=0)
     all_features = np.concatenate(all_features, axis=0)
     all_labels = np.concatenate(all_labels, axis=0)
     all_space_times = np.concatenate(all_space_times, axis=0)
@@ -274,7 +294,9 @@ def load_merra_data_by_percentage(data_directory, windowsize, val_pc=20, test_pc
         'val_y.npy': val_y,
         'val_z.npy': val_z
     }
-    
+    if all_ref:
+        # keep the same ordering & splits as X
+        results['ref_x.npy'] = all_ref[test_indices]
     return results
 def parse_experiment_pairs(experiment_list):
     """
@@ -431,7 +453,7 @@ def load_merra_data_by_period(data_directory, windowsize,
     vl_x, vl_y, vl_z = [], [], []
     td_x, td_y, td_z = [], [], []  # dec–apr test
     tm_x, tm_y, tm_z = [], [], []  # may–nov test
-
+    ref_test = []
     dec_apr = {12,1,2,3,4}
     may_nov = set(range(5,12))
 
@@ -450,7 +472,14 @@ def load_merra_data_by_period(data_directory, windowsize,
             X = np.load(feat)
             Y = np.load(lab)
             Z = np.load(st)
-
+            # load matching ref file
+            feat_name = f'features{var_num}_{windows}{month:02d}fixed.npy'
+            ref_path  = os.path.join(data_directory, str(year), f'ref_{feat_name}')
+            if os.path.exists(ref_path):
+                REF = np.load(ref_path)
+            else:
+                print(f"Warning: Ref file not found for {year}-{month:02d}")
+                REF = None
             # monthly split
             n = X.shape[0]
             idx = np.random.permutation(n)
@@ -463,11 +492,10 @@ def load_merra_data_by_period(data_directory, windowsize,
             # assign
             tr_x.append(X[i_tr]);    tr_y.append(Y[i_tr]);    tr_z.append(Z[i_tr])
             vl_x.append(X[i_val]);   vl_y.append(Y[i_val]);   vl_z.append(Z[i_val])
-
             if month in dec_apr:
-                td_x.append(X[i_test]); td_y.append(Y[i_test]); td_z.append(Z[i_test])
+                td_x.append(X[i_test]); td_y.append(Y[i_test]); td_z.append(Z[i_test]); ref_test.append(REF[i_test])
             else:
-                tm_x.append(X[i_test]); tm_y.append(Y[i_test]); tm_z.append(Z[i_test])
+                tm_x.append(X[i_test]); tm_y.append(Y[i_test]); tm_z.append(Z[i_test]); ref_test.append(REF[i_test])
 
     # concat splits
     train_x = np.concatenate(tr_x, axis=0)
@@ -486,6 +514,9 @@ def load_merra_data_by_period(data_directory, windowsize,
     test_may_y = np.concatenate(tm_y, axis=0)
     test_may_z = np.concatenate(tm_z, axis=0)
 
+    if ref_test:
+        ref_test = np.concatenate(ref_test, axis=0)
+        
     return {
       'train_x.npy': train_x,
       'train_y.npy': train_y,
@@ -499,6 +530,7 @@ def load_merra_data_by_period(data_directory, windowsize,
       'test_may_nov_x.npy': test_may_x,
       'test_may_nov_y.npy': test_may_y,
       'test_may_nov_z.npy': test_may_z,
+      'ref_x.npy': ref_test
     }
 
 def write_data(data_dict, work_folder, val_pc=20):
