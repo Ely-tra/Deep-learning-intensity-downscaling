@@ -88,14 +88,15 @@ def split_var_level(list_vars):
      ('U', 750), ('V', 750), ('T', 750), ('RH', 750), ('SLP', 750)]
     """
     result = []
-    pattern = re.compile(r"([a-zA-Z]+)(\d+)")
+    pattern = re.compile(r"^([A-Za-z]+?)(\d*)$")
     for item in list_vars:
         match = pattern.match(item)
-        if match:
-            # Extract the alphabetic part and convert the numeric part to an integer
-            var = match.group(1)
-            level = int(match.group(2))
-            result.append((var, level))
+        if not match:
+            continue
+        var   = match.group(1)
+        lvl_s = match.group(2)
+        level = int(lvl_s) if lvl_s else None
+        result.append((var, level))
     return result
 
 list_vars = split_var_level(list_vars)
@@ -109,16 +110,16 @@ def build_data_array(data, var_levels):
     arrays = []
 
     for var, lev in var_levels:
-        try:
-            # Attempt to select the variable at the specified level
-            selected_data = data[var].sel(lev=lev)
-        except KeyError as e:
-            selected_data = data[var]  # Select without using 'lev'
-
-        # Convert to numpy array (add a new axis if needed based on your data shape)
-        numpy_data = np.array(selected_data)
-        
-        # Append the numpy array to the list
+        if lev is None:
+            # pure variable (e.g. lat, lon) – no level dimension
+            selected = data[var]
+        else:
+            # levelled variable
+            try:
+                selected = data[var].sel(lev=lev)
+            except KeyError:
+                selected = data[var]
+        numpy_data = np.array(selected)
         arrays.append(numpy_data)
 
     # Concatenate all arrays along the first axis (adjust axis if necessary based on data shape)
