@@ -106,6 +106,7 @@ ref_num  = len(ref_vars)
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
+'''
 def build_data_array(data, var_levels):
     arrays = []
 
@@ -126,6 +127,65 @@ def build_data_array(data, var_levels):
     data_array_x = np.stack(arrays, axis = 0)
     
     return data_array_x
+'''
+def build_data_array(data, var_levels):
+    """
+    Pull out each var/level pair, convert to numpy, then
+    broadcast any 1‑D or 0‑D arrays to the common 2‑D grid
+    before stacking along a new channel axis.
+    """
+    arrays = []
+    for var, lev in var_levels:
+        # select with or without level
+        if lev is None:
+            sel = data[var]
+        else:
+            try:
+                sel = data[var].sel(lev=lev)
+            except KeyError:
+                sel = data[var]
+        arr = np.array(sel)
+
+        # If there's an extra leading singleton (e.g. time=1), drop it:
+        if arr.ndim > 2 and arr.shape[0] == 1:
+            arr = arr.squeeze(0)
+
+        arrays.append(arr)
+
+    # figure out our target 2-D shape
+    spatial_shape = None
+    for a in arrays:
+        if a.ndim == 2:
+            spatial_shape = a.shape
+            break
+    if spatial_shape is None:
+        raise ValueError("Couldn't infer 2D grid shape for build_data_array")
+
+    H, W = spatial_shape
+    normalized = []
+    for idx, a in enumerate(arrays):
+        if a.ndim == 2:
+            # already full grid
+            normalized.append(a)
+
+        elif a.ndim == 1:
+            # either a lat-vector (H,) or lon-vector (W,)
+            if   a.shape[0] == H:
+                normalized.append(np.repeat(a[:, None], W, axis=1))
+            elif a.shape[0] == W:
+                normalized.append(np.repeat(a[None, :], H, axis=0))
+            else:
+                raise ValueError(f"Cannot broadcast 1D var #{idx} of length {a.shape[0]} to {spatial_shape}")
+
+        elif a.ndim == 0:
+            # scalar → fill entire grid
+            normalized.append(np.full((H, W), a))
+
+        else:
+            raise ValueError(f"Unsupported array shape {a.shape} for var #{idx}")
+
+    # stack into (channels, H, W)
+    return np.stack(normalized, axis=0)
 def convert_date_to_cyclic(date_str):
     """
     Convert a date in 'YYYYMMDD' format to a cyclic representation using sine and cosine.
