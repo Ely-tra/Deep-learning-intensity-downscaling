@@ -410,6 +410,7 @@ def load_wrf_data(workdir, xd, td, ix, iy, train=None, test=None, val=None):
 def f_r(ilist):
     ''' A quick reshaper'''
     return np.concatenate(ilist, axis=0)
+'''
 def load_merra_data_by_period(data_directory, windowsize,
                               val_pc=20, test_pc=10):
     """
@@ -525,6 +526,129 @@ def load_merra_data_by_period(data_directory, windowsize,
         'test_all_y.npy': test_all_y,
         'test_all_z.npy': test_all_z,
     }
+'''
+def load_merra_data_by_period(data_directory, windowsize,
+                              val_pc=20, test_pc=10):
+    """
+    For each month: split into
+      - test_pc% → test
+      - val_pc%  → val
+      - rest     → train
+    Then aggregate over months into:
+      - train (full year)
+      - val   (full year)
+      - test_dec_apr  (months 12–4)
+      - test_may_nov  (months 5–11)
+    """
+    windows = f'{windowsize[0]}x{windowsize[1]}'
+    #print(data_directory)
+    years = get_year_directories(data_directory)
+    #print(data_directory)
+    month_X = {m: [] for m in range(1,13)}
+    month_Y = {m: [] for m in range(1,13)}
+    month_Z = {m: [] for m in range(1,13)}
+
+    dec_apr = {12,1,2,3,4}
+    may_nov = set(range(5,12))
+
+
+
+    for year in years:
+        for month in range(1, 13):
+            feat = os.path.join(
+                data_directory, str(year),
+                f'features{var_num}_{windows}{month:02d}fixed.npy'
+            )
+            lab = os.path.join(
+                data_directory, str(year),
+                f'labels{var_num}_{windows}{month:02d}.npy'
+            )
+            st = os.path.join(
+                data_directory, str(year),
+                f'space_time_info{var_num}_{windows}{month:02d}.npy'
+            )
+            if not (os.path.exists(feat) and os.path.exists(lab) and os.path.exists(st)):
+                print(f"Warning: missing files for {year}-{month:02d}")
+                continue
+
+            X = np.load(feat)
+            Y = np.load(lab)
+            Z = np.load(st)
+            # monthly split with carry‐over to avoid rounding drift
+            month_X[month].append(X)
+            month_Y[month].append(Y)
+            month_Z[month].append(Z)
+    # ── now do per‑month stratified sampling ──
+    tr_x, tr_y, tr_z = [], [], []
+    vl_x, vl_y, vl_z = [], [], []
+    td_x, td_y, td_z = [], [], []   # dec–apr test
+    tm_x, tm_y, tm_z = [], [], []   # may–nov test
+    
+    for month in range(1,13):
+        # pool everything for this month
+        X_m = np.concatenate(month_X[month], axis=0)
+        Y_m = np.concatenate(month_Y[month], axis=0)
+        Z_m = np.concatenate(month_Z[month], axis=0)
+    
+        n = X_m.shape[0]
+        idx = np.random.permutation(n)
+    
+        # exact per‑month slice
+        n_test = int(n * test_pc/100)
+        n_val  = int(n * val_pc/100)
+    
+        i_test = idx[:n_test]
+        i_val  = idx[n_test:n_test+n_val]
+        i_tr   = idx[n_test+n_val:]
+    
+        # collect splits
+        tr_x.append(X_m[i_tr]);    tr_y.append(Y_m[i_tr]);    tr_z.append(Z_m[i_tr])
+        vl_x.append(X_m[i_val]);   vl_y.append(Y_m[i_val]);   vl_z.append(Z_m[i_val])
+    
+        if month in dec_apr:
+            td_x.append(X_m[i_test]); td_y.append(Y_m[i_test]); td_z.append(Z_m[i_test])
+        else:
+            tm_x.append(X_m[i_test]); tm_y.append(Y_m[i_test]); tm_z.append(Z_m[i_test])
+    
+    # ── finally concatenate each list ──
+    train_x      = np.concatenate(tr_x, axis=0)
+    train_y      = np.concatenate(tr_y, axis=0)
+    train_z      = np.concatenate(tr_z, axis=0)
+    
+    val_x        = np.concatenate(vl_x, axis=0)
+    val_y        = np.concatenate(vl_y, axis=0)
+    val_z        = np.concatenate(vl_z, axis=0)
+    
+    test_dec_x   = np.concatenate(td_x, axis=0)
+    test_dec_y   = np.concatenate(td_y, axis=0)
+    test_dec_z   = np.concatenate(td_z, axis=0)
+    
+    test_may_x   = np.concatenate(tm_x, axis=0)
+    test_may_y   = np.concatenate(tm_y, axis=0)
+    test_may_z   = np.concatenate(tm_z, axis=0)
+    
+    test_all_x   = np.concatenate(td_x + tm_x, axis=0)
+    test_all_y   = np.concatenate(td_y + tm_y, axis=0)
+    test_all_z   = np.concatenate(td_z + tm_z, axis=0)
+    
+    return {
+        'train_x.npy':       train_x,
+        'train_y.npy':       train_y,
+        'train_z.npy':       train_z,
+        'val_x.npy':         val_x,
+        'val_y.npy':         val_y,
+        'val_z.npy':         val_z,
+        'test_dec_apr_x.npy': test_dec_x,
+        'test_dec_apr_y.npy': test_dec_y,
+        'test_dec_apr_z.npy': test_dec_z,
+        'test_may_nov_x.npy': test_may_x,
+        'test_may_nov_y.npy': test_may_y,
+        'test_may_nov_z.npy': test_may_z,
+        'test_all_x.npy':    test_all_x,
+        'test_all_y.npy':    test_all_y,
+        'test_all_z.npy':    test_all_z,
+    }
+
 def write_data(data_dict, work_folder, val_pc=20):
 
     """
