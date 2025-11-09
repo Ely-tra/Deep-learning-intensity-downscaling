@@ -326,3 +326,13 @@ if [ "${build[2]}" -eq 1 ]; then
 fi
 
 #find "$workdir/temp/" -type f -name "*$temp_id*" -delete
+python TC_plot_and_report.py \
+    --workdir $workdir \
+    --data_source ${data_source} \
+    --windowsizex $windowsize_x \
+    --var_num ${var_num}\
+    --temp_id "$temp_id" \
+    --result_folder YEAR \
+    --i 5 \
+    --name YEAR
+    
