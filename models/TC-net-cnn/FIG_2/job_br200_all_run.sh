@@ -13,9 +13,9 @@
 #SBATCH -A r00043
 #SBATCH --mem=128G
 module load python/gpu/3.10.10
-cd /N/slate/ckieu/deep-learning/TC-net-cnn/
+#cd /N/slate/ckieu/deep-learning/TC-net-cnn/
 set -x
-
+i=1
 # File/Directory for input data, output, and intermediate files
 workdir='/N/slate/kmluong/TC-net-cnn_workdir/'   # Working directory for saving output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to TC best track 
@@ -43,7 +43,7 @@ elif [ "$data_source" = "WRF" ]; then
     echo "${var_num} number of vars to process: ${VAR_LEVELS_WRF[@]}"
 fi
 temp_id=$(echo "$(date +%s%N)$$$BASHPID$RANDOM$(uuidgen)" | sha256sum | tr -dc 'A-Za-z0-9' | head -c10)
-temp_id='sssssss'
+temp_id='sssssdd'
 if [ $mode = "ALL" ]; then
     config='../model_core/77all.json'    # Default JSON config model with 7x7 for all metrics
 else
@@ -84,10 +84,10 @@ st_embed=0                  # Toggle for space-time embedding (0 = disabled, 1 =
 force_rewrite=0             # Flag to force re-creation of files, even if they already exist, use int
 windowsize_x=18             # Domain size along the x-axis to cut MERRRA global data
 windowsize_y=18             # Domain size along the y-axis to cut MERRRA global data
-validation_years=(2014)     # Year(s) to use for validation
-test_years=(2017)           # Year(s) to use for testing
+validation_years=(2014 2013)     # Year(s) to use for validation
+test_years=(2017 2016)           # Year(s) to use for testing
 nan_fill_map="0,1:0,1,2,3;4,5:4,5,6,7;8,9:8,9,10,11"      # Map for handling NaN values in the dataset 
-                                                          #(format: "referenced wind field: fields to fix;")
+                                                        #(format: "referenced wind field: fields to fix;")
 ref_vars=("U1000" "V1000" "SLP" "lat" "lon")
 # Deep learning Configuration
 random_split=1              # 1: use percentages (val_pc and test_pc), 0: year-based splits
@@ -100,8 +100,8 @@ image_size=64               # Size of the input images for the model
 echo "Data source is set to $data_source for experiment ${expName} and mode ${mode}"
 echo "Working directory is $workdir"
 if [ "$data_source" = "MERRA2" ]; then
-    text_report_name="${mode}TCNN_${var_num}c.txt"        # text report (saved under workdir/text_report)
-    model_name="TCNN4_${windowsize_x}w_${var_num}c"        # Model name assigned to each experiemnts
+    text_report_name="${mode}TCNN$((i))_${var_num}c.txt"        # text report (saved under workdir/text_report)
+    model_name="TCNN$((i))_${windowsize_x}w_${var_num}c"        # Model name assigned to each experiemnts
     expName="000"
 elif [ "$data_source" = "WRF" ]; then
     text_report_name="${mode}${expName}_${var_num}c.txt"  # text report (saved under workdir/text_report)
@@ -182,7 +182,8 @@ if [ "${build[0]}" -eq 1 ]; then
         -td $Y_resolution_wrf
         
 fi
-: <<'END_COMMENT'
+
+
 if [ "${build[1]}" -eq 1 ]; then
     python TC-build_model.py \
         --mode $mode \
@@ -214,43 +215,48 @@ if [ "${build[2]}" -eq 1 ]; then
         --text_report_name $text_report_name \
         -u $plot_unit
 fi
-END_COMMENT
-mode='PMIN'
-text_report_name="${mode}TCNN_${var_num}c.txt"        # text report (saved under workdir/text_report)
-if [ "${build[1]}" -eq 1 ]; then
-    python TC-build_model.py \
-        --mode $mode \
-        --root $workdir \
-        --windowsize $windowsize_x $windowsize_y \
-        --var_num $var_num \
-        --st_embed $st_embed\
-        --model_name $model_name \
-        --learning_rate $learning_rate \
-        --batch_size $batch_size \
-        --num_epochs $num_epochs \
-        --image_size $image_size \
-        -temp "${temporary_folder}" \
-        -ss ${data_source} \
-        -cfg $config \
-        -tid "$temp_id"
-fi
-
-if [ "${build[2]}" -eq 1 ]; then
-    python TC-test_plot.py \
-        --mode $mode \
-        --root $workdir \
-        --image_size $image_size \
-        --st_embed $st_embed \
-        --model_name $model_name \
-        -temp ${temporary_folder} \
-        -ss ${data_source} \
-        -tid "$temp_id" \
-        --text_report_name $text_report_name \
-        -u $plot_unit
-fi
-: <<'END_COMMENT'
 mode='RMW'
-text_report_name="${mode}TCNN_${var_num}c.txt"        # text report (saved under workdir/text_report)
+# Use TCNN7 for RMW
+text_report_name="${mode}TCNN$((i+2))_${var_num}c.txt"        # text report (saved under workdir/text_report)
+model_name="TCNN$((i+2))_${windowsize_x}w_${var_num}c"        # override model name for RMW
+
+if [ "${build[1]}" -eq 1 ]; then
+    python TC-build_model.py \
+        --mode $mode \
+        --root $workdir \
+        --windowsize $windowsize_x $windowsize_y \
+        --var_num $var_num \
+        --st_embed $st_embed\
+        --model_name $model_name \
+        --learning_rate $learning_rate \
+        --batch_size $batch_size \
+        --num_epochs $num_epochs \
+        --image_size $image_size \
+        -temp "${temporary_folder}" \
+        -ss ${data_source} \
+        -cfg $config \
+        -tid "$temp_id"
+fi
+
+if [ "${build[2]}" -eq 1 ]; then
+    python TC-test_plot.py \
+        --mode $mode \
+        --root $workdir \
+        --image_size $image_size \
+        --st_embed $st_embed \
+        --model_name $model_name \
+        -temp ${temporary_folder} \
+        -ss ${data_source} \
+        -tid "$temp_id" \
+        --text_report_name $text_report_name \
+        -u $plot_unit
+fi
+
+mode='PMIN'
+# Use TCNN6 for PMIN
+text_report_name="${mode}TCNN$((i+1))_${var_num}c.txt"        # text report (saved under workdir/text_report)
+model_name="TCNN$((i+1))_${windowsize_x}w_${var_num}c"        # override model name for PMIN
+
 if [ "${build[1]}" -eq 1 ]; then
     python TC-build_model.py \
         --mode $mode \
@@ -283,8 +289,10 @@ if [ "${build[2]}" -eq 1 ]; then
         -u $plot_unit
 fi
 mode='ALL'
-text_report_name="${mode}TCNN_${var_num}c.txt"        # text report (saved under workdir/text_report)
-config='../model_core/77all.json'    # Default JSON config model with 7x7 for all metrics
+# Use TCNN8 for ALL
+text_report_name="${mode}TCNN$((i+3))_${var_num}c.txt"        # text report (saved under workdir/text_report)
+config='../model_core/77all.json'                      # 7x7 config for ALL (unchanged)
+model_name="TCNN$((i+3))_${windowsize_x}w_${var_num}c"        # override model name for ALL
 if [ "${build[1]}" -eq 1 ]; then
     python TC-build_model.py \
         --mode $mode \
@@ -316,5 +324,5 @@ if [ "${build[2]}" -eq 1 ]; then
         --text_report_name $text_report_name \
         -u $plot_unit
 fi
-END_COMMENT
+
 #find "$workdir/temp/" -type f -name "*$temp_id*" -delete
