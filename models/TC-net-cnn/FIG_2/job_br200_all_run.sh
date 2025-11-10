@@ -15,7 +15,8 @@
 module load python/gpu/3.10.10
 #cd /N/slate/ckieu/deep-learning/TC-net-cnn/
 set -x
-i=1
+i=5
+FIG2_name_prefix=YEAR
 # File/Directory for input data, output, and intermediate files
 workdir='/N/slate/kmluong/TC-net-cnn_workdir/'   # Working directory for saving output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to TC best track 
@@ -332,6 +333,6 @@ python TC_plot_and_report.py \
     --windowsize_x $windowsize_x \
     --var_num ${var_num}\
     --temp_id "$temp_id" \
-    --i 5 \
-    --name YEAR
+    --i ${i} \
+    --name "$FIG2_name_prefix"
     
