@@ -365,6 +365,24 @@ def _prep_metric_series(metric, paths, stats, y_pred_lin, unit_override=None):
     L = min(len(A), len(B), len(C), len(D), len(y_pred_col))
     return A[:L], B[:L], C[:L], D[:L], y_pred_col[:L], label_name, unit
 
+def save_matrix_txt(path, arr):
+    """
+    Save 3-column array with headers:
+        VMAX PMIN RMW
+        kts  mb   nm
+    followed by rows of numeric data.
+    """
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    arr = np.asarray(arr)
+    if arr.ndim != 2 or arr.shape[1] != 3:
+        raise ValueError(f"Expected (N,3) array, got {arr.shape}")
+
+    with open(path, 'w') as f:
+        f.write("VMAX PMIN RMW\n")
+        f.write("kts mb nm\n")
+        np.savetxt(f, arr, fmt="%.3f")
+
+
 def extract_wind_slp_stats(ref_x):
     """
     ref_x: np.ndarray, shape (N,5,lon,lat)
@@ -453,7 +471,15 @@ def main():
 
     # 2) Train/compute linear baseline once
     y_pred_lin, y_true_lin = train_and_eval_linear_models(train_x, train_y, test_x, test_y)
+    merra_out  = stats
+    linear_out = y_pred_lin
+    merra_path  = os.path.join(report_dir, f"MERRA_stats_{args.temp_id}.txt")
+    linear_path = os.path.join(report_dir, f"LINEAR_pred_{args.temp_id}.txt")
+    save_matrix_txt(merra_path,  merra_out)      # header: "VMAX PMIN RMW"
+    save_matrix_txt(linear_path, linear_out)     # header: "VMAX PMIN RMW"
 
+    print(f"Wrote MERRA stats to:  {merra_path}")
+    print(f"Wrote linear preds to: {linear_path}")
     # 3) Make all three figures in one go
     for metric in ["vmax", "pmin", "rmw"]:
         A, B, C, D, ylin, label_name, unit = _prep_metric_series(
