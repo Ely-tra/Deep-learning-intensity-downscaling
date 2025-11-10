@@ -67,16 +67,12 @@ def parse_args():
                    help="Base working dir")
     p.add_argument("--data_source",   type=str, default="MERRA2",
                    help="Data source label")
-    p.add_argument("--exp_name",      type=str, default="000",
-                   help="Experiment code (e.g., 000)")
     p.add_argument("--windowsize_x",  type=int, default=18,
                    help="Window size (x-direction)")
     p.add_argument("--var_num",       type=int, default=13,
                    help="Number of variables")
     p.add_argument("--temp_id",       type=str, default="sssssdd",
                    help="Fixed temp id suffix for npy files")
-    p.add_argument("--result_folder",          type=str, default="YEAR",
-                   help="Folder name to save figs under text_report")
     p.add_argument("--i",             type=int, default=5,
                    help="Starting index, as there are 4 models")
     p.add_argument("--name", type=str, default="FIG",
@@ -91,15 +87,16 @@ def build_paths(a):
     import os
 
     # ---- Derived bases ----
-    base_dir   = os.path.join(a.workdir, f"{a.data_source}_{a.exp_name}{a.windowsize_x}w")
-    report_dir = os.path.join(base_dir, "text_report", a.result_folder)
+    base_dir   = a.workdir
+    report_dir = os.path.join(base_dir, "text_report")
+    temp_dir = os.path.join(base_dir, "temp")
 
     # ---- Temp arrays written by the data reader ----
-    ref_x   = os.path.join(report_dir, f"ref_x_{a.temp_id}.npy")
-    train_x = os.path.join(report_dir, f"train_x_{a.temp_id}.npy")
-    train_y = os.path.join(report_dir, f"train_y_{a.temp_id}.npy")
-    test_x  = os.path.join(report_dir, f"test_x_{a.temp_id}.npy")
-    test_y  = os.path.join(report_dir, f"test_y_{a.temp_id}.npy")
+    ref_x   = os.path.join(temp_dir, f"ref_x_{a.temp_id}.npy")
+    train_x = os.path.join(temp_dir, f"train_x_{a.temp_id}.npy")
+    train_y = os.path.join(temp_dir, f"train_y_{a.temp_id}.npy")
+    test_x  = os.path.join(temp_dir, f"test_x_{a.temp_id}.npy")
+    test_y  = os.path.join(temp_dir, f"test_y_{a.temp_id}.npy")
 
     # ---- Indices per metric ----
     idx_vmax = a.i

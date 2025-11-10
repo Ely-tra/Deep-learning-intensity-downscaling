@@ -25,7 +25,7 @@ wrfdata="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base directory for WR
 # Control Sequence: Toggle execution of the whole workflow
 merra=(0 0 0)               # Array to control execution of MERRA2 data processing (0 = off, 1 = on)
 wrf=0                       # Flag to control execution of WRF data processing (0 = off, 1 = on)
-build=(1 1 1)               # Array to control execution of builder scripts (0 = off, 1 = on)
+build=(0 0 0)               # Array to control execution of builder scripts (0 = off, 1 = on)
 
 # Common Settings: Basic Configuration Options Used Across Scripts
 mode='VMAX'                  # Operation mode: VMAX/PMIN/RMW/ALL
@@ -43,7 +43,7 @@ elif [ "$data_source" = "WRF" ]; then
     echo "${var_num} number of vars to process: ${VAR_LEVELS_WRF[@]}"
 fi
 temp_id=$(echo "$(date +%s%N)$$$BASHPID$RANDOM$(uuidgen)" | sha256sum | tr -dc 'A-Za-z0-9' | head -c10)
-temp_id='sssssdd'
+temp_id='sssssss'
 if [ $mode = "ALL" ]; then
     config='../model_core/77all.json'    # Default JSON config model with 7x7 for all metrics
 else
@@ -329,10 +329,9 @@ fi
 python TC_plot_and_report.py \
     --workdir $workdir \
     --data_source ${data_source} \
-    --windowsizex $windowsize_x \
+    --windowsize_x $windowsize_x \
     --var_num ${var_num}\
     --temp_id "$temp_id" \
-    --result_folder YEAR \
     --i 5 \
     --name YEAR
     
