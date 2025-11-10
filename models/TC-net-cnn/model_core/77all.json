@@ -1,0 +1,82 @@
+{
+  "inputs": [
+    {"name": "inputs", "shape": [64,64,"var_num"]}
+  ],
+  "process_flows": [
+    {
+      "name": "data_augmentation",
+      "input": "inputs",
+      "operations": [
+        {"type": "RandomRotation", "factor": 0.1},
+        {"type": "RandomZoom", "factor": 0.2}
+      ]
+    },
+    {
+      "name": "conv_block_1",
+      "input": "data_augmentation",
+      "operations": [
+        {"type": "Conv2D", "filters": 32, "kernel_size": 7, "padding": "same", "activation": "relu"},
+        {"type": "MaxPooling2D", "pool_size": 2},
+        {"type": "BatchNormalization"}
+      ]
+    },
+    {
+      "name": "conv_block_2",
+      "input": "conv_block_1",
+      "operations": [
+        {"type": "Conv2D", "filters": 64, "kernel_size": 7, "padding": "same", "activation": "relu"},
+        {"type": "MaxPooling2D", "pool_size": 2},
+        {"type": "BatchNormalization"}
+      ]
+    },
+    {
+      "name": "conv_block_3",
+      "input": "conv_block_2",
+      "operations": [
+        {"type": "Conv2D", "filters": 128, "kernel_size": 7, "padding": "same", "activation": "relu"},
+        {"type": "MaxPooling2D", "pool_size": 2}
+      ]
+    },
+    {
+      "name": "conv_block_4",
+      "input": "conv_block_3",
+      "operations": [
+        {"type": "Conv2D", "filters": 256, "kernel_size": 7, "padding": "same", "activation": "relu"},
+        {"type": "Conv2D", "filters": 512, "kernel_size": 7, "padding": "valid", "activation": "relu"},
+        {"type": "BatchNormalization"}
+      ]
+    },
+    {
+      "name": "dense_block",
+      "input": "conv_block_4",
+      "operations": [
+        {"type": "Flatten"},
+        {"type": "Dropout", "rate": 0.4}
+      ]
+    },
+    {
+      "name": "conditional_st_embed",
+      "input": "dense_block",
+      "operations": [
+        {
+          "type": "conditional",
+          "condition": "st_embed",
+          "true_branch": [
+            {"name": "Z_input", "type": "Input", "shape": [4]},
+            {"type": "concatenate", "inputs": ["dense_block", "Z_input"]}
+          ],
+          "false_branch": []
+        }
+      ]
+    },
+    {
+      "name": "final_dense",
+      "input": "conditional_st_embed",
+      "operations": [
+        {"type": "Dense", "units": 512, "activation": "relu"},
+        {"type": "Dense", "units": 312, "activation": "relu"},
+        {"type": "Dense", "units": 3, "activation": "relu"}
+      ]
+    }
+  ]
+}

@@ -7,7 +7,7 @@
 # consistency across different runs and modules.
 # ==============================================================================
 #SBATCH -N 1
-#SBATCH -t 7:59:00
+#SBATCH -t 23:59:00
 #SBATCH -J TCNN-ctl
 #SBATCH -p gpu --gpus 1
 #SBATCH -A r00043
@@ -81,8 +81,8 @@ fi
 regions="EP NA WP"          # Basins to analyze (e.g., Eastern Pacific, North Atlantic, Western Pacific)
 st_embed=0                  # Toggle for space-time embedding (0 = disabled, 1 = enabled)
 force_rewrite=0             # Flag to force re-creation of files, even if they already exist, use int
-windowsize_x=25             # Domain size along the x-axis to cut MERRRA global data
-windowsize_y=25             # Domain size along the y-axis to cut MERRRA global data
+windowsize_x=18             # Domain size along the x-axis to cut MERRRA global data
+windowsize_y=18             # Domain size along the y-axis to cut MERRRA global data
 validation_years=(2014)     # Year(s) to use for validation
 test_years=(2017)           # Year(s) to use for testing
 nan_fill_map="0,1:0,1,2,3;4,5:4,5,6,7;8,9:8,9,10,11"      # Map for handling NaN values in the dataset 
@@ -93,7 +93,7 @@ test_pc=10                  # Percent of training data for testing (applies to r
 val_pc=20                    # Percent of training data for validation (used if no explicit validation )
 learning_rate=0.0001        # Learning rate for the optimizer
 batch_size=256              # Number of samples per training batch
-num_epochs=300              # Total number of training epochs
+num_epochs=500              # Total number of training epochs
 image_size=64               # Size of the input images for the model
 echo "Data source is set to $data_source for experiment ${expName} and mode ${mode}"
 echo "Working directory is $workdir"
@@ -139,7 +139,6 @@ if [ "${merra[2]}" -eq 1 ]; then
         --var_num "$var_num" \
         --channel_map $nan_fill_map
 fi
-
 # WRF preprocess
 if [ "$wrf" -eq 1 ]; then
     python wrf_data/extractor.py \
@@ -212,5 +211,104 @@ if [ "${build[2]}" -eq 1 ]; then
         --text_report_name $text_report_name \
         -u $plot_unit
 fi
+mode='PMIN'
+text_report_name="${mode}TCNN_${var_num}c.txt"        # text report (saved under workdir/text_report)
+if [ "${build[1]}" -eq 1 ]; then
+    python TC-build_model.py \
+        --mode $mode \
+        --root $workdir \
+        --windowsize $windowsize_x $windowsize_y \
+        --var_num $var_num \
+        --st_embed $st_embed\
+        --model_name $model_name \
+        --learning_rate $learning_rate \
+        --batch_size $batch_size \
+        --num_epochs $num_epochs \
+        --image_size $image_size \
+        -temp "${temporary_folder}" \
+        -ss ${data_source} \
+        -cfg $config \
+        -tid "$temp_id"
+fi
 
+if [ "${build[2]}" -eq 1 ]; then
+    python TC-test_plot.py \
+        --mode $mode \
+        --root $workdir \
+        --image_size $image_size \
+        --st_embed $st_embed \
+        --model_name $model_name \
+        -temp ${temporary_folder} \
+        -ss ${data_source} \
+        -tid "$temp_id" \
+        --text_report_name $text_report_name \
+        -u $plot_unit
+fi
+mode='RMW'
+text_report_name="${mode}TCNN_${var_num}c.txt"        # text report (saved under workdir/text_report)
+if [ "${build[1]}" -eq 1 ]; then
+    python TC-build_model.py \
+        --mode $mode \
+        --root $workdir \
+        --windowsize $windowsize_x $windowsize_y \
+        --var_num $var_num \
+        --st_embed $st_embed\
+        --model_name $model_name \
+        --learning_rate $learning_rate \
+        --batch_size $batch_size \
+        --num_epochs $num_epochs \
+        --image_size $image_size \
+        -temp "${temporary_folder}" \
+        -ss ${data_source} \
+        -cfg $config \
+        -tid "$temp_id"
+fi
+
+if [ "${build[2]}" -eq 1 ]; then
+    python TC-test_plot.py \
+        --mode $mode \
+        --root $workdir \
+        --image_size $image_size \
+        --st_embed $st_embed \
+        --model_name $model_name \
+        -temp ${temporary_folder} \
+        -ss ${data_source} \
+        -tid "$temp_id" \
+        --text_report_name $text_report_name \
+        -u $plot_unit
+fi
+mode='ALL'
+text_report_name="${mode}TCNN_${var_num}c.txt"        # text report (saved under workdir/text_report)
+config='model_core/77all.json'    # Default JSON config model with 7x7 for all metrics
+if [ "${build[1]}" -eq 1 ]; then
+    python TC-build_model.py \
+        --mode $mode \
+        --root $workdir \
+        --windowsize $windowsize_x $windowsize_y \
+        --var_num $var_num \
+        --st_embed $st_embed\
+        --model_name $model_name \
+        --learning_rate $learning_rate \
+        --batch_size $batch_size \
+        --num_epochs $num_epochs \
+        --image_size $image_size \
+        -temp "${temporary_folder}" \
+        -ss ${data_source} \
+        -cfg $config \
+        -tid "$temp_id"
+fi
+
+if [ "${build[2]}" -eq 1 ]; then
+    python TC-test_plot.py \
+        --mode $mode \
+        --root $workdir \
+        --image_size $image_size \
+        --st_embed $st_embed \
+        --model_name $model_name \
+        -temp ${temporary_folder} \
+        -ss ${data_source} \
+        -tid "$temp_id" \
+        --text_report_name $text_report_name \
+        -u $plot_unit
+fi
 find "$workdir/temp/" -type f -name "*$temp_id*" -delete

@@ -264,7 +264,7 @@ def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
                     Line2D([0], [0], color='none', marker='', label=f'RMSE: {rmse:.2f}'),
                     Line2D([0], [0], color='none', marker='', label=f'MAE: {mae:.2f}')]
 
-    #axs[1].legend(custom_lines, [f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12, handlelength=0)
+    axs[1].legend(custom_lines, [f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12, handlelength=0)
 
     figPath = f"{report_directory}/fig_{myMode}{name}.png" 
     textPath = f"{report_directory}/{myMode}{name}.txt" 
