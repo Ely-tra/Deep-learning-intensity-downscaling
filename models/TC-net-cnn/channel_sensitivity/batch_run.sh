@@ -35,22 +35,22 @@ declare -a suffixes=(
   "all_"
 )
 declare -a descriptions=(
-  "UV 850"     # for channels 0 1
-  "UV 950"     # for channels 4 5
-  "UV 750"     # for channels 8 9
-  "All wind"   # for channels 0 1 4 5 8 9
-  "T 850"      # for channel 2
-  "T 950"      # for channel 6
-  "T 750"      # for channel 10
-  "All T"      # for channels 2 6 10
-  "RH 850"     # for channel 3
-  "RH 950"     # for channel 7
-  "RH 750"     # for channel 11
-  "All RH"     # for channels 3 7 11
+  "UV850"     # for channels 0 1
+  "UV950"     # for channels 4 5
+  "UV750"     # for channels 8 9
+  "Allwind"   # for channels 0 1 4 5 8 9
+  "T850"      # for channel 2
+  "T950"      # for channel 6
+  "T750"      # for channel 10
+  "AllT"      # for channels 2 6 10
+  "RH850"     # for channel 3
+  "RH950"     # for channel 7
+  "RH750"     # for channel 11
+  "AllRH"     # for channels 3 7 11
   "SLP"        # for channel 12
 )
 # File/Directory for input data, output, and intermediate files
-workdir='/N/slate/kmluong/TC-net-cnn_workdir'   # Working directory for saving output files
+workdir='/N/scratch/kmluong/cfm1'   # Working directory for saving output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to TC best track 
 merra2data='/N/project/Typhoon-deep-learning/data/nasa-merra2/'  # Directory containing raw MERRA2 data
 wrfdata="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base directory for WRF simulation data
@@ -219,6 +219,7 @@ if [ "${build[1]}" -eq 1 ]; then
     desc="${descriptions[$idx]}"
     for suffix in "${suffixes[@]}"; do
       echo "Cutting ${channels} for ${desc} for ${suffix}" >> output_fig9.txt 2>&1
+      text_report_name="${desc}TCNN_${suffix}c.txt"
       python TC-build_model.py \
         --mode $mode \
         --root $workdir \
