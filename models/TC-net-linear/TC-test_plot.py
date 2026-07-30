@@ -14,11 +14,8 @@ import tensorflow as tf
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-from keras import backend as K
 from matplotlib.lines import Line2D
-from tensorflow.keras import layers
 import argparse
-import re
 #
 # Define parameters and data path. Note that x_size is the input data size. By default
 # is (64x64) after resized for windowsize < 26x26. For a larger wind:wown size, set it
@@ -29,13 +26,10 @@ def parse_args():
     parser.add_argument("--mode", default="VMAX", type=str, help="Mode of operation (e.g., VMAX, PMIN, RMW)")
     parser.add_argument('-r', "--root", default="/N/project/Typhoon-deep-learning/output/", type=str, 
                         help="Directory to save output data")
-    parser.add_argument('-imsize', '--image_size', type=int, default=64, help='Size to resize the image to')
     parser.add_argument('--st_embed', type=int, default=0, help='Including space-time embedded')
-    parser.add_argument("--model_name", default='CNNmodel', type=str, help="Base of the model name")
+    parser.add_argument("--model_name", default='LINmodel', type=str, help="Base of the model name")
     parser.add_argument('-temp', '--work_folder', type=str, default='/N/project/Typhoon-deep-learning/output/', 
                         help='Temporary working folder')
-    parser.add_argument("--text_report_name", default= 'report.txt', type=str, 
-                        help="Filename to write text report to, will be inside text_report dir")
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source')
     parser.add_argument('-tid', '--temp_id', type=str)
     parser.add_argument('-u', '--unit', type=str, default='Knots', help = 'Displayed unit')
@@ -45,10 +39,8 @@ def parse_args():
 args = parse_args()
 mode = args.mode
 workdir = args.root
-image_size = args.image_size
 st_embed = args.st_embed
 model_name = args.model_name
-text_report_name=args.text_report_name
 data_source=args.data_source
 work_folder=args.work_folder
 temp_id=args.temp_id
@@ -56,7 +48,6 @@ unit=args.unit
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
 report_directory = os.path.join(workdir, 'text_report')
 os.makedirs(report_directory, exist_ok=True)
-text_report_path=os.path.join(report_directory, text_report_name)
 model_dir = workdir + '/model/' + model_name
 temp_dir = os.path.join(work_folder, 'temp')
 
@@ -71,23 +62,6 @@ def mode_switch(mode):
     }
     # Return the corresponding value if mode is found, otherwise return None as default
     return switcher.get(mode, None)
-
-def get_year_directories(data_directory):
-    """
-    List all directory names within a given directory that are formatted as four-digit years.
-
-    Parameters:
-    - data_directory (str): Path to the directory containing potential year-named subdirectories.
-
-    Returns:
-    - list: A list of directory names that match the four-digit year format.
-    """
-    all_entries = os.listdir(data_directory)
-    year_directories = [
-        int(entry) for entry in all_entries
-        if os.path.isdir(os.path.join(data_directory, entry)) and re.match(r'^\d{4}$', entry)
-    ]
-    return year_directories
 
 def load_data(temp_dir, temp_id=temp_id):
     global test_x, test_y, test_z
@@ -128,11 +102,6 @@ def rmse_for_output(index):
     rmse.__name__ = f'rmse_{index+1}'
     return rmse
 
-def resize_preprocess(image, HEIGHT, WIDTH, method):
-    """Resize and preprocess images using the specified method."""
-    image = tf.image.resize(image, (HEIGHT, WIDTH), method=method)
-    return image
-
 def normalize_channels(X, y):
     """Normalize the channel data for all samples in the dataset."""
     nsample = X.shape[0]
@@ -147,67 +116,11 @@ def normalize_channels(X, y):
 # MAIN CALL: Initialize dictionary to store results
 #
 datadict = {}
-class Patches(layers.Layer):
-    def __init__(self, patch_size, **kwargs):
-        super().__init__(**kwargs)
-        self.patch_size = patch_size
-
-    def call(self, images):
-        input_shape = tf.shape(images)
-        batch_size = input_shape[0]
-        height = input_shape[1]
-        width = input_shape[2]
-        channels = input_shape[3]
-
-        num_patches_h = height // self.patch_size
-        num_patches_w = width // self.patch_size
-
-        patches = tf.image.extract_patches(images, sizes=[1, self.patch_size, self.patch_size, 1], 
-                  strides=[1, self.patch_size, self.patch_size, 1], rates=[1, 1, 1, 1], padding='VALID')
-
-        patches = tf.reshape(
-            patches,
-            (batch_size, num_patches_h * num_patches_w, self.patch_size * self.patch_size * channels))
-
-        return patches
-
-    def get_config(self):
-        config = super().get_config()
-        config.update({"patch_size": self.patch_size})
-        return config
-
-class PatchEncoder(layers.Layer):
-    def __init__(self, num_patches, projection_dim, **kwargs):
-        super().__init__(**kwargs)
-        self.num_patches = num_patches
-        self.projection_dim = projection_dim  # Initialize projection_dim attribute
-        self.projection = layers.Dense(units=projection_dim)
-        self.position_embedding = layers.Embedding(
-            input_dim=num_patches, output_dim=projection_dim
-        )
-
-    def call(self, patch):
-        positions = tf.expand_dims(
-            np.arange(start=0, stop=self.num_patches, step=1), axis=0
-        )
-        projected_patches = self.projection(patch)
-        encoded = projected_patches + self.position_embedding(positions)
-        return encoded
-
-    def get_config(self):
-        config = super().get_config()
-        config.update({"num_patches": self.num_patches, "projection_dim": self.projection_dim})
-        return config
-
 def normalize_Z(Z):
     Z[:,2] = (Z[:,2]+90) / 180
     Z[:,3] = (Z[:,3]+180) / 360
     return Z
 
-custom_objects = {
-    'mae_1': mae_for_output(0),
-    'rmse_1': rmse_for_output(0)
-}
 
 def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
     if mode == "ALL":
@@ -294,24 +207,49 @@ if mode == "ALL":
     test_x, test_y = normalize_channels(test_x, test_y[:,0:3])
 else:
     test_x, test_y = normalize_channels(test_x, test_y[:,b])
-test_x = resize_preprocess(test_x, image_size, image_size, 'lanczos5')
 if st_embed:
     test_z = normalize_Z(test_z)
-number_channels=test_x.shape[3]
 
-# Load model and perform predictions
-model = tf.keras.models.load_model(model_dir, custom_objects=custom_objects)
-name = model_name
-if st_embed:
-    predict = model.predict([test_x, test_z])
-else:
-    predict = model.predict(test_x)
+# Load  model and perform predictions
+lin_model_path = model_dir + "_linear_model.npz"
+print(f"Loading linear model from: {lin_model_path}")
+lin = np.load(lin_model_path)
+
+B = lin["B"]                        # (F+1, T)
+n_features = int(lin["n_features"][0])
+
+# Build test features: spatial average over H,W, optionally concat Z
+X = test_x
+N, H, W, C = X.shape
+X_red = X.mean(axis=(1, 2))      # (N, C)
+X_feat = X_red                   # base features
+
+if st_embed and test_z is not None:
+    if test_z.shape[0] != N:
+        raise ValueError(
+            f"test_z and test_x have inconsistent sample sizes: "
+            f"{test_z.shape[0]} vs {N}"
+        )
+    X_feat = np.concatenate([X_feat, test_z], axis=1)
+
+if X_feat.shape[1] != n_features:
+    raise ValueError(
+        f"Feature size mismatch: test has {X_feat.shape[1]} features, "
+        f"but linear model was trained with {n_features}."
+    )
+
+# Add bias and predict: Y_hat = [1, X_feat] @ B
+X_aug = np.concatenate(
+    [np.ones((N, 1), dtype=X_feat.dtype), X_feat],
+    axis=1
+)   # (N, F+1)
+
+predict = X_aug @ B              # (N, T) where T=1 or 3 depending on mode
 print(f"Prediction output shape is {predict.shape}")
+
+name = model_name
 if mode == "ALL":
     for pc in range(3):
-        plotPrediction(datadict,predict,test_y,pc,mode,name,unit,report_directory)
+        plotPrediction(datadict, predict, test_y, pc, mode, name, unit, report_directory)
 else:
-    plotPrediction(datadict,predict,test_y,0,mode,name,unit,report_directory)
-
-
-print('Completed!')
+    plotPrediction(datadict, predict, test_y, 0, mode, name, unit, report_directory)

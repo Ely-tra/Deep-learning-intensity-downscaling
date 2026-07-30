@@ -54,8 +54,6 @@ def get_args():
     parser.add_argument('--force_rewrite', type=int, default=0, help='Overwrite previous dataset if this flag is set')
     parser.add_argument('--list_vars', type=str, nargs='+', default=['U850', 'V850', 'T850', 'RH850', 'U950', 'V950', 'T950', 'RH950', 'U750', 'V750', 'T750', 'RH750', 'SLP750'],
                         help='List of variables with levels, formatted as VarLevel (e.g., "V950")')
-    parser.add_argument('--ref_vars',   '-rv',  type=str, nargs='+', default=[],
-                       help='List of reference variables with levels (e.g., "U1000")')
     return parser.parse_args()
 args = get_args()
 workdir = args.workdir  # Take working directory from command-line argument
@@ -63,7 +61,6 @@ inputpath = os.path.join(workdir,'TC_domain')  # Take input path from command-li
 windowsize = args.windowsize  # Take window size from command-line argument
 force_rewrite = args.force_rewrite  # Overwrite previous dataset option
 list_vars = args.list_vars
-ref_vars = args.ref_vars
 def split_var_level(list_vars):
     """
     Splits each element in a list of combined variable-level strings into separate components.
@@ -88,104 +85,41 @@ def split_var_level(list_vars):
      ('U', 750), ('V', 750), ('T', 750), ('RH', 750), ('SLP', 750)]
     """
     result = []
-    pattern = re.compile(r"^([A-Za-z]+?)(\d*)$")
+    pattern = re.compile(r"([a-zA-Z]+)(\d+)")
     for item in list_vars:
         match = pattern.match(item)
-        if not match:
-            continue
-        var   = match.group(1)
-        lvl_s = match.group(2)
-        level = int(lvl_s) if lvl_s else None
-        result.append((var, level))
+        if match:
+            # Extract the alphabetic part and convert the numeric part to an integer
+            var = match.group(1)
+            level = int(match.group(2))
+            result.append((var, level))
     return result
 
 list_vars = split_var_level(list_vars)
 var_num = len(list_vars)
-ref_vars = split_var_level(ref_vars)
-ref_num  = len(ref_vars)
 #####################################################################################
 # DO NOT EDIT BELOW UNLESS YOU WANT TO MODIFY THE SCRIPT
 #####################################################################################
-'''
 def build_data_array(data, var_levels):
     arrays = []
 
     for var, lev in var_levels:
-        if lev is None:
-            # pure variable (e.g. lat, lon) – no level dimension
-            selected = data[var]
-        else:
-            # levelled variable
-            try:
-                selected = data[var].sel(lev=lev)
-            except KeyError:
-                selected = data[var]
-        numpy_data = np.array(selected)
+        try:
+            # Attempt to select the variable at the specified level
+            selected_data = data[var].sel(lev=lev)
+        except KeyError as e:
+            selected_data = data[var]  # Select without using 'lev'
+
+        # Convert to numpy array (add a new axis if needed based on your data shape)
+        numpy_data = np.array(selected_data)
+        
+        # Append the numpy array to the list
         arrays.append(numpy_data)
 
     # Concatenate all arrays along the first axis (adjust axis if necessary based on data shape)
     data_array_x = np.stack(arrays, axis = 0)
     
     return data_array_x
-'''
-def build_data_array(data, var_levels):
-    """
-    Pull out each var/level pair, convert to numpy, then
-    broadcast any 1‑D or 0‑D arrays to the common 2‑D grid
-    before stacking along a new channel axis.
-    """
-    arrays = []
-    for var, lev in var_levels:
-        # select with or without level
-        if lev is None:
-            sel = data[var]
-        else:
-            try:
-                sel = data[var].sel(lev=lev)
-            except KeyError:
-                sel = data[var]
-        arr = np.array(sel)
-
-        # If there's an extra leading singleton (e.g. time=1), drop it:
-        if arr.ndim > 2 and arr.shape[0] == 1:
-            arr = arr.squeeze(0)
-
-        arrays.append(arr)
-
-    # figure out our target 2-D shape
-    spatial_shape = None
-    for a in arrays:
-        if a.ndim == 2:
-            spatial_shape = a.shape
-            break
-    if spatial_shape is None:
-        raise ValueError("Couldn't infer 2D grid shape for build_data_array")
-
-    H, W = spatial_shape
-    normalized = []
-    for idx, a in enumerate(arrays):
-        if a.ndim == 2:
-            # already full grid
-            normalized.append(a)
-
-        elif a.ndim == 1:
-            # either a lat-vector (H,) or lon-vector (W,)
-            if   a.shape[0] == H:
-                normalized.append(np.repeat(a[:, None], W, axis=1))
-            elif a.shape[0] == W:
-                normalized.append(np.repeat(a[None, :], H, axis=0))
-            else:
-                raise ValueError(f"Cannot broadcast 1D var #{idx} of length {a.shape[0]} to {spatial_shape}")
-
-        elif a.ndim == 0:
-            # scalar → fill entire grid
-            normalized.append(np.full((H, W), a))
-
-        else:
-            raise ValueError(f"Unsupported array shape {a.shape} for var #{idx}")
-
-    # stack into (channels, H, W)
-    return np.stack(normalized, axis=0)
 def convert_date_to_cyclic(date_str):
     """
     Convert a date in 'YYYYMMDD' format to a cyclic representation using sine and cosine.
@@ -244,7 +178,7 @@ def check_date_within_range(date_str):
     return start_date <= date <= end_date
 
 def dumping_data(root='', outdir='', outname=['features', 'labels'],
-                 regionize=True, ref_vars=None, omit_percent=5, windowsize=[18,18], cold_start=False):
+                 regionize=True, omit_percent=5, windowsize=[18,18], cold_start=False):
     """
     Select and convert data from NetCDF files to NumPy arrays organized by year and months.
 
@@ -281,7 +215,6 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
                 os.makedirs(year_dir)
         else:
             continue
-
         if cold_start and i == 0:
             # Clear previous data if cold start is enabled
             for fname in glob.glob(os.path.join(year_dir, '*.npy')):
@@ -300,30 +233,17 @@ def dumping_data(root='', outdir='', outname=['features', 'labels'],
         data_array_y = np.array([data.VMAX, data.PMIN, data.RMW])  # knots, mb, nmile
         data_array_z = data_array_z.reshape([1, data_array_z.shape[0]])
         data_array_y = data_array_y.reshape([1, data_array_y.shape[0]])
-        if ref_vars:
-            data_array_ref = build_data_array(data, ref_vars)
-            data_array_ref = data_array_ref.reshape([1,
-                                                     data_array_ref.shape[0],
-                                                     data_array_ref.shape[1],
-                                                     data_array_ref.shape[2]])
-        else:
-            data_array_ref = None
         # Further implementation as needed...
-
         # Reshape and store the data arrays
         with NpyAppendArray(os.path.join(year_dir, outname[0] + month + '.npy')) as npaax:
             npaax.append(data_array_x)
         with NpyAppendArray(os.path.join(year_dir, outname[1] + month + '.npy')) as npaay:
             npaay.append(data_array_y)
-        with NpyAppendArray(os.path.join(year_dir, outname[2] + month + '.npy')) as npaay:
-            npaay.append(data_array_z)
-            # write out reference channels to their own file
-        if data_array_ref is not None:
-            ref_fname = os.path.join(year_dir, 'ref_' + outname[0] + month + '.npy')
-            with NpyAppendArray(ref_fname) as npa_ref:
-                npa_ref.append(data_array_ref)
-
-
+        try:
+            with NpyAppendArray(os.path.join(year_dir, outname[2] + month + '.npy')) as npaaz:
+                npaaz.append(data_array_z)
+        except Exception as e:
+            print(f"⚠️  Failed to write z for {filename}: {e}", flush=True)
         i += 1
         if i % 1000 == 0:
             print(f"{i} dataset processed.", flush=True)
@@ -372,4 +292,4 @@ if __name__ == "__main__":
     ]
 
     # Function to dump data - Placeholder for your actual function call
-    dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, ref_vars=ref_vars, outname=outname, cold_start=force_rewrite)
+    dumping_data(root=inputpath, outdir=outputpath, windowsize=windowsize, outname=outname, cold_start=force_rewrite)

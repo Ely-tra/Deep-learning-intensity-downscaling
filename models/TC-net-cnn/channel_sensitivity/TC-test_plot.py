@@ -39,7 +39,9 @@ def parse_args():
     parser.add_argument('-ss', '--data_source', type=str, default='MERRA2', help='Data source')
     parser.add_argument('-tid', '--temp_id', type=str)
     parser.add_argument('-u', '--unit', type=str, default='Knots', help = 'Displayed unit')
-
+    parser.add_argument('-sf', '--save_fig', type=int, default=0, help ='Save figure or not')
+    parser.add_argument('-ts', '--test_suffix', type=str, default='dec_apr_', help ='Test suffix')
+    parser.add_argument('-cs', '--channels_skipped', nargs='+', type=int, default=[0], help ='Channels to remove from the test')
     return parser.parse_args()
 
 args = parse_args()
@@ -53,6 +55,9 @@ data_source=args.data_source
 work_folder=args.work_folder
 temp_id=args.temp_id
 unit=args.unit
+save_fig=args.save_fig
+test_suffix=args.test_suffix
+channels_skipped=args.channels_skipped
 model_name = f'{model_name}_{data_source}_{mode}{"_st" if st_embed else ""}'
 report_directory = os.path.join(workdir, 'text_report')
 os.makedirs(report_directory, exist_ok=True)
@@ -89,16 +94,16 @@ def get_year_directories(data_directory):
     ]
     return year_directories
 
-def load_data(temp_dir, temp_id=temp_id):
+def load_data(temp_dir, temp_id=temp_id, test_suffix=test_suffix):
     global test_x, test_y, test_z
 
     # Load mandatory test data files
-    test_x = np.load(os.path.join(temp_dir, f'test_x_{temp_id}.npy'))
-    test_y = np.load(os.path.join(temp_dir, f'test_y_{temp_id}.npy'))
+    test_x = np.load(os.path.join(temp_dir, f'test_{test_suffix}x_{temp_id}.npy'))
+    test_y = np.load(os.path.join(temp_dir, f'test_{test_suffix}y_{temp_id}.npy'))
 
     # Optionally load test_z if it exists
-    if f'test_z_{temp_id}.npy' in os.listdir(temp_dir):
-        test_z = np.load(os.path.join(temp_dir, f'test_z_{temp_id}.npy'))
+    if f'test_{test_suffix}z_{temp_id}.npy' in os.listdir(temp_dir):
+        test_z = np.load(os.path.join(temp_dir, f'test_{test_suffix}z_{temp_id}.npy'))
     else:
         test_z = None  # Ensure test_z is defined even if it does not exist
 
@@ -209,7 +214,7 @@ custom_objects = {
     'rmse_1': rmse_for_output(0)
 }
 
-def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
+def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory, save_fig=save_fig):
     if mode == "ALL":
         test_y = truth[:,pc]
         if pc == 0:
@@ -253,33 +258,36 @@ def plotPrediction(datadict,predict,truth,pc,mode,name,unit,report_directory):
     axs[1].plot(np.arange(min(test_y), max(test_y)), np.arange(min(test_y), max(test_y)), 'r-', alpha=0.8)
     mae = datadict[name+'MAE']
     rmse = datadict[name+'rmse']
-    #axs[1].fill_between(np.arange(min(test_y), max(test_y)), 
-    #                    np.arange(min(test_y), max(test_y)) + mae, 
-    #                    np.arange(min(test_y), max(test_y)) - mae, 
-    #                    color='red', alpha=0.3)
+    axs[1].fill_between(np.arange(min(test_y), max(test_y)), 
+                        np.arange(min(test_y), max(test_y)) + mae, 
+                        np.arange(min(test_y), max(test_y)) - mae, 
+                        color='red', alpha=0.3)
     axs[1].tick_params(axis='both', which='major', labelsize=14)
     
     # Legends with RMSE and MAE without markers
     custom_lines = [
+                    Line2D([0], [0], color='red', lw=4, alpha=0.3),
                     Line2D([0], [0], color='none', marker='', label=f'RMSE: {rmse:.2f}'),
                     Line2D([0], [0], color='none', marker='', label=f'MAE: {mae:.2f}')]
 
-    #axs[1].legend(custom_lines, [f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12, handlelength=0)
+    axs[1].legend(custom_lines, [ 'MAE Area', f'RMSE: {rmse:.2f}', f'MAE: {mae:.2f}'], fontsize=12)
 
     figPath = f"{report_directory}/fig_{myMode}{name}.png" 
     textPath = f"{report_directory}/{myMode}{name}.txt" 
-    plt.savefig(figPath)
-    print(f"Saving result to: {figPath}")
+    if save_fig:
+        plt.savefig(figPath)
+        print(f"Saving result to: {figPath}")
     print('RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE'])))
-    output_str = 'RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE']))
-    if not os.path.exists(report_directory):
-        os.makedirs(report_directory)
-    with open(textPath, 'w') as file:
-        file.write(f"Saving result to: {figPath}\n")
-        file.write(output_str + '\n')
-        file.write('Predictions vs Actual Values:\n')
-        for i in range(len(predict)):
-            file.write(f"{predict[i][pc]}, {test_y[i]} \n")
+    if save_fig:
+        output_str = 'RMSE = ' + str("{:.2f}".format(datadict[name + 'rmse'])) + ' and MAE = ' + str("{:.2f}".format(datadict[name + 'MAE']))
+        if not os.path.exists(report_directory):
+            os.makedirs(report_directory)
+        with open(textPath, 'w') as file:
+            file.write(f"Saving result to: {figPath}\n")
+            file.write(output_str + '\n')
+            file.write('Predictions vs Actual Values:\n')
+            for i in range(len(predict)):
+                file.write(f"{predict[i][pc]}, {test_y[i]} \n")
 
 #==============================================================================================
 # Main call
@@ -290,6 +298,7 @@ load_data(temp_dir)
 
 # Normalize the data before encoding
 test_x=np.transpose(test_x, (0, 2, 3, 1))
+test_x = np.delete(test_x, channels_skipped, axis=-1)
 if mode == "ALL":
     test_x, test_y = normalize_channels(test_x, test_y[:,0:3])
 else:
@@ -303,9 +312,9 @@ number_channels=test_x.shape[3]
 model = tf.keras.models.load_model(model_dir, custom_objects=custom_objects)
 name = model_name
 if st_embed:
-    predict = model.predict([test_x, test_z])
+    predict = model.predict([test_x, test_z]);
 else:
-    predict = model.predict(test_x)
+    predict = model.predict(test_x);
 print(f"Prediction output shape is {predict.shape}")
 if mode == "ALL":
     for pc in range(3):
