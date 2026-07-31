@@ -8,28 +8,28 @@
 # ==============================================================================
 #SBATCH -N 1
 #SBATCH -t 7:59:00
-#SBATCH -J TCNN-ctl
+#SBATCH -J wrf-cnn
 #SBATCH -p gpu --gpus 1
 #SBATCH -A r00043
 #SBATCH --mem=128G
 module load python/gpu/3.10.10
-cd /N/slate/ckieu/deep-learning/TC-net-cnn/
+cd /N/u/ckieu/BigRed200/model/Deep-learning-intensity-downscaling/models/TC-net-cnn
 set -x
 
 # File/Directory for input data, output, and intermediate files
-workdir='/N/project/Typhoon-deep-learning/output/ctl/'   # Working directory for saving output files
+workdir='/N/slate/ckieu/deep-learning/output/ctl/'   # Working directory for saving output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to TC best track 
 merra2data='/N/project/Typhoon-deep-learning/data/nasa-merra2/'  # Directory containing raw MERRA2 data
 wrfdata="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base directory for WRF simulation data
 
 # Control Sequence: Toggle execution of the whole workflow
-merra=(1 1 1)               # Array to control execution of MERRA2 data processing (0 = off, 1 = on)
-wrf=0                       # Flag to control execution of WRF data processing (0 = off, 1 = on)
+merra=(0 0 0)               # Array to control execution of MERRA2 data processing (0 = off, 1 = on)
+wrf=1                       # Flag to control execution of WRF data processing (0 = off, 1 = on)
 build=(1 1 1)               # Array to control execution of builder scripts (0 = off, 1 = on)
 
 # Common Settings: Basic Configuration Options Used Across Scripts
-mode='ALL'                  # Operation mode: VMAX/PMIN/RMW/ALL
-data_source='MERRA2'        # Data source selection: options include 'MERRA2' or 'WRF'
+mode='VMAX'                  # Operation mode: VMAX/PMIN/RMW/ALL
+data_source='WRF'          # Data source selection: options include 'MERRA2' or 'WRF'
 if [ "$data_source" = "MERRA2" ]; then
     wrf=0                   # When using MERRA2, disable WRF-related processing
     list_vars=("U850" "V850" "T850" "RH850" "U950" "V950" "T950" \
@@ -213,4 +213,4 @@ if [ "${build[2]}" -eq 1 ]; then
         -u $plot_unit
 fi
 
-find "$workdir/temp/" -type f -name "*$temp_id*" -delete
+#find "$workdir/temp/" -type f -name "*$temp_id*" -delete

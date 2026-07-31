@@ -367,7 +367,7 @@ def main(X, Y, loss='huber', NAME='best_model', st_embed=False, batch_size=32, e
     model.summary()
     
     callbacks = [
-        keras.callbacks.ModelCheckpoint(NAME, save_best_only=True),
+        keras.callbacks.ModelCheckpoint(f"{NAME}.keras", save_best_only=True),
         keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1)
     ]
     
