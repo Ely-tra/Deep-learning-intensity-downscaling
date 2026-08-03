@@ -17,19 +17,19 @@ cd /N/u/ckieu/BigRed200/model/Deep-learning-intensity-downscaling/models/TC-net-
 set -x
 
 # File/Directory for input data, output, and intermediate files
-workdir='/N/slate/ckieu/deep-learning/output/ctl/'   # Working directory for saving output files
+workdir='/N/slate/ckieu/deep-learning/output/wrf/'   # Working directory for saving output files
 besttrack='/N/project/hurricane-deep-learning/data/tc/ibtracs.ALL.list.v04r00.csv'  # Path to TC best track 
 merra2data='/N/project/Typhoon-deep-learning/data/nasa-merra2/'  # Directory containing raw MERRA2 data
 wrfdata="/N/project/Typhoon-deep-learning/data/tc-wrf/"  # Base directory for WRF simulation data
 
 # Control Sequence: Toggle execution of the whole workflow
 merra=(0 0 0)               # Array to control execution of MERRA2 data processing (0 = off, 1 = on)
-wrf=1                       # Flag to control execution of WRF data processing (0 = off, 1 = on)
+wrf=0                       # Flag to control execution of WRF data processing (0 = off, 1 = on)
 build=(1 1 1)               # Array to control execution of builder scripts (0 = off, 1 = on)
 
 # Common Settings: Basic Configuration Options Used Across Scripts
 mode='VMAX'                  # Operation mode: VMAX/PMIN/RMW/ALL
-data_source='WRF'          # Data source selection: options include 'MERRA2' or 'WRF'
+data_source='WRF'           # Data source selection: options include 'MERRA2' or 'WRF'
 if [ "$data_source" = "MERRA2" ]; then
     wrf=0                   # When using MERRA2, disable WRF-related processing
     list_vars=("U850" "V850" "T850" "RH850" "U950" "V950" "T950" \
@@ -38,7 +38,7 @@ if [ "$data_source" = "MERRA2" ]; then
     echo "${var_num} number of vars to process: ${list_vars[@]}"
 elif [ "$data_source" = "WRF" ]; then
     merra=(0 0 0)           # When using WRF, disable MERRA2-related processing
-    VAR_LEVELS_WRF=("U01" "V01" "PSFC")
+    VAR_LEVELS_WRF=("U01" "V01" "U18" "V18" "T14" "W14" "QVAPOR09" "PSFC")
     var_num=${#VAR_LEVELS_WRF[@]}
     echo "${var_num} number of vars to process: ${VAR_LEVELS_WRF[@]}"
 fi
@@ -50,25 +50,25 @@ else
 fi
 
 # WRF Configurations
-expName='H02h02'            # Unique identifier for the experiment
+expName='L18l02'            # Unique identifier for the experiment
 plot_unit='m/s'             # Unit for plotting results (e.g., wind speed in meters per second)
 imsize_variables="180 180"  # Dimensions (width height) for variable images
 imsize_labels="180 180"     # Dimensions (width height) for label images
-X_resolution_wrf='d03'      # Horizontal resolution identifier for X-axis
+X_resolution_wrf='d01'      # Horizontal resolution identifier for X-axis
 Y_resolution_wrf='d03'      # Horizontal resolution identifier for Y-axis
 val_experiment_wrf=''       # Placeholder for WRF validation experiment (if needed)
 train_experiment_wrf=(      # experiment for x: experiment for y
-                            "exp_02km_m01:exp_02km_m01"             
-                            "exp_02km_m02:exp_02km_m02"
-                            "exp_02km_m04:exp_02km_m04"
-                            "exp_02km_m05:exp_02km_m05"
-                            "exp_02km_m06:exp_02km_m06"
-                            "exp_02km_m07:exp_02km_m07"
-                            "exp_02km_m08:exp_02km_m08"
-                            "exp_02km_m09:exp_02km_m09"
-                            "exp_02km_m10:exp_02km_m10"
+                            "exp_02km_u01:exp_02km_u01"             
+                            "exp_02km_u02:exp_02km_u02"
+                            "exp_02km_u04:exp_02km_u04"
+                            "exp_02km_u05:exp_02km_u05"
+                            "exp_02km_u06:exp_02km_u06"
+                            "exp_02km_u07:exp_02km_u07"
+                            "exp_02km_u08:exp_02km_u08"
+                            "exp_02km_u09:exp_02km_u09"
+                            "exp_02km_u10:exp_02km_u10"
 )
-test_experiment_wrf=("exp_02km_m03:exp_02km_m03")
+test_experiment_wrf=("exp_02km_u03:exp_02km_u03")
 if [ $Y_resolution_wrf == "d01"  ]; then
     dx=18
 elif [ $Y_resolution_wrf == "d02"  ]; then
